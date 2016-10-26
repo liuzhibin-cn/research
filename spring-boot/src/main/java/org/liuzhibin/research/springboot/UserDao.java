@@ -18,7 +18,7 @@ public interface UserDao {
     @Delete("delete from sys_user where usr_id=#{id}")
     int deleteUser(@Param("id") int id);
 
-    @Delete("delete from sys_user")
+    @Delete("truncate table sys_user")
     int deleteAll();
 
     @Select("select * from sys_user")
