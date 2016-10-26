@@ -14,6 +14,7 @@ git clone https://github.com/liuzhibin-cn/research.git ./
 
 1. 在MySQL中建立演示数据库`demo_db`；
 2. 使用下面脚本创建演示用的表：
+
     ```sql
     CREATE TABLE `demo_db`.`sys_user` (
       `usr_id` INT NOT NULL AUTO_INCREMENT,
@@ -21,6 +22,7 @@ git clone https://github.com/liuzhibin-cn/research.git ./
       `create_time` DATETIME NOT NULL DEFAULT current_timestamp,
       PRIMARY KEY (`usr_id`));
     ```
+    
 3. 在项目中的文件`application.yml`中修改数据库连接信息，包括数据库名、用户、密码等
 
 ### 运行
@@ -33,10 +35,10 @@ mvn spring-boot:run
 在浏览器中访问：
 
 1. 创建测试用户：[http://127.0.0.1:8001/demo/user/create](http://127.0.0.1:8001/demo/user/create) 
-2. 查询测试用户：
+2. 查询测试用户：<br />
    查询所有用户：[http://127.0.0.1:8001/demo/user/find](http://127.0.0.1:8001/demo/user/find) <br />
    查询特定用户：[http://127.0.0.1:8001/demo/user/find?id=2](http://127.0.0.1:8001/demo/user/find?id=2) 
-3. 删除测试用户：
+3. 删除测试用户：<br />
    删除所有用户：[http://127.0.0.1:8001/demo/user/delete](http://127.0.0.1:8001/demo/user/delete) <br />
    删除特定用户：[http://127.0.0.1:8001/demo/user/delete?id=2](http://127.0.0.1:8001/demo/user/delete?id=2) 
    
