@@ -11,15 +11,16 @@ git clone https://github.com/liuzhibin-cn/research.git ./
 ```
 
 ### 配置数据库
+
 1. 在MySQL中建立演示数据库`demo_db`；
 2. 使用下面脚本创建演示用的表：
-```sql
-CREATE TABLE `demo_db`.`sys_user` (
-  `usr_id` INT NOT NULL AUTO_INCREMENT,
-  `usr_name` VARCHAR(30) NOT NULL DEFAULT '',
-  `create_time` DATETIME NOT NULL DEFAULT current_timestamp,
-  PRIMARY KEY (`usr_id`));
-```
+    ```sql
+    CREATE TABLE `demo_db`.`sys_user` (
+      `usr_id` INT NOT NULL AUTO_INCREMENT,
+      `usr_name` VARCHAR(30) NOT NULL DEFAULT '',
+      `create_time` DATETIME NOT NULL DEFAULT current_timestamp,
+      PRIMARY KEY (`usr_id`));
+    ```
 3. 在项目中的文件`application.yml`中修改数据库连接信息，包括数据库名、用户、密码等
 
 ### 运行
@@ -30,6 +31,7 @@ mvn spring-boot:run
 ```
 
 在浏览器中访问：
+
 1. 创建测试用户：[http://127.0.0.1:8001/demo/user/create](http://127.0.0.1:8001/demo/user/create) 
 2. 查询测试用户：
    查询所有用户：[http://127.0.0.1:8001/demo/user/find](http://127.0.0.1:8001/demo/user/find) <br />
