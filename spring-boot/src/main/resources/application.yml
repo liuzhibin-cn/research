@@ -1,0 +1,25 @@
+server:
+  port: 8001
+  contextPath: /demo
+  
+spring:  
+  datasource:  
+    name: demo
+    type: org.apache.tomcat.jdbc.pool.DataSource 
+    driver-class-name: com.mysql.cj.jdbc.Driver  
+    url: jdbc:mysql://localhost:3306/demo_db  
+    username: root  
+    password: dev
+    defaultAutoCommit: true
+    defaultTransactionIsolation: 2
+    initialSize: 1  
+    minIdle: 1
+    maxIdle: 2
+    maxActive: 2
+    maxWait: 2000
+    timeBetweenEvictionRunsMillis: 60000  
+    minEvictableIdleTimeMillis: 300000
+    testOnBorrow: true
+    validationQuery: /* ping */ select 1
+    validationInterval: 30000
+    testWhileIdle: true
