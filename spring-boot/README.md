@@ -83,3 +83,6 @@ mvn spring-boot:run
 mvn package
 java -jar target/demo-spring-boot-0.0.1-SNAPSHOT.jar
 ```
+
+# 参考：
+[Spring Boot Reference Guide](http://docs.spring.io/spring-boot/docs/current/reference/html/index.html)
