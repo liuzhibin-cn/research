@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @RestController
 @RequestMapping({ "/user" })
@@ -32,23 +33,31 @@ public class UserController {
     @RequestMapping(value = "/find")
     @ResponseBody
     public String find(@RequestParam(name = "id", required = false) Integer id) {
-        Gson gson = new Gson();
         if (id == null || id <= 0)
-            return gson.toJson(this.dao.findAll());
+            return this.htmlFormat(this.dao.findAll());
         else
-            return gson.toJson(this.dao.getUser(id));
+            return this.htmlFormat(this.dao.getUser(id));
     }
 
     @RequestMapping(value = "/delete")
     @ResponseBody
     public String delete(@RequestParam(name = "id", required = false) Integer id) {
         System.out.println(id);
-        if (id == null || id <= 0)
-            return "成功删除 " + this.dao.deleteAll() + " 个测试用户";
+        if (id == null || id <= 0) {
+            this.dao.deleteAll();
+            return "成功删除了所有测试用户";
+        }
         User user = this.dao.getUser(id);
         if (user == null)
             return "用户 " + id + " 不存在";
         this.dao.deleteUser(id);
-        return "用户：" + new Gson().toJson(user) + "，已经删除";
+        return "用户：" + this.htmlFormat(user) + "，已经删除";
+    }
+
+    private String htmlFormat(Object obj) {
+        if (obj == null)
+            return "null";
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").setPrettyPrinting().create();
+        return gson.toJson(obj).replaceAll(" ", "&nbsp;&nbsp;").replaceAll("\n", "<br />");
     }
 }
