@@ -1,0 +1,31 @@
+server:
+  port: 12000
+  
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:11000/eureka/
+            
+spring:  
+    application:
+        name: order-service
+    datasource:  
+        name: order
+        type: org.apache.tomcat.jdbc.pool.DataSource 
+        driver-class-name: com.mysql.cj.jdbc.Driver  
+        url: jdbc:mysql://localhost:3306/demo_db?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+        username: root  
+        password: dev
+        defaultAutoCommit: true
+        defaultTransactionIsolation: 2
+        initialSize: 1  
+        minIdle: 1
+        maxIdle: 2
+        maxActive: 2
+        maxWait: 2000
+        timeBetweenEvictionRunsMillis: 60000  
+        minEvictableIdleTimeMillis: 300000
+        testOnBorrow: true
+        validationQuery: /* ping */ select 1
+        validationInterval: 30000
+        testWhileIdle: true

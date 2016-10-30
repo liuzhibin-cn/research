@@ -1,7 +1,7 @@
 **/target/
-.settings
-.project
-.classpath
-.DS_Store
-maven-eclipse.xml
+**/.settings
+**/.project
+**/.classpath
+**/.DS_Store
+**/maven-eclipse.xml
 **/.externalToolBuilders/
