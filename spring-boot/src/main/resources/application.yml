@@ -7,7 +7,7 @@ spring:
     name: demo
     type: org.apache.tomcat.jdbc.pool.DataSource 
     driver-class-name: com.mysql.cj.jdbc.Driver  
-    url: jdbc:mysql://localhost:3306/demo_db  
+    url: jdbc:mysql://localhost:3306/demo_db?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root  
     password: dev
     defaultAutoCommit: true
