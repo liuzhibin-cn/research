@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>liuzhibin-research</groupId>
-    <artifactId>demo-spring-boot</artifactId>
+    <artifactId>spring-boot-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <parent>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            </dependency>
+        </dependency>
     </dependencies>
     
     <build>
