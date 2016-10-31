@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
+@SpringBootApplication
 @RestController
 public class Application {
 
