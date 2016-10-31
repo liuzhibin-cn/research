@@ -3,32 +3,29 @@ package org.liuzhibin.research.order.service.client.rest;
 import java.util.Date;
 import java.util.List;
 
+import org.liuzhibin.research.order.service.DateUtils;
 import org.liuzhibin.research.order.service.OrderStatus;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * 订单，客户端与服务端数据传输对象。
+ * 
+ * @author Richie 刘志斌 yudi@sina.com
+ * Oct 31, 2016
+ */
 public class OrderDTO {
-    @SuppressWarnings("deprecation")
-    private static final Date defaultDate = new Date(1900, 1, 1);
-
-    // @JsonProperty(value = "oid")
+    @JsonProperty("oid")
     private Integer orderId = 0;
-    // @JsonProperty(value = "no")
     private String orderNo = "";
     private OrderStatus status = OrderStatus.New;
-    // @JsonProperty(value = "p")
     private String province = "";
-    // @JsonProperty(value = "c")
     private String city = "";
-    // @JsonProperty(value = "d")
     private String district = "";
     private String phone = "";
     private String contact = "";
-    // @JsonProperty(value = "addr")
     private String address = "";
-    // @JsonProperty(value = "time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime = defaultDate;
+    private Date createTime = DateUtils.defaultDate();
     private List<OrderDetailDTO> details;
 
     /**
@@ -226,7 +223,7 @@ public class OrderDTO {
      */
     public void setCreateTime(Date value) {
         if (value == null)
-            this.createTime = defaultDate;
+            this.createTime = DateUtils.getDate(1900, 1, 1);
         else
             this.createTime = value;
     }

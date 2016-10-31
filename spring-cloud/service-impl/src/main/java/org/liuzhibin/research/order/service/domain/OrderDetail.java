@@ -1,8 +1,9 @@
 package org.liuzhibin.research.order.service.domain;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import org.liuzhibin.research.order.service.DateUtils;
 
 /**
  * 订单明细
@@ -10,11 +11,7 @@ import java.util.Date;
  * @author 刘志斌 yudi@sina.com
  * @since 2016/10/30 13:54:21
  */
-public class OrderDetail implements Serializable {
-    private static final long serialVersionUID = -111112860117969970L;
-    @SuppressWarnings("deprecation")
-    private static final Date defaultDate = new Date(1900, 1, 1);
-
+public class OrderDetail {
     private Integer lineId;
     private Integer orderId;
     private Integer itemId = 0;
@@ -22,7 +19,7 @@ public class OrderDetail implements Serializable {
     private Integer quantity = 0;
     private BigDecimal price = BigDecimal.ZERO;
     private BigDecimal amount = BigDecimal.ZERO;
-    private Date createTime = defaultDate;
+    private Date createTime = DateUtils.defaultDate();
 
     /**
      * 获取 订单明细ID。
@@ -179,7 +176,7 @@ public class OrderDetail implements Serializable {
      */
     public void setCreateTime(Date value) {
         if (value == null)
-            this.createTime = defaultDate;
+            this.createTime = DateUtils.defaultDate();
         else
             this.createTime = value;
     }

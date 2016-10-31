@@ -1,9 +1,9 @@
 server:
-  port: 11000
+  port: 11000 # 注册中心地址
   
 eureka:
     client:
-        register-with-eureka: false
+        register-with-eureka: false # 不将自己注册到注册中心
         fetch-registry: false
         serviceUrl:
             defaultZone: http://localhost:${server.port}/eureka/

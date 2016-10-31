@@ -23,6 +23,41 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * 将OrderServiceImpl封装成REST形式的对外开放接口。
+ * 
+ * <ul>
+ *  <li><strong>领域模型封装工作</strong><br />
+ *      业务逻辑在OrderServiceImpl中实现；OrderServiceImpl提供细粒度接口。<br />
+ *      OrderRestServiceImpl根据客户端场景提供合适的粗粒度接口（REST方式）；OrderRestServiceImpl仅对OrderServiceImpl进行简单的组装，
+ *      不能包含过多的判断等业务逻辑处理。
+ *  </li>
+ *  <li><strong>对象模型转换工作</strong><br />
+ *      OrderServiceImpl使用org.liuzhibin.research.order.service.domain中定义的对象模型，为细粒度对象模型，
+ *      实际开发中与表结构绑定比较紧密（即通常将DAO作为领域对象模型）。<br />
+ *      OrderRestServiceImpl使用org.liuzhibin.research.order.service.client.rest中定义的对象模型（DTO），为粗粒度对象模型，
+ *      专用于与客户端的交互，为客户端屏蔽内部细粒度对象模型的复杂性，提高网络通讯效率。
+ *  </li>
+ * </ul>
+ * 
+ * <p>
+ *      <strong>客户端服务端公共jar包</strong><br />
+ *      spring-cloud-demo-service-client是服务端、客户端公共的jar包。
+ *      对外接口、DTO对象定义在spring-cloud-demo-service-client中，方便客户端使用，代价是将对REST服务的弱类型依赖变成了强类型依赖。<br />
+ *      如果服务接口的参数以基本数据类型为主，没必要采用公共jar包方式；如果服务接口参数大量采用自定义业务对象，则使用这种公共jar方式比较方便。
+ * </p>
+ *  
+ *  <p>
+ *      <strong>Spring MVC Annotation说明</strong><br />
+ *      1. 类和方法层级的RequestMapping声明在OrderRestService上；<br />
+ *      2. 参数层级的annotation在OrderRestService和OrderRestServiceImpl都有说明，必须保持一致；<br />
+ *      这是因为服务端实现接口时，实现类无法从接口继承到参数的annotation，因此在实现类中必须重复声明一下。<br />
+ *      TODO: 两处同时维护且必须一致，给维护工作带来麻烦和隐患，方案待完善。
+ *  </p>
+ *  
+ * @author Richie 刘志斌 yudi@sina.com
+ * Oct 31, 2016
+ */
 @RestController
 public class OrderRestServiceImpl implements OrderRestService {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -31,8 +66,11 @@ public class OrderRestServiceImpl implements OrderRestService {
     private OrderServiceImpl orderService;
 
     @Autowired
-    DiscoveryClient client;
+    private DiscoveryClient client;
 
+    /*
+     * (non-Javadoc)
+     */
     @Override
     public String ping(@RequestParam(name = "msg") String message) {
         log.info("Message received: " + message);
@@ -42,6 +80,9 @@ public class OrderRestServiceImpl implements OrderRestService {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     */
     @Override
     public int createOrder(@RequestBody OrderDTO orderDto) {
         if (orderDto == null)
@@ -80,6 +121,9 @@ public class OrderRestServiceImpl implements OrderRestService {
         return id;
     }
 
+    /*
+     * (non-Javadoc)
+     */
     @Override
     public OrderDTO getOrder(@PathVariable("id") Integer id) {
         Order order = orderService.loadOrderAndDetails(id);
@@ -91,6 +135,9 @@ public class OrderRestServiceImpl implements OrderRestService {
         return dto;
     }
 
+    /*
+     * (non-Javadoc)
+     */
     @Override
     public List<OrderDTO> findOrders(@RequestParam(name = "status", required = false) OrderStatus status) {
         List<Order> orders = orderService.findOrders(status);
@@ -108,6 +155,9 @@ public class OrderRestServiceImpl implements OrderRestService {
         return dtos;
     }
 
+    /*
+     * (non-Javadoc)
+     */
     @Override
     public void updateOrder(@PathVariable("id") Integer id,
             @RequestParam(name = "status", required = false) OrderStatus status) {

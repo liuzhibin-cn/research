@@ -11,9 +11,15 @@ import org.liuzhibin.research.order.service.dao.OrderDetailDAO;
 import org.liuzhibin.research.order.service.domain.Order;
 import org.liuzhibin.research.order.service.domain.OrderAddress;
 import org.liuzhibin.research.order.service.domain.OrderDetail;
+import org.liuzhibin.research.order.service.rest.OrderRestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * @see {@link OrderRestServiceImpl}
+ * @author Richie 刘志斌 yudi@sina.com
+ * Oct 31, 2016
+ */
 @Component
 public class OrderServiceImpl {
     @Autowired

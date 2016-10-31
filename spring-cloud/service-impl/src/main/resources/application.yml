@@ -1,14 +1,14 @@
 server:
-  port: 12000
+  port: 12000 # 服务端口号
   
 eureka:
     client:
         serviceUrl:
-            defaultZone: http://localhost:11000/eureka/
+            defaultZone: http://localhost:11000/eureka/ # 注册中心地址
             
 spring:  
     application:
-        name: order-service
+        name: order-service # 注册到注册中心的服务名称
     datasource:  
         name: order
         type: org.apache.tomcat.jdbc.pool.DataSource 

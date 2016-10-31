@@ -3,34 +3,30 @@ package org.liuzhibin.research.order.service.client.rest;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.liuzhibin.research.order.service.DateUtils;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * 订单明细
+ * 订单明细，客户端与服务端数据传输对象。
  * 
  * @author 刘志斌 yudi@sina.com
  * @since 2016/10/30 13:54:21
  */
 public class OrderDetailDTO {
-    @SuppressWarnings("deprecation")
-    private static final Date defaultDate = new Date(1900, 1, 1);
-
-    @JsonProperty(value = "lid")
+    @JsonProperty("lid")
     private Integer lineId;
-    @JsonProperty(value = "oid")
+    @JsonProperty("oid")
     private Integer orderId;
-    @JsonProperty(value = "iid")
+    @JsonProperty("iid")
     private Integer itemId = 0;
-    @JsonProperty(value = "in")
     private String itemName;
-    @JsonProperty(value = "qty")
+    @JsonProperty("qty")
     private Integer quantity = 0;
-    @JsonProperty(value = "p")
     private BigDecimal price = BigDecimal.ZERO;
-    @JsonProperty(value = "amt")
+    @JsonProperty("amt")
     private BigDecimal amount = BigDecimal.ZERO;
-    @JsonProperty(value = "time")
-    private Date createTime = defaultDate;
+    private Date createTime = DateUtils.defaultDate();
 
     /**
      * 获取 订单明细ID。
@@ -187,7 +183,7 @@ public class OrderDetailDTO {
      */
     public void setCreateTime(Date value) {
         if (value == null)
-            this.createTime = defaultDate;
+            this.createTime = DateUtils.defaultDate();
         else
             this.createTime = value;
     }

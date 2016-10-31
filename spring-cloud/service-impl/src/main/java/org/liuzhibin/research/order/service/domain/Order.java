@@ -1,9 +1,9 @@
 package org.liuzhibin.research.order.service.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.liuzhibin.research.order.service.DateUtils;
 import org.liuzhibin.research.order.service.OrderStatus;
 
 /**
@@ -12,15 +12,11 @@ import org.liuzhibin.research.order.service.OrderStatus;
  * @author 刘志斌 yudi@sina.com
  * @since 2016/10/30 13:54:21
  */
-public class Order implements Serializable {
-    private static final long serialVersionUID = 111140847777401427L;
-    @SuppressWarnings("deprecation")
-    private static final Date defaultDate = new Date(1900, 1, 1);
-
+public class Order {
     private Integer orderId = 0;
     private String orderNo = "";
     private OrderStatus status = OrderStatus.New;
-    private Date createTime = defaultDate;
+    private Date createTime = DateUtils.defaultDate();
     private List<OrderDetail> details;
 
     public List<OrderDetail> getDetails() {
@@ -106,7 +102,7 @@ public class Order implements Serializable {
      */
     public void setCreateTime(Date value) {
         if (value == null)
-            this.createTime = defaultDate;
+            this.createTime = DateUtils.defaultDate();
         else
             this.createTime = value;
     }
