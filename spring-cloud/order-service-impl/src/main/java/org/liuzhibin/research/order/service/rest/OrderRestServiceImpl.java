@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.liuzhibin.research.order.service.OrderStatus;
-import org.liuzhibin.research.order.service.client.rest.OrderDTO;
-import org.liuzhibin.research.order.service.client.rest.OrderDetailDTO;
-import org.liuzhibin.research.order.service.client.rest.OrderRestService;
 import org.liuzhibin.research.order.service.domain.Order;
 import org.liuzhibin.research.order.service.domain.OrderAddress;
 import org.liuzhibin.research.order.service.domain.OrderDetail;
 import org.liuzhibin.research.order.service.impl.OrderServiceImpl;
+import org.liuzhibin.research.order.service.rest.OrderDTO;
+import org.liuzhibin.research.order.service.rest.OrderDetailDTO;
+import org.liuzhibin.research.order.service.rest.OrderRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

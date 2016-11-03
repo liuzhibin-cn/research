@@ -1,4 +1,4 @@
-package org.liuzhibin.research.order.service.client.rest;
+package org.liuzhibin.research.order.service.rest;
 
 import java.math.BigDecimal;
 import java.util.Date;

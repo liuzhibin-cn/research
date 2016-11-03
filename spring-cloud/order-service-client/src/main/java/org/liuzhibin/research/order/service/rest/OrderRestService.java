@@ -1,4 +1,4 @@
-package org.liuzhibin.research.order.service.client.rest;
+package org.liuzhibin.research.order.service.rest;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Richie 刘志斌 yudi@sina.com
  * Oct 31, 2016
  */
-@RequestMapping(value = "/order")
+@RequestMapping(value="/order")
 public interface OrderRestService {
     /**
      * 创建订单并返回新建的订单对象。演示请求参数为复杂对象的情况。<br />

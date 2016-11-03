@@ -17,3 +17,9 @@ hystrix:
                 isolation:
                     thread:
                         timeoutInMilliseconds: 60000
+
+# 打开FeignClient的Debug日志
+logging.level.org.liuzhibin.research.feign.OrderServiceViaZuulFeignClient: DEBUG
+logging.level.org.liuzhibin.research.feign.OrderServiceNoZuulFeignClient: DEBUG
+logging.level.org.liuzhibin.research.feign.DemoServiceViaZuulFeignClient: DEBUG
+logging.level.org.liuzhibin.research.feign.DemoServiceNoZuulFeignClient: DEBUG

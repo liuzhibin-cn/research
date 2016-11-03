@@ -1,13 +1,15 @@
-package org.liuzhibin.research.springcloud.client;
+package org.liuzhibin.research.client;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.liuzhibin.research.feign.DemoServiceNoZuulFeignClient;
+import org.liuzhibin.research.feign.OrderServiceNoZuulFeignClient;
 import org.liuzhibin.research.order.service.OrderStatus;
-import org.liuzhibin.research.order.service.client.rest.OrderDTO;
-import org.liuzhibin.research.order.service.client.rest.OrderDetailDTO;
+import org.liuzhibin.research.order.service.rest.OrderDTO;
+import org.liuzhibin.research.order.service.rest.OrderDetailDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @RestController
-public class DemoOrderClientController {
+@RequestMapping("/no-zuul")
+public class ClientNoZuulController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    OrderServiceFeignProxy orderService;
+    OrderServiceNoZuulFeignClient orderService;
     @Autowired
-    DemoServiceFeignProxy demoService;
+    DemoServiceNoZuulFeignClient demoService;
 
     @Autowired
     DiscoveryClient client;
