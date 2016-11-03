@@ -1,5 +1,5 @@
 server:
-  port: 11000 # 注册中心地址
+  port: 9000 # 注册中心地址
   
 eureka:
     client:

@@ -23,55 +23,56 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @RestController
-@RequestMapping(value = "/demo/order")
 public class DemoOrderClientController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    OrderServiceFeignProxy service;
+    OrderServiceFeignProxy orderService;
+    @Autowired
+    DemoServiceFeignProxy demoService;
 
     @Autowired
     DiscoveryClient client;
 
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    @RequestMapping(value = "/demo/ping", method = RequestMethod.GET)
     public String ping() {
         String message = "Ping from " + client.getLocalServiceInstance().getHost() + ":"
                 + client.getLocalServiceInstance().getPort();
         log.info("Message sent: " + message);
-        message = service.ping(message);
+        message = demoService.ping(message);
         log.info("Message received: " + message);
         return message;
     }
 
-    @RequestMapping(value = "/benchmark", method = RequestMethod.GET)
+    @RequestMapping(value = "/demo/benchmark", method = RequestMethod.GET)
     public String benchmark() {
         int count = 5000;
         StringBuilder sb = new StringBuilder();
         DecimalFormat format = new DecimalFormat("#0.00");
 
         // 预热
-        service.ping("Warn-Up Ping");
-        service.ping("Warn-Up Ping");
-        service.ping("Warn-Up Ping");
-        service.ping("Warn-Up Ping");
+        demoService.ping("Warn-Up Ping");
+        demoService.ping("Warn-Up Ping");
+        demoService.ping("Warn-Up Ping");
+        demoService.ping("Warn-Up Ping");
 
         long start = System.nanoTime(), end = 0;
         for (int i = 0; i < count; i++)
-            service.ping("Benchmarck Ping");
+            demoService.ping("Benchmarck Ping");
         end = System.nanoTime();
         sb.append("第一轮").append(count).append("次，耗时 ").append(format.format((end - start) / 1000000 / 1000.0))
                 .append(" 秒，平均 ").append(format.format((end - start) / 1000000 / 1.0 / count)).append(" 毫秒<br />");
 
         start = System.nanoTime();
         for (int i = 0; i < count; i++)
-            service.ping("Benchmarck Ping");
+            demoService.ping("Benchmarck Ping");
         end = System.nanoTime();
         sb.append("第二轮").append(count).append("次，耗时 ").append(format.format((end - start) / 1000000 / 1000.0))
                 .append(" 秒，平均 ").append(format.format((end - start) / 1000000 / 1.0 / count)).append(" 毫秒<br />");
 
         start = System.nanoTime();
         for (int i = 0; i < count; i++)
-            service.ping("Benchmarck Ping");
+            demoService.ping("Benchmarck Ping");
         end = System.nanoTime();
         sb.append("第三轮").append(count).append("次，耗时 ").append(format.format((end - start) / 1000000 / 1000.0))
                 .append(" 秒，平均 ").append(format.format((end - start) / 1000000 / 1.0 / count)).append(" 毫秒<br />");
@@ -79,7 +80,7 @@ public class DemoOrderClientController {
         return sb.toString();
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/order/create", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public OrderDTO create() {
         OrderDTO order = new OrderDTO();
         order.setProvince("山东");
@@ -101,27 +102,27 @@ public class DemoOrderClientController {
         order.getDetails().add(detail);
 
         log.info("Order sent:" + this.jsonEncode(order));
-        int id = service.createOrder(order);
-        order = service.getOrder(id);
+        int id = orderService.createOrder(order);
+        order = orderService.getOrder(id);
         log.info("Order received:" + this.jsonEncode(order));
 
         return order;
     }
 
-    @RequestMapping(value = "/find", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/order/find", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public List<OrderDTO> find(@RequestParam(value = "status") OrderStatus status) {
-        return service.findOrders(status);
+        return orderService.findOrders(status);
     }
 
-    @RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/order/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public OrderDTO get(@PathVariable(name = "id") Integer id) {
-        return service.getOrder(id);
+        return orderService.getOrder(id);
     }
 
-    @RequestMapping(value = "/update/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/order/update/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public OrderDTO update(@PathVariable(name = "id") Integer id, @RequestParam(value = "status") OrderStatus status) {
-        service.updateOrder(id, status);
-        return service.getOrder(id);
+        orderService.updateOrder(id, status);
+        return orderService.getOrder(id);
     }
 
     private String jsonEncode(Object obj) {

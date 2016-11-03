@@ -27,37 +27,37 @@ public class Application {
     @RequestMapping(produces = "text/html;charset=UTF-8")
     public String home() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div style='font-size:12px;padding:25px;'>");
+        sb.append("<div style='font-size:14px;padding:20px;line-height:25px;'>");
         sb.append("<a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/ping?msg=Ping>")
+            .append("/demo/ping?msg=Ping>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/ping?msg=Ping</a>");
+            .append("/demo/ping?msg=Ping</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/benchmark>")
+            .append("/demo/benchmark>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/benchmark</a>");
+            .append("/demo/benchmark</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/create>")
+            .append("/order/create>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/create</a>");
+            .append("/order/create</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/find?status=New>")
+            .append("/order/find?status=New>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/find?status=New</a>");
+            .append("/order/find?status=New</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/get/1>")
+            .append("/order/get/1>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/get/1</a>");
+            .append("/order/get/1</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/update/1?status=Close>")
+            .append("/order/update/1?status=Close>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/demo/order/update/1?status=Close</a>");
+            .append("/order/update/1?status=Close</a>");
         sb.append("</div>");
         return sb.toString();
     }

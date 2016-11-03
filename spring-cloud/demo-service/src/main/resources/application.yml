@@ -1,0 +1,11 @@
+server:
+  port: 10200 # 服务端口号
+  
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9000/eureka/ # 注册中心地址
+            
+spring:  
+    application:
+        name: demo-service # 注册到注册中心的服务名称

@@ -4,7 +4,7 @@ import org.liuzhibin.research.order.service.client.rest.OrderRestService;
 import org.springframework.cloud.netflix.feign.FeignClient;
 
 /**
- * 使用Feign生成服务代理对象。
+ * 使用Feign生成订单服务的代理对象。
  * 
  * @author Richie 刘志斌 yudi@sina.com
  * Oct 31, 2016
