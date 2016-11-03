@@ -24,6 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * 客户端通过网关访问服务。网关路由规则参考工程spring-cloud-zuul-server中的application.yml
+ * 
+ * @author Richie 刘志斌 yudi@sina.com
+ * Nov 4, 2016
+ */
 @RestController
 @RequestMapping("/via-zuul/")
 public class ClientViaZuulController {

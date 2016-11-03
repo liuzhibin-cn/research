@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 方法上通过{@link RequestMapping @RequestMapping}指定的路径。</p>
  * 
  * <p>在通过服务网关访问服务的情况下，{@link FeignClient @FeignClient}指定的服务名称为网关服务。Feign将调用请求
- * 发送给网关服务，由网关服务进行路由。</p>
+ * 发送给网关服务，由网关服务进行路由。<br />
+ * 网关路由规则参考工程spring-cloud-zuul-server中的application.yml</p>
  * 
  * @author Richie 刘志斌 yudi@sina.com
  * Nov 3, 2016

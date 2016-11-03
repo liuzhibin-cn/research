@@ -1,17 +1,20 @@
 server:
   port: 9100 # 网关服务端口号
-  
+
 eureka:
     client:
         serviceUrl:
             defaultZone: http://localhost:9000/eureka/ # 注册中心地址
-            
+
 spring:  
     application:
         name: zuul-server # 注册到注册中心的网关服务名称
 
+# Zuul路由配置
+# http://localhost:9100/demo/xxx --> http://localhost:10200/xxx
+# http://localhost:9100/sdk/order/xxx --> http://localhost:10100/xxx
 zuul:
-    routes: # Zuul路由配置
+    routes:
         demo-service: # Demo服务路由
             path: /demo/** 
             serviceId: demo-service

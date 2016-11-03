@@ -24,6 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * 客户端直接访问服务。
+ * 
+ * @author Richie 刘志斌 yudi@sina.com
+ * Nov 4, 2016
+ */
 @RestController
 @RequestMapping("/no-zuul")
 public class ClientNoZuulController {
