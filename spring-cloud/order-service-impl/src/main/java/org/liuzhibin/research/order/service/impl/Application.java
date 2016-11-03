@@ -23,7 +23,7 @@ public class Application {
     private DiscoveryClient client;
     
     /**
-     * 根域名，返回简单的HTML，显示服务的REST接口清单
+     * 用简单的HTML显示Order服务的REST API接口清单
      * @return
      */
     @RequestMapping(produces = "text/html;charset=UTF-8")
