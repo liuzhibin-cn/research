@@ -28,7 +28,7 @@ public class DemoOrderClientController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    OrderServiceProxy service;
+    OrderServiceFeignProxy service;
 
     @Autowired
     DiscoveryClient client;

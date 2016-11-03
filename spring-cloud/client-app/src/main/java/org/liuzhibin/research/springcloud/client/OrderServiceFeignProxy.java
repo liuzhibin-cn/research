@@ -9,6 +9,6 @@ import org.springframework.cloud.netflix.feign.FeignClient;
  * @author Richie 刘志斌 yudi@sina.com
  * Oct 31, 2016
  */
-@FeignClient("order-service") //这里的名称必须和服务的spring.application.name对应
-public interface OrderServiceProxy extends OrderRestService {
+@FeignClient("order-service") //FeignClient的名称必须和服务的spring.application.name对应
+public interface OrderServiceFeignProxy extends OrderRestService {
 }
