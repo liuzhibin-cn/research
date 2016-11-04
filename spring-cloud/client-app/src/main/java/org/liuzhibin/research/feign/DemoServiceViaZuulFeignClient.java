@@ -2,8 +2,6 @@ package org.liuzhibin.research.feign;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 通过Zuul服务网关访问Demo服务的Feign代理。
@@ -20,7 +18,5 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Nov 3, 2016
  */
 @FeignClient(name="zuul-server", path="/demo", configuration=FeignConfiguration.class) 
-public interface DemoServiceViaZuulFeignClient {
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
-    String ping(@RequestParam(name = "msg") String message);
+public interface DemoServiceViaZuulFeignClient extends DemoServiceFeignClient {
 }
