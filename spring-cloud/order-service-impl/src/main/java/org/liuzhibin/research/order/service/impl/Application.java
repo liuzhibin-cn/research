@@ -32,21 +32,21 @@ public class Application {
         sb.append("<div style='font-size:14px;padding:20px;line-height:25px;'>");
         sb.append("<span>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/create (POST)")
+            .append("/order/create (POST)")
             .append("</span>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/find?status=New>")
+            .append("/order/find?status=New>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/find?status=New (GET)</a>");
+            .append("/order/find?status=New (GET)</a>");
         sb.append("<br /><a href=")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/get/1>")
+            .append("/order/get/1>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/get/1 (GET)</a>");
+            .append("/order/get/1 (GET)</a>");
         sb.append("<br /><span>")
             .append(client.getLocalServiceInstance().getUri())
-            .append("/update/1?status=Close (POST)")
+            .append("/order/update/1?status=Close (POST)")
             .append("</span>");
         sb.append("</div>");
         return sb.toString();
