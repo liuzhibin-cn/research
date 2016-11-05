@@ -1,3 +1,6 @@
+# 演示项目架构概况
+
+![Spring Cloud Netflix Demo Project Architecture Overview](resource/spring-cloud-demo-architecture.svg)
 
 
 
