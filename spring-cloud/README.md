@@ -17,7 +17,7 @@ git clone https://github.com/liuzhibin-cn/research.git ./
 1. 在`MySQL`数据库中使用`spring-cloud/order-service-impl/src/main/resources/db.sql`脚本建立演示数据库和表；
 2. 修改`spring-cloud/order-service-impl/src/main/resources/application.yml`JDBC配置，包括`数据库名`、`账号`、`密码`；
 
-进入`spring-cloud/order-service-client`目录，执行下面命令将`OrderService`的共享jar包安装到本地maven仓库：
+进入`spring-cloud/order-service-client`目录，执行下面命令将`OrderService`客户端和服务端共享的jar包安装到本地maven仓库：
 ```shell
 mvn install
 ```
@@ -39,37 +39,40 @@ java -jar target/spring-cloud-eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles
 
 *注意：2个注册中心通过互相注册同步复制的方式提供高可用性，在启动第1个注册中心时因为第2个注册中心还没有启动，因此会有一些报错信息，等第2个注册中心启动完成后就恢复正常了。*
 
-启动成功后，通过浏览器访问[http://localhost:9001](http://localhost:9001)、[http://localhost:9002](http://localhost:9002)，可以看到2个注册中心运行状态。
-
 ### 启动其它服务
-除了注册中心之外，演示项目中的其它服务和应用全部通过下面maven命令启动：
+除了注册中心之外，演示项目中的其它所有服务和应用都通过下面maven命令启动：
 ```shell
 mvn spring-boot:run
 ```
-分别进入`demo-service`、`order-service-impl`、`zuul-server`、`client-app`、`hystrix-dashboard`目录，执行上述命令启动相关服务和应用。<br />
+依次进入`demo-service`、`order-service-impl`、`zuul-server`、`client-app`、`hystrix-dashboard`目录，执行上述命令启动相关服务和应用。<br />
 每次启动一个服务或应用，都必须新开一个shell终端、命令行窗口。
 
-### 访问演示项目
+# 访问演示项目
 
-启动成功后，可以通过[http://localhost:10200](http://localhost:10200)直接访问`DemoService`，[http://localhost:10100](http://localhost:10100)直接访问`OrderService`。<br />
-[http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)、[http://localhost:10100/order/find?status=New](http://localhost:10100/order/find?status=New)可以直接通过浏览器访问调用，但此时还没有创建任何订单，因此订单查询方法没有返回结果。
+**访问注册中心** <br />
+通过[http://localhost:9001](http://localhost:9001)或者[http://localhost:9002](http://localhost:9002)访问注册中心，可以看到各服务和应用的注册状态：<br />
+![Eureka Server Status](resource/eureka-status.png)
 
+**直接访问服务** <br />
+直接访问Demo服务：[http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)，在浏览器可以看到服务返回消息，在Demo服务的启动窗口可以看到服务端的日志输出。<br />
+直接访问Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10100/order/find?status=New)，此时浏览器没有输出内容，因为我们还没有创建任何订单。
+
+**访问客户端应用** <br />
+浏览器打开[http://localhost:12000](http://localhost:12000)可以看到客户端功能演示用的全部URL清单。
+```shell
+http://localhost:12000/via-zuul/demo/ping?msg=Ping
+http://localhost:12000/via-zuul/demo/benchmark
+http://localhost:12000/via-zuul/order/create
+http://localhost:12000/via-zuul/order/find?status=New
+http://localhost:12000/via-zuul/order/get/1
+http://localhost:12000/via-zuul/order/update/1?status=Close
+http://localhost:12000/no-zuul/demo/ping?msg=Ping
+http://localhost:12000/no-zuul/demo/benchmark
+http://localhost:12000/no-zuul/order/create
+http://localhost:12000/no-zuul/order/find?status=New
+http://localhost:12000/no-zuul/order/get/1
+http://localhost:12000/no-zuul/order/update/1?status=Close
 ```
-http://richie-work:12000/via-zuul/demo/ping?msg=Ping
-http://richie-work:12000/via-zuul/demo/benchmark
-http://richie-work:12000/via-zuul/order/create
-http://richie-work:12000/via-zuul/order/find?status=New
-http://richie-work:12000/via-zuul/order/get/1
-http://richie-work:12000/via-zuul/order/update/1?status=Close
-http://richie-work:12000/no-zuul/demo/ping?msg=Ping
-http://richie-work:12000/no-zuul/demo/benchmark
-http://richie-work:12000/no-zuul/order/create
-http://richie-work:12000/no-zuul/order/find?status=New
-http://richie-work:12000/no-zuul/order/get/1
-http://richie-work:12000/no-zuul/order/update/1?status=Close
-```
-
-用浏览器打开[]()
 
 # 参考
 
