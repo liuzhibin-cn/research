@@ -14,8 +14,8 @@ git clone https://github.com/liuzhibin-cn/research.git ./
 
 建立演示数据库：
 
-1. 在`MySQL`数据库中使用`spring-cloud/order-service-impl/src/main/resources/db.sql`SQL脚本建立演示数据库和表；
-2. 修改`spring-cloud/order-service-impl/src/main/resources/application.yml`中的JDBC信息，包括`数据库名`、`账号`、`密码`；
+1. 在`MySQL`数据库中使用`spring-cloud/order-service-impl/src/main/resources/db.sql`脚本建立演示数据库和表；
+2. 修改`spring-cloud/order-service-impl/src/main/resources/application.yml`JDBC配置，包括`数据库名`、`账号`、`密码`；
 
 进入`spring-cloud/order-service-client`目录，执行下面命令将`OrderService`的共享jar包安装到本地maven仓库：
 ```shell
@@ -41,34 +41,19 @@ java -jar target/spring-cloud-eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles
 
 启动成功后，通过浏览器访问[http://localhost:9001](http://localhost:9001)、[http://localhost:9002](http://localhost:9002)，可以看到2个注册中心运行状态。
 
-### 启动微服务
-进入`spring-cloud/demo-service`目录，执行下面命令启动`DemoService`：
+### 启动其它服务
+除了注册中心之外，演示项目中的其它服务和应用全部通过下面maven命令启动：
 ```shell
 mvn spring-boot:run
 ```
-进入`spring-cloud/order-service-impl`目录，执行下面命令启动`OrderService`：
-```shell
-mvn spring-boot:run
-```
+分别进入`demo-service`、`order-service-impl`、`zuul-server`、`client-app`、`hystrix-dashboard`目录，执行上述命令启动相关服务和应用。<br />
+每次启动一个服务或应用，都必须新开一个shell终端、命令行窗口。
+
+### 访问演示项目
 
 启动成功后，可以通过[http://localhost:10200](http://localhost:10200)直接访问`DemoService`，[http://localhost:10100](http://localhost:10100)直接访问`OrderService`。<br />
 [http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)、[http://localhost:10100/order/find?status=New](http://localhost:10100/order/find?status=New)可以直接通过浏览器访问调用，但此时还没有创建任何订单，因此订单查询方法没有返回结果。
 
-### 启动Zuul网关服务、客户端应用、Hystrix Dashboard监控应用
-进入`spring-cloud/zuul-server`目录，执行下面命令启动Zuul网关服务：
-```shell
-mvn spring-boot:run
-```
-进入`spring-cloud/client-app`目录，执行下面命令启动客户端应用：
-```shell
-mvn spring-boot:run
-```
-进入`spring-cloud/hystrix-dashboard`目录，执行下面命令启动Hystrix Dashboard监控应用：
-```shell
-mvn spring-boot:run
-```
-
-### 访问演示项目
 ```
 http://richie-work:12000/via-zuul/demo/ping?msg=Ping
 http://richie-work:12000/via-zuul/demo/benchmark
