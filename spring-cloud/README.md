@@ -70,13 +70,16 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 
 # Hystrix Dashboard 监控服务
 > 浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：
+
 ![Hystrix Initial Screen](resource/hystrix-dashboard-1.png)
 
 > 在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。
 > 如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：
+
 ![Hystrix Loading Screen](resource/hystrix-dashboard-2.png)
 
 > 访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：
+
 ![Hystrix Monitor Screen](resource/hystrix-dashboard-3.png)
 
 # 参考
