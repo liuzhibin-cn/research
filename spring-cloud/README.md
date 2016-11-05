@@ -1,8 +1,40 @@
-# 演示项目架构概况
+# 架构概况
 
 ![Spring Cloud Netflix Demo Project Architecture Overview](resource/spring-cloud-demo-architecture.png)
+图：Spring Cloud演示项目架构概况
 
+# 运行演示
 
+#### 前期准备
+本演示项目使用的开发环境：`Mac OSX`、`JDK 1.8`
+
+从github下载演示项目代码：
+```shell
+git clone https://github.com/liuzhibin-cn/research.git ./
+```
+
+建立演示数据库：<br />
+1. 在`MySQL`数据库中使用`spring-cloud/order-service-impl/src/main/resources/db.sql`SQL脚本建立演示数据库和表；
+2. 修改`spring-cloud/order-service-impl/src/main/resources/application.yml`中的JDBC信息，包括`数据库名`、`账号`、`密码`；
+
+#### 启动注册中心
+项目演示了使用2个erueka server建立高可用注册中心。<br />
+进入`spring-cloud/eureka-server`目录，执行下面maven命令编译打包：
+```shell
+mvn package
+```
+启动第1个注册中心：
+```shell
+java -jar target/spring-cloud-eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer1
+```
+启动第2个注册中心：
+```shell
+java -jar target/spring-cloud-eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2
+```
+
+*注意：2个注册中心通过互相注册同步复制的方式提供高可用性，在启动第1个注册中心时因为第2个注册中心还没有启动，因此会有一些报错信息，等第2个注册中心启动完成后就恢复正常了。*
+
+#### 
 
 # 参考
 
