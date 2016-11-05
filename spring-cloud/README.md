@@ -59,14 +59,25 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 
 ### 访问客户端应用
 浏览器打开[http://localhost:12000](http://localhost:12000)可以看到客户端功能演示用的全部URL清单。<br />
-其中，URL包含`no-zuul`的，客户端直接调用微服务接口；URL包含`via-zuul`的，客户端通过网关调用微服务接口，即客户端应用以`HTTP REST`形式向`zuul`网关服务发送请求，网关服务根据规则将请求路由到Demo服务或Order服务。
+其中，URL包含`no-zuul`的，客户端应用直接调用微服务接口，不通过网关服务；URL包含`via-zuul`的，客户端通过网关服务调用微服务接口，即客户端应用以`HTTP REST`形式向`zuul`网关服务发送请求，网关服务根据规则将请求路由到Demo服务或Order服务（同样使用`HTTP REST`形式）。
 
-1. `/demo/ping?msg=Ping`: 客户端向`DemoService`发送一个`Ping`消息（`msg=Ping`为发送的消息内容），`DemoService`返回一个`Pong`消息。<br />
-2. `/demo/benchmark`: 简单的性能测试。客户端分3轮调用`DemoService`的`ping`接口，每轮调用5000次，执行完成后在浏览器中显示平均一次调用执行耗时。注意：该URL执行完毕需用时30-40秒左右。<br />
-3. `/order/create`: 调用微服务`OrderService`的创建订单接口，随机创建一个订单。<br />
-4. `/order/find?status=New`: 调用微服务`OrderService`的订单查询接口，返回指定状态的所有订单列表。可选的状态值为：`New`、`Confirmed`、`Shipped`、`Canceled`、`Closed`。<br />
-5. `/order/get/1`: 调用微服务`OrderService`的订单获取接口，返回订单详情。URL最后一位数字为订单ID。<br />
-6. `/order/update/1?status=Close`: 调用微服务`OrderService`的订单状态更新接口，通过URL指定订单ID和要更新的目标状态值。
+1. `/demo/ping?msg=Ping`: 客户端应用向`DemoService`发送一个`Ping`消息（`msg=Ping`为发送的消息内容），`DemoService`返回一个`Pong`消息。
+2. `/demo/benchmark`: 简单的性能测试。客户端应用分3轮调用`DemoService`的`ping`接口，每轮调用5000次，执行完成后在浏览器中显示平均执行时间。注意：该URL执行完毕需用时30-40秒左右。
+3. `/order/create`: 客户端应用调用微服务`OrderService`的创建订单接口，随机创建一个订单。
+4. `/order/find?status=New`: 客户端应用调用微服务`OrderService`的订单查询接口，返回指定状态的所有订单列表。可选的状态值为：`New`、`Confirmed`、`Shipped`、`Canceled`、`Closed`。
+5. `/order/get/1`: 客户端应用调用微服务`OrderService`的订单获取接口，返回订单详情。URL最后一位数字为订单ID。
+6. `/order/update/1?status=Close`: 客户端应用调用微服务`OrderService`的订单状态更新接口，通过URL指定订单ID和要更新的目标状态值。
+
+# Hystrix Dashboard
+浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：<br />
+![Hystrix Initial Screen](resource/hystrix-dashboard-1.png)
+
+在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。<br />
+如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：
+![Hystrix Loading Screen](resource/hystrix-dashboard-2.png)
+
+访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：<br />
+![Hystrix Monitor Screen](resource/hystrix-dashboard-3.png)
 
 # 参考
 
