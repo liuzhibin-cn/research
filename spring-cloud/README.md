@@ -49,30 +49,23 @@ mvn spring-boot:run
 
 # 访问演示项目
 
-**访问注册中心** <br />
+### 访问注册中心
 通过[http://localhost:9001](http://localhost:9001)或者[http://localhost:9002](http://localhost:9002)访问注册中心，可以看到各服务和应用的注册状态：<br />
 ![Eureka Server Status](resource/eureka-status.png)
 
-**直接访问服务** <br />
-直接访问Demo服务：[http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)，在浏览器可以看到服务返回消息，在Demo服务的启动窗口可以看到服务端的日志输出。<br />
-直接访问Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10100/order/find?status=New)，此时浏览器没有输出内容，因为我们还没有创建任何订单。
+### 直接访问微服务
+Demo服务：[http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)。在浏览器可以看到服务返回消息，在Demo服务的启动窗口可以看到服务端的日志输出。<br />
+Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10100/order/find?status=New)，此时浏览器没有输出内容，因为我们还没有创建任何订单，后面创建好订单后再访问该地址，浏览器会以JSON格式输出查询结果。
 
-**访问客户端应用** <br />
-浏览器打开[http://localhost:12000](http://localhost:12000)可以看到客户端功能演示用的全部URL清单。
-```shell
-http://localhost:12000/via-zuul/demo/ping?msg=Ping
-http://localhost:12000/via-zuul/demo/benchmark
-http://localhost:12000/via-zuul/order/create
-http://localhost:12000/via-zuul/order/find?status=New
-http://localhost:12000/via-zuul/order/get/1
-http://localhost:12000/via-zuul/order/update/1?status=Close
-http://localhost:12000/no-zuul/demo/ping?msg=Ping
-http://localhost:12000/no-zuul/demo/benchmark
-http://localhost:12000/no-zuul/order/create
-http://localhost:12000/no-zuul/order/find?status=New
-http://localhost:12000/no-zuul/order/get/1
-http://localhost:12000/no-zuul/order/update/1?status=Close
-```
+### 访问客户端应用
+浏览器打开[http://localhost:12000](http://localhost:12000)可以看到客户端功能演示用的全部URL清单。<br />
+其中，URL包含`no-zuul`的，客户端直接调用微服务接口；URL包含`via-zuul`的，客户端通过网关调用微服务接口，即客户端应用以`HTTP REST`形式向`zuul`网关服务发送请求，网关服务根据规则将请求路由到Demo服务或Order服务。<br />
+`/demo/ping?msg=Ping`: 客户端向`DemoService`发送一个`Ping`消息（`msg=Ping`为发送的消息内容），`DemoService`返回一个`Pong`消息。<br />
+`/demo/benchmark`: 简单的性能测试。客户端分3轮调用`DemoService`的`ping`接口，每轮调用5000次，执行完成后在浏览器中显示平均一次调用执行耗时。注意：该URL执行完毕需用时30-40秒左右。<br />
+`/order/create`: 调用微服务`OrderService`的创建订单接口，随机创建一个订单。<br />
+`/order/find?status=New`: 调用微服务`OrderService`的订单查询接口，返回指定状态的所有订单列表。可选的状态值为：`New`、`Confirmed`、`Shipped`、`Canceled`、`Closed`。<br />
+`/order/get/1`: 调用微服务`OrderService`的订单获取接口，返回订单详情。URL最后一位数字为订单ID。<br />
+`/order/update/1?status=Close`: 调用微服务`OrderService`的订单状态更新接口，通过URL指定订单ID和要更新的目标状态值。
 
 # 参考
 
