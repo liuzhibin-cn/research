@@ -2,7 +2,7 @@
 
 ![Spring Cloud Netflix Demo Project Architecture Overview](resource/spring-cloud-demo-architecture.jpg)
 
-# 启动演示项目
+# 启动运行
 
 ### 前期准备
 本演示项目使用的开发环境：`Mac OSX`、`JDK 1.8`
@@ -47,7 +47,7 @@ mvn spring-boot:run
 依次进入`demo-service`、`order-service-impl`、`zuul-server`、`client-app`、`hystrix-dashboard`目录，执行上述命令启动相关服务和应用。<br />
 每次启动一个服务或应用，都必须新开一个shell终端、命令行窗口。
 
-# 访问演示项目
+# 功能演示
 
 ### 访问注册中心
 通过[http://localhost:9001](http://localhost:9001)或者[http://localhost:9002](http://localhost:9002)访问注册中心，可以看到各服务和应用的注册状态：<br />
@@ -68,15 +68,15 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 5. `/order/get/1`: 客户端应用调用微服务`OrderService`的订单获取接口，返回订单详情。URL最后一位数字为订单ID。
 6. `/order/update/1?status=Close`: 客户端应用调用微服务`OrderService`的订单状态更新接口，通过URL指定订单ID和要更新的目标状态值。
 
-# Hystrix Dashboard
-浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：<br />
+# Hystrix Dashboard 监控服务
+> 浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：
 ![Hystrix Initial Screen](resource/hystrix-dashboard-1.png)
 
-在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。<br />
-如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：
+> 在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。
+> 如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：
 ![Hystrix Loading Screen](resource/hystrix-dashboard-2.png)
 
-访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：<br />
+> 访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：
 ![Hystrix Monitor Screen](resource/hystrix-dashboard-3.png)
 
 # 参考
