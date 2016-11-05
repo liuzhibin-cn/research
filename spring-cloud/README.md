@@ -69,17 +69,16 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 6. `/order/update/1?status=Close`: 客户端应用调用微服务`OrderService`的订单状态更新接口，通过URL指定订单ID和要更新的目标状态值。
 
 # Hystrix Dashboard 监控服务
-> 浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：
-
+浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：<br />
 ![Hystrix Initial Screen](resource/hystrix-dashboard-1.png)
 
-> 在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。
-> 如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：
-
+-------------------------------------
+在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。<br />
+如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：<br />
 ![Hystrix Loading Screen](resource/hystrix-dashboard-2.png)
 
-> 访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：
-
+-------------------------------------
+访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：<br />
 ![Hystrix Monitor Screen](resource/hystrix-dashboard-3.png)
 
 # 参考
