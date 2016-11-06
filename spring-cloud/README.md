@@ -1,6 +1,6 @@
 # 架构概况
 
-![Spring Cloud Netflix Demo Project Architecture Overview](resource/spring-cloud-demo-architecture.jpg)
+![Spring Cloud Netflix Demo Project Architecture Overview](../resources/spring-cloud-demo-architecture.jpg)
 
 # 启动运行
 
@@ -51,7 +51,7 @@ mvn spring-boot:run
 
 ### 访问注册中心
 通过[http://localhost:9001](http://localhost:9001)或者[http://localhost:9002](http://localhost:9002)访问注册中心，可以看到各服务和应用的注册状态：<br />
-![Eureka Server Status](resource/eureka-status.png)
+![Eureka Server Status](../resources/eureka-status.png)
 
 ### 直接访问微服务
 Demo服务：[http://localhost:10200/ping?msg=Ping](http://localhost:10200/ping?msg=Ping)。在浏览器可以看到服务返回消息，在Demo服务的启动窗口可以看到服务端的日志输出。<br />
@@ -70,16 +70,16 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 
 # Hystrix Dashboard 监控服务
 浏览器打开[http://localhost:9300/hystrix](http://localhost:9300/hystrix)，界面显示如下：<br />
-![Hystrix Initial Screen](resource/hystrix-dashboard-1.png)
+![Hystrix Initial Screen](../resources/hystrix-dashboard-1.png)
 
 -------------------------------------
 在输入框中输入：`http://localhost:12000/hystrix.stream`，点击`Monitor Stream`按钮。<br />
 如果是客户端应用刚启动，还未执行过任何请求，则界面显示如下（长时间处于Loading状态，或者报错无法连接上）：<br />
-![Hystrix Loading Screen](resource/hystrix-dashboard-2.png)
+![Hystrix Loading Screen](../resources/hystrix-dashboard-2.png)
 
 -------------------------------------
 访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：<br />
-![Hystrix Monitor Screen](resource/hystrix-dashboard-3.png)
+![Hystrix Monitor Screen](../resources/hystrix-dashboard-3.png)
 
 # 参考
 
