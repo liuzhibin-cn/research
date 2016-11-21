@@ -721,15 +721,25 @@ There is also a "native" profile in the Config Server that doesn’t use Git, bu
 
 在Config Server中,还有一种不使用Git的"native"的配置方式,这种方式是从本地classpath 或文件系统中加载配置文件(使用 "spring.cloud.config.server.native.searchLocations"配置项进行设置). 加载Config Server 的"spring.profiles.active=native"配置项可以开启native配置.
 
-NOTE
-Remember to use the file: prefix for file resources (the default without a prefix is usually the classpath). Just as with any Spring Boot configuration you can embed ${}-style environment placeholders, but remember that absolute paths in Windows require an extra "/", e.g. file:///${user.home}/config-repo
-WARNING
-The default value of the searchLocations is identical to a local Spring Boot application (so [classpath:/, classpath:/config, file:./, file:./config]). This does not expose the application.properties from the server to all clients because any property sources present in the server are removed before being sent to the client.
-TIP
-A filesystem backend is great for getting started quickly and for testing. To use it in production you need to be sure that the file system is reliable, and shared across all instances of the Config Server.
+> *NOTE* <br />
+> Remember to use the file: prefix for file resources (the default without a prefix is usually the classpath). Just as with any Spring Boot configuration you can embed `${}`-style environment placeholders, but remember that absolute paths in Windows require an extra "/", e.g. `file:///${user.home}/config-repo` <br />
+> *注意*：牢记使用file:前缀来指示资源 (默认没有前缀是从classpath中去文件).就像任何 Spring Boot配置一样,你也可以 嵌入`${}`环境参数占位符,但是windows系统下使用绝对路径,前缀后面需要多加个"/", e.g. `file:///${user.home}/config-repo`
+
+> *WARNING* <br />
+The default value of the `searchLocations` is identical to a local Spring Boot application (so `[classpath:/, classpath:/config, file:./, file:./config]`). This does not expose the `application.properties` from the server to all clients because any property sources present in the server are removed before being sent to the client. <br />
+> *警告*：默认的 `searchLocations`值和本地Spring Boot 应用系统是一样的(如 `[classpath:/, classpath:/config,file:./, file:./config]`). 这种方式下,并不暴露服务器上的`application.properties`文件给客户端,因为在把属性传给客户端之前,服务器中属性源信息会被删除掉.
+
+> **TIP**<br />
+> A filesystem backend is great for getting started quickly and for testing. To use it in production you need to be sure that the file system is reliable, and shared across all instances of the Config Server.<br />
+> **提示**：对于测试来说,用文件系统做后端是非常便捷的.如果想生产环境中使用它,你需要确定文件系统的可靠性,并垮所有的Config Server 实例是能够共享这些本地文件.
+
 The search locations can contain placeholders for {application}, {profile} and {label}. In this way you can segregate the directories in the path, and choose a strategy that makes sense for you (e.g. sub-directory per application, or sub-directory per profile).
 
+对于{application},{profile} and {label}来说,搜寻位置可以包含占位符. 采用这种方式,你可以隔离目录,也可以选择某种策略来使你的应用程序更加清晰明了(如:一个application一个子目录,或一个profile一个子目录).
+
 If you don’t use placeholders in the search locations, this repository also appends the {label} parameter of the HTTP resource to a suffix on the search path, so properties files are loaded from each search location and a subdirectory with the same name as the label (the labelled properties take precedence in the Spring Environment). Thus the default behaviour with no placeholders is the same as adding a search location ending with /{label}/. For example `file:/tmp/config is the same as file:/tmp/config,file:/tmp/config/{label}
+
+如果你在在查找位置中不指定占位符,可以把在HTTP资源请求参数{label}追加到查询路径的后面,此时是从查询路径和用label名称一样的子目录中加载配置文件的(在Spring环境下,被打标记的属性具有较高优先级别).因此,没有占位符的默认特性和以/{label}/结尾的结果一样.举例`file:/tmp/config和 file:/tmp/config,file:/tmp/config/{label}请求效果等同.
 
 Sharing Configiration With All Applications
 With file-based (i.e. git, svn and native) repositories, resources with file names in application* are shared between all client applications (so application.properties, application.yml, application-*.properties etc.). You can use resources with these file names to configure global defaults and have them overridden by application-specific files as necessary.
