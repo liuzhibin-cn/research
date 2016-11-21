@@ -647,7 +647,7 @@ spring:
 ```
 
 > *NOTE*<br />
-> Spring Cloud will guess that a pattern containing a profile that doesn’t end in \* implies that you actually want to match a list of profiles starting with this pattern (so `\*/staging` is a shortcut for `\["\*/staging", "\*/staging,\*"\])`. This is common where you need to run apps in the "development" profile locally but also the "cloud" profile remotely, for instance.<br />
+> Spring Cloud will guess that a pattern containing a profile that doesn’t end in \* implies that you actually want to match a list of profiles starting with this pattern (so `*/staging` is a shortcut for `["*/staging", "*/staging,*"])`. This is common where you need to run apps in the "development" profile locally but also the "cloud" profile remotely, for instance.<br />
 > *注意*：如果 profile 不是以\*结尾的,Spring Cloud 会猜想实际的profile值, 这意味着你实际上是匹配以这个表达式开头的一个profile列表(因此 `*/staging` 只是 `["*/staging", "*/staging,*"]`的 简单表示法)。举例，普遍\*\*\*\*的一种方法是在本地环境中使用"development" profile 来运行系统,在远程环境中运行"cloud" profile.
 
 Every repository can also optionally store config files in sub-directories, and patterns to search for those directories can be specified as searchPaths. For example at the top level:
