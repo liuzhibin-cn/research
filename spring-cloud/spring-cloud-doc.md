@@ -83,11 +83,10 @@ If you build an application context from SpringApplication or SpringApplicationB
 
 如果你通过SpringApplication或者SpringApplicationBuilder创建一个Application Context,那么会为spring应用的Application Context创建父上下文Bootstrap Context。在Spring里有个特性，子上下文会继承父类的“property sources” and “profiles” ，所以“main application context” 相对于没有使用Spring Cloud Config，会新增额外的property sources。额外的property sources有：
 
-* "bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.
-* "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.
-
-* "bootstrap" : 如果在Bootstrap Context扫描到PropertySourceLocators并且有属性，则会添加到CompositePropertySource。Spirng Cloud Config就是通过这种方式来添加的属性的。详见下面的说明如何自定义属性源的内容。
-* "applicationConfig: [classpath:bootstrap.yml]": 如果你使用bootstrap.yml来配置，他比application.yml优先级要低。它将添加到子上下文，作为Spring Boot应用程序的一部分。下文有介绍。
+* "bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.<br />
+  "bootstrap" : 如果在Bootstrap Context扫描到PropertySourceLocators并且有属性，则会添加到CompositePropertySource。Spirng Cloud Config就是通过这种方式来添加的属性的。详见下面的说明如何自定义属性源的内容。
+* "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.<br />
+  "applicationConfig: [classpath:bootstrap.yml]": 如果你使用bootstrap.yml来配置，他比application.yml优先级要低。它将添加到子上下文，作为Spring Boot应用程序的一部分。下文有介绍。
 
 Because of the ordering rules of property sources the "bootstrap" entries take precedence, but note that these do not contain any data from bootstrap.yml, which has very low precedence, but can be used to set defaults.
 
