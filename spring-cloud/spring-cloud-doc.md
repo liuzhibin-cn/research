@@ -723,11 +723,11 @@ There is also a "native" profile in the Config Server that doesn’t use Git, bu
 
 > **NOTE** <br />
 > Remember to use the file: prefix for file resources (the default without a prefix is usually the classpath). Just as with any Spring Boot configuration you can embed `${}`-style environment placeholders, but remember that absolute paths in Windows require an extra "/", e.g. `file:///${user.home}/config-repo` <br />
-> *注意*：牢记使用file:前缀来指示资源 (默认没有前缀是从classpath中去文件).就像任何 Spring Boot配置一样,你也可以 嵌入`${}`环境参数占位符,但是windows系统下使用绝对路径,前缀后面需要多加个"/", e.g. `file:///${user.home}/config-repo`
+> **注意**：牢记使用file:前缀来指示资源 (默认没有前缀是从classpath中去文件).就像任何 Spring Boot配置一样,你也可以 嵌入`${}`环境参数占位符,但是windows系统下使用绝对路径,前缀后面需要多加个"/", e.g. `file:///${user.home}/config-repo`
 
 > **WARNING** <br />
 The default value of the `searchLocations` is identical to a local Spring Boot application (so `[classpath:/, classpath:/config, file:./, file:./config]`). This does not expose the `application.properties` from the server to all clients because any property sources present in the server are removed before being sent to the client. <br />
-> *警告*：默认的 `searchLocations`值和本地Spring Boot 应用系统是一样的(如 `[classpath:/, classpath:/config,file:./, file:./config]`). 这种方式下,并不暴露服务器上的`application.properties`文件给客户端,因为在把属性传给客户端之前,服务器中属性源信息会被删除掉.
+> **警告**：默认的 `searchLocations`值和本地Spring Boot 应用系统是一样的(如 `[classpath:/, classpath:/config,file:./, file:./config]`). 这种方式下,并不暴露服务器上的`application.properties`文件给客户端,因为在把属性传给客户端之前,服务器中属性源信息会被删除掉.
 
 > **TIP**<br />
 > A filesystem backend is great for getting started quickly and for testing. To use it in production you need to be sure that the file system is reliable, and shared across all instances of the Config Server.<br />
@@ -741,33 +741,58 @@ If you don’t use placeholders in the search locations, this repository also ap
 
 如果你在在查找位置中不指定占位符,可以把在HTTP资源请求参数{label}追加到查询路径的后面,此时是从查询路径和用label名称一样的子目录中加载配置文件的(在Spring环境下,被打标记的属性具有较高优先级别).因此,没有占位符的默认特性和以/{label}/结尾的结果一样.举例`file:/tmp/config和 file:/tmp/config,file:/tmp/config/{label}请求效果等同.
 
-Sharing Configiration With All Applications
+## Sharing Configiration With All Applications 共享配置给所有应用
+
 With file-based (i.e. git, svn and native) repositories, resources with file names in application* are shared between all client applications (so application.properties, application.yml, application-*.properties etc.). You can use resources with these file names to configure global defaults and have them overridden by application-specific files as necessary.
+
+在基于文件的资源库中(i.e. git, svn and native), 这样的文件名 application* 命名的资源在所有的客户端都是共享的(如 application.properties, application.yml, application-*.properties,etc.).
 
 The #_property_overrides[property overrides] feature can also be used for setting global defaults, and with placeholders applications are allowed to override them locally.
 
-TIP
-With the "native" profile (local file system backend) it is recommended that you use an explicit search location that isn’t part of the server’s own configuration. Otherwise the application* resources in the default search locations are removed because they are part of the server.
-Property Overrides
+你可以使用这种文件名的资源进行全局默认值配置,当需要覆盖默认值时,可以使用指定application名称的文件名. 也可以使用#_property_overrides[property overrides]方式来设置全局默认值,通过带占位符的applications来进行本地化覆盖.
+
+> **TIP** <br />
+> With the "native" profile (local file system backend) it is recommended that you use an explicit search location that isn’t part of the server’s own configuration. Otherwise the application* resources in the default search locations are removed because they are part of the server. <br />
+> **注意**：对于"native" profile(本地文件系统作为后端),推荐你使用指定查询路径进行配置，这个路径不是服务器自己配置的一部分.除此之外,默认查询路径中的application*资源都会被删除,因为这些资源都是服务器的一部分.
+
+## Property Overrides 属性覆盖
+
 The Config Server has an "overrides" feature that allows the operator to provide configuration properties to all applications that cannot be accidentally changed by the application using the normal Spring Boot hooks. To declare overrides just add a map of name-value pairs to spring.cloud.config.server.overrides. For example
 
+Config Server有一个“覆盖”功能,允许开发人员为所有的应用程序提供配置属性,这些配置属性不会被Spring Boot应用程序进行错误设置.定义覆盖只需要为“spring.cloud.config.server.overrides”添加一个Map类型的name-value对. 例如:
+
+```yaml
 spring:
   cloud:
     config:
       server:
         overrides:
           foo: bar
+```
+
 will cause all applications that are config clients to read foo=bar independent of their own configuration. (Of course an application can use the data in the Config Server in any way it likes, so overrides are not enforceable, but they do provide useful default behaviour if they are Spring Cloud Config clients.)
 
-TIP
-Normal, Spring environment placeholders with "${}" can be escaped (and resolved on the client) by using backslash ("\") to escape the "$" or the "{", e.g. \${app.foo:bar} resolves to "bar" unless the app provides its own "app.foo". Note that in YAML you don’t need to escape the backslash itself, but in properties files you do, when you configure the overrides on the server.
-You can change the priority of all overrides in the client to be more like default values, allowing applications to supply their own values in environment variables or System properties, by setting the flag `
+会使所有的配置客户端应用程序读取foo=bar到他们自己配置参数中. ( 如果这个应用程序是Spring Cloud Config 客户端，当然,应用程序可以按任何喜欢的方式 使用配置服务器中的数据,所以覆盖并不是强制的,但覆盖提供了非常有用的默认行为.)
 
-Health Indicator
+> **TIP** <br />
+> Normal, Spring environment placeholders with "${}" can be escaped (and resolved on the client) by using backslash ("\") to escape the "$" or the "{", e.g. \${app.foo:bar} resolves to "bar" unless the app provides its own "app.foo". Note that in YAML you don’t need to escape the backslash itself, but in properties files you do, when you configure the overrides on the server. <br />
+> **提示**：一般情况下,Spring环境变量占位符"${}"可以通过使用反斜杠(\)来被转义(或者在客户端被正常处理) 如:"\${app.foo:bar}"会被处理成"bar",除非应用程序提供了自己的“app.foo”值.注意,当你在服务器上配置覆盖参数时,在YAML类型文件中,你不需要转义反斜杠本身,而是在properties文件中,你需要对他进行转义.
+
+You can change the priority of all overrides in the client to be more like default values, allowing applications to supply their own values in environment variables or System properties, by setting the flag 
+
+你可以改变客户端所有的覆盖参数的优先级,而使这些值更像默认值,在环境变量或系统属性中提供自己的参数值来修改这些值.
+
+## Health Indicator 健康指示器
+
 Config Server comes with a Health Indicator that checks if the configured EnvironmentRepository is working. By default it asks the EnvironmentRepository for an application named app, the default profile and the default label provided by the EnvironmentRepository implementation.
+
+Config Server也提供了健康指示器,通过这个指示器能够检查已经配置的EnvironmentRepository 是否正常运行.默认情况下,指示器通过 EnvironmentRepository提供的app应用程序名称、default`profile和默认label来请求`EnvironmentRepository.
 
 You can configure the Health Indicator to check more applications along with custom profiles and custom labels, e.g.
 
+你也可以自定义更多的applications、profiles和labels进行检查，例如：
+
+```yaml
 spring:
   cloud:
     config:
@@ -779,109 +804,208 @@ spring:
             myservice-dev:
               name: myservice
               profiles: development
+```
+
 You can disable the Health Indicator by setting spring.cloud.config.server.health.enabled=false.
 
-Security
+你也可以通过设置 spring.cloud.config.server.health.enabled=false参数来禁用健康指示器.
+
+## Security 安全
+
 You are free to secure your Config Server in any way that makes sense to you (from physical network security to OAuth2 bearer tokens), and Spring Security and Spring Boot make it easy to do pretty much anything.
+
+你可以自由选择任何你觉得合理的方式来保护你的Config Server(从物理网络安全到OAuth2 令牌),同时使用Spring Security和Spring Boog 能使你做更多其他有用的事情.
 
 To use the default Spring Boot configured HTTP Basic security, just include Spring Security on the classpath (e.g. through spring-boot-starter-security). The default is a username of "user" and a randomly generated password, which isn’t going to be very useful in practice, so we recommend you configure the password (via security.user.password) and encrypt it (see below for instructions on how to do that).
 
-Encryption and Decryption
-IMPORTANT
-Prerequisites: to use the encryption and decryption features you need the full-strength JCE installed in your JVM (it’s not there by default). You can download the "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files" from Oracle, and follow instructions for installation (essentially replace the 2 policy files in the JRE lib/security directory with the ones that you downloaded).
+为了使用默认的Spring Boot HTTP Basic 安全,只需要把Spring Security 增加到classpath中(如通过spring-boot-starter-security).默认的用户名是"user",对应的会生成一个随机密码,这种情况在实际使用中并没有意义,我们建议你配置一个密码(通过 security.user.password属性进行配置)并对这个密码进行加密(下面章节有关于怎么加密的步骤).
+
+## Encryption and Decryption 加密与解密
+
+> **IMPORTANT** <br />
+> **Prerequisites**: to use the encryption and decryption features you need the full-strength JCE installed in your JVM (it’s not there by default). You can download the "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files" from Oracle, and follow instructions for installation (essentially replace the 2 policy files in the JRE lib/security directory with the ones that you downloaded). <br />
+> **重要**<br />
+> **预备内容**：为了加密和解密功能,你需要在JVM中安装full-strength JCE(默认并没有安装).你可以在Oracle站点上下载"Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files",然后根据提示安装(一般来说就是使用你下载的2个策略文件替换JRE lib/security目录下的相同名称文件).
+
 If the remote property sources contain encrypted content (values starting with {cipher}) they will be decrypted before sending to clients over HTTP. The main advantage of this set up is that the property values don’t have to be in plain text when they are "at rest" (e.g. in a git repository). If a value cannot be decrypted it is removed from the property source and an additional property is added with the same key, but prefixed with "invalid." and a value that means "not applicable" (usually "<n/a>"). This is largely to prevent cipher text being used as a password and accidentally leaking.
+
+如果远程属性包含加密内容(以{cipher}开头),这些值将在通过HTTP传递到客户端之前被解密.这样设置的最大优点在于属性值不使用时(如在git库中时)，没有必要以明文的方式显示.如果属性值不能被解密,那么这个值将会被删除,之后增加一个和原来key一样的属性值,不过，key的前缀是"invalid."，值是"not applicable"(通常是"<n/a>").这种设计方法很大程度上是为了阻止使用密文当作密码和意外密文泄露.
 
 If you are setting up a remote config repository for config client applications it might contain an application.yml like this, for instance:
 
-application.yml
+如果你想为config client设置远程config库时使用密文，可能包含的文件application.yml像这样，举例:
+
+`application.yml`
+```yaml
 spring:
   datasource:
     username: dbuser
     password: '{cipher}FKSAJDFGYOS8F7GLHAKERGFHLSAJ'
+```
+
 Encrypted values in a .properties file must not be wrapped in quotes, otherwise the value will not be decrypted:
 
-application.properties
+如果是.properties文件,加密的属性值一定不能用引号扩起来，不然值不能解密:
+
+`application.properties`
+```yaml
 spring.datasource.username: dbuser
 spring.datasource.password: {cipher}FKSAJDFGYOS8F7GLHAKERGFHLSAJ
+```
+
 You can safely push this plain text to a shared git repository and the secret password is protected.
+
+你可以设置安全的把纯文本推送到共享的git库中,密码也可以很好的得到保护.
 
 The server also exposes /encrypt and /decrypt endpoints (on the assumption that these will be secured and only accessed by authorized agents). If you are editing a remote config file you can use the Config Server to encrypt values by POSTing to the /encrypt endpoint, e.g.
 
+服务器也会可以暴露 /encrypt和/decrypt接口(假设这些会是安全的,只能被授权的客户端访问).如果你想编辑远程配置文件，你可以请求Config Server的/encrypt接口来加密,e.g.
+
+```shell
 $ curl localhost:8888/encrypt -d mysecret
 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
+```
+
 The inverse operation is also available via /decrypt (provided the server is configured with a symmetric key or a full key pair):
 
+逆操作也可以通过/decrypt 来完成(服务器提供配置一个对称密钥或密钥对来实现此功能):
+
+```shell
 $ curl localhost:8888/decrypt -d 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
 mysecret
-TIP
-If you are testing like this with curl, then use --data-urlencode (instead of -d) or set an explicit Content-Type: text/plain to make sure curl encodes the data correctly when there are special characters ('+' is particularly tricky).
+```
+
+> **TIP** <br />
+> If you are testing like this with curl, then use --data-urlencode (instead of -d) or set an explicit Content-Type: text/plain to make sure curl encodes the data correctly when there are special characters ('+' is particularly tricky).<br />
+> **提示**：urlencode (取代 -d)或 明确指定Content-Type:text/plain 参数来对这些数据正确编码.
+
 Take the encrypted value and add the {cipher} prefix before you put it in the YAML or properties file, and before you commit and push it to a remote, potentially insecure store.
+
+你加密的值增加{cipher}前缀后,放到YAML或properties文件之前，或者在递交或推送到远程服务器之前,这些加密的值都面临着潜在的不安全存储风险.
 
 The /encrypt and /decrypt endpoints also both accept paths of the form /*/{name}/{profiles} which can be used to control cryptography per application (name) and profile when clients call into the main Environment resource.
 
-NOTE
-to control the cryptography in this granular way you must also provide a @Bean of type TextEncryptorLocator that creates a different encryptor per name and profiles. The one that is provided by default does not do this (so all encryptions use the same key).
+当客户端程序对主环境资源不能确定时,/encrypt 和/decrypt接口也接受带有路径形式的请求 /*/{name}/{profiles},这样可以针对每个application(name)和profile进行详细的控制加解密.
+
+> **NOTE** <br />
+> to control the cryptography in this granular way you must also provide a @Bean of type TextEncryptorLocator that creates a different encryptor per name and profiles. The one that is provided by default does not do this (so all encryptions use the same key). <br />
+> **注意**：如果以这种细粒度的方式来控制加解密，你必须提供一个TextEncryptorLocator类型的@Bean,使用这个Bean 可以为每个名称或profile创建不同的加密方法.默认提供的并没有这个功能(所有加密使用相同的密钥).
+
 The spring command line client (with Spring Cloud CLI extensions installed) can also be used to encrypt and decrypt, e.g.
 
+spring命令行客户端(和 Spring Cloud CLI扩展一起安装)也可以用于加密和解密, e.g.
+
+```shell
 $ spring encrypt mysecret --key foo
 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
 $ spring decrypt --key foo 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
 mysecret
+```
+
 To use a key in a file (e.g. an RSA public key for encryption) prepend the key value with "@" and provide the file path, e.g.
 
+为了使用文件中的密钥 (如使用 RSA 公钥加密),需要在提供的文件前增加一个"@"符号,e.g.
+
+```shell
 $ spring encrypt mysecret --key @${HOME}/.ssh/id_rsa.pub
 AQAjPgt3eFZQXwt8tsHAVv/QHiY5sI2dRcR+...
+```
+
 The key argument is mandatory (despite having a -- prefix).
 
-Key Management
+key 参数是必填的(尽管有--前缀).
+
+## Key Management 密钥管理
+
 The Config Server can use a symmetric (shared) key or an asymmetric one (RSA key pair). The asymmetric choice is superior in terms of security, but it is often more convenient to use a symmetric key since it is just a single property value to configure.
+
+Config Server 可以使用对称(共享)密钥或者非对称密钥(RSA密钥对).就安全性来讲,非对称密钥是优先选择,但是，选择对称密钥进行加解密处理显得非常方便，因为,只需要简单的配置一个属性值.
 
 To configure a symmetric key you just need to set encrypt.key to a secret String (or use an enviroment variable ENCRYPT_KEY to keep it out of plain text configuration files).
 
+为了配置对称密钥,你只需要把encrypt.key设置成你的密码字符串(或者使用环境变量ENCRYPT_KEY进行配置,这样可以让密码不在明文配置文件中显示).
+
 To configure an asymmetric key you can either set the key as a PEM-encoded text value (in encrypt.key), or via a keystore (e.g. as created by the keytool utility that comes with the JDK). The keystore properties are encrypt.keyStore.* with * equal to
 
-location (a Resource location),
+为了配置非对称密钥，你可以使用PEM编码格式的文本字符串(对encrypt.key配置项设置值),或者使用keystore(例如,可以使用JDK携带的keytool工具创建).keystore的配置属性是encrypt.keyStore.*,*可以是
 
-password (to unlock the keystore) and
-
-alias (to identify which key in the store is to be used).
+* location (a Resource location), <br />
+  location ( Resource 位置)
+* password (to unlock the keystore) and <br />
+  password (用来打开keystore) and
+* alias (to identify which key in the store is to be used). <br />
+  alias (确定使用keystore 中的那个密钥)
 
 The encryption is done with the public key, and a private key is needed for decryption. Thus in principle you can configure only the public key in the server if you only want to do encryption (and are prepared to decrypt the values yourself locally with the private key). In practice you might not want to do that because it spreads the key management process around all the clients, instead of concentrating it in the server. On the other hand it’s a useful option if your config server really is relatively insecure and only a handful of clients need the encrypted properties.
 
-Creating a Key Store for Testing
+加密使用公钥完成,私钥用来解密.原则上，如果你只想加密，服务器上只配置公钥(用私钥在本地自行解密).实际中,你可能不想这样做,原因是这种方式会把密钥管理过程让所有的客户端都知道，而不是把焦点聚集在服务器上.从另外一个方面讲,一个非常有益的建议是如果你的配置服务器 相对不安全,只能有少数客户端需要加密配置属性.
+
+## Creating a Key Store for Testing 创建一个测试密钥库
+
 To create a keystore for testing you can do something like this:
 
+为了创建用于测试的keystore,你可以按照以下步骤来做:
+
+```shell
 $ keytool -genkeypair -alias mytestkey -keyalg RSA \
   -dname "CN=Web Server,OU=Unit,O=Organization,L=City,S=State,C=US" \
   -keypass changeme -keystore server.jks -storepass letmein
+```
+
 Put the server.jks file in the classpath (for instance) and then in your application.yml for the Config Server:
 
+把 server.jks文件放到你的classpath中(配置服务器的系统中),然后再application.yml文件中对Config Server 进行配置:
+
+```yaml
 encrypt:
   keyStore:
     location: classpath:/server.jks
     password: letmein
     alias: mytestkey
     secret: changeme
-Using Multiple Keys and Key Rotation
+```
+
+## Using Multiple Keys and Key Rotation 使用多密钥和循环密钥
+
 In addition to the {cipher} prefix in encrypted property values, the Config Server looks for {name:value} prefixes (zero or many) before the start of the (Base64 encoded) cipher text. The keys are passed to a TextEncryptorLocator which can do whatever logic it needs to locate a TextEncryptor for the cipher. If you have configured a keystore (encrypt.keystore.location) the default locator will look for keys in the store with aliases as supplied by the "key" prefix, i.e. with a cipher text like this:
 
+除了在加密属性前增加{cipher}前缀外,在开始使用密文前,Config Server也查找{name:value}这种前缀的属性(0次或多次).系统会把密钥传递给可以做任何逻辑处理的TextEncryptorLocator类,然后使用该类定位到一个用于加密的TextEncryptor类.如果你配置了一个keystore(通过encrypt.keystore.location配置),默认的定位器将定位密钥库中的密钥,定位时使用"key" 前缀定义的别名.举例,配置的密钥文本如下:
+
+```yaml
 foo:
   bar: `{cipher}{key:testkey}...`
+```
+
 the locator will look for a key named "testkey". A secret can also be supplied via a {secret:…​} value in the prefix, but if it is not the default is to use the keystore password (which is what you get when you build a keytore and don’t specify a secret). If you do supply a secret it is recommended that you also encrypt the secrets using a custom SecretLocator.
+
+定位器将查找一个名字为"testkey"的密钥.密码也可以直接通过{secret:…}这种方式来指定，但是这种方式不是默认使用keystore密码的方式(目的是为了让你明白当使用keystore时，不要特定指定密码).如果你提供了一个密码,建议你自定义一个SecretLocator对密码也进行加密.
 
 Key rotation is hardly ever necessary on cryptographic grounds if the keys are only being used to encrypt a few bytes of configuration data (i.e. they are not being used elsewhere), but occasionally you might need to change the keys if there is a security breach for instance. In that case all the clients would need to change their source config files (e.g. in git) and use a new {key:…​} prefix in all the ciphers, checking beforehand of course that the key alias is available in the Config Server keystore.
 
-TIP
-the {name:value} prefixes can also be added to plaintext posted to the /encrypt endpoint, if you want to let the Config Server handle all encryption as well as decryption.
-Serving Plain Text
+在整个加解密使用过程中,如果只使用密钥用来加密一些配置属性值,密钥更换几乎不需要(密钥不需要在其他系统使用的情况)，但是在某些情况下如安全信息泄露,可能需要更换密钥.在这种情况下,所有的客户端都需要更改他们连接配置属性源文件(e.g.如在git中的文件)，还需要使用新的{key:…}前缀加到密文信息中,同时检查在Config Server keystore 中密钥的别名是否可用.
+
+> **TIP** <br />
+> the {name:value} prefixes can also be added to plaintext posted to the /encrypt endpoint, if you want to let the Config Server handle all encryption as well as decryption. <br />
+> **提示**：如果你想让 Config Server处理所有的加密和解密,{name:value}前缀也可以放到明文前面,然后通过/encrypt接口进行加密.
+
+## Serving Plain Text 文本解释服务 
+
 Instead of using the Environment abstraction (or one of the alternative representations of it in YAML or properties format) your applications might need generic plain text configuration files, tailored to their environment. The Config Server provides these through an additional endpoint at /{name}/{profile}/{label}/{path} where "name", "profile" and "label" have the same meaning as the regular environment endpoint, but "path" is a file name (e.g. log.xml). The source files for this endpoint are located in the same way as for the environment endpoints: the same search path is used as for properties or YAML files, but instead of aggregating all matching resources, only the first one to match is returned.
+
+有的时候根据不同环境，可以考虑不使用`Environment`抽象层（即：不使用JSON,YAML,Properties），而直接使用纯文本方式进行配置。Config Server提供几个额外的访问端点：`/{name}/{profile}/{label}/{path}`起到和正常`Environment`端点一样的作用，不过这里的`{path}`是指的一个文件名(例如 log.xml)。这里的源文件的定位与正常YAML或者属性文件的扫描处理逻辑类似，不同点在于只会搜索到第一个匹配到的文件，而不会想YAML及属性文件那样扫描加载所有匹配文件。
 
 After a resource is located, placeholders in the normal format (${…​}) are resolved using the effective Environment for the application name, profile and label supplied. In this way the resource endpoint is tightly integrated with the environment endpoints. Example, if you have this layout for a GIT (or SVN) repository:
 
+当资源文件被找到后，与常规的配置文件一样，也会先处理占位符。这种配置方法会与环境端点紧密的关联。例如，如果在git（svn）上你有下面这些文件：
+
+```
 application.yml
 nginx.conf
+```
+
 where nginx.conf looks like this:
 
+```conf
 server {
     listen              80;
     server_name         ${nginx.server.name};
@@ -897,8 +1021,13 @@ spring:
 nginx:
   server:
     name: develop.com
+```
+
 then the /foo/default/master/nginx.conf resource looks like this:
 
+接着有一个/foo/default/master/nginx.conf 文件:
+
+```conf
 server {
     listen              80;
     server_name         example.com;
@@ -909,6 +1038,8 @@ server {
     listen              80;
     server_name         develop.com;
 }
+```
+
 NOTE
 just like the source files for environment configuration, the "profile" is used to resolve the file name, so if you want a profile-specific file then /*/development/*/logback.xml will be resolved by a file called logback-development.xml (in preference to logback.xml).
 Embedding the Config Server
