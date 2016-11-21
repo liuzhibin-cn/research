@@ -486,10 +486,16 @@ public class ConfigServer {
 
 Like all Spring Boot apps it runs on port 8080 by default, but you can switch it to the conventional port 8888 in various ways. The easiest, which also sets a default configuration repository, is by launching it with spring.config.name=configserver (there is a configserver.yml in the Config Server jar). Another is to use your own application.properties, e.g.
 
-application.properties
+像所有的Spring Boot应用系统默认运行在8080端口一样,你也可以通过各种方式切换这个端口为Config Server默认运行端口为8888.最简单的方法是启动Config Server 时,通过spring.config.name=configserver参数(在Config Server jar中必须有一个configserver.yml文件),这种方式也可以给整个Config Server设置一个默认配置参数集合.另一种方式是使用你自己的application.properties文件，例如：
+
+`application.properties`
+```yaml
 server.port: 8888
 spring.cloud.config.server.git.uri: file://${user.home}/config-repo
+```
+
 where ${user.home}/config-repo is a git repository containing YAML and properties files.
+其中${user.home}/config-repo包含了YAML 和 properties文件的git库.
 
 NOTE
 in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. file:///${user.home}/config-repo.
