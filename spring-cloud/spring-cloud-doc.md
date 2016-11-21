@@ -2255,7 +2255,7 @@ If the Config Server is registered with Eureka, non-jvm application can access i
 
 Non-jvm app can take advantage of the Config Server’s ability to return YAML documents. For example, a call to http://sidecar.local.spring.io:5678/configserver/default-master.yml might result in a YAML document like the following
 
-非jvm应用也能使用ConfigServer返回YAML文档，例如调用http://sidecar.local.spring.io:5678/configserver/default-master.yml后返回如下的YAML文档：
+非jvm应用也能使用ConfigServer返回YAML文档，例如调用http://sidecar.local.spring.io:5678/configserver/default-master.yml 后返回如下的YAML文档：
 
 ```yaml
 eureka:
