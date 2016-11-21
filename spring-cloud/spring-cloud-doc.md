@@ -114,7 +114,7 @@ The bootstrap context can be trained to do anything you like by adding entries t
 可以通过修改/META-INF/spring.factories配置文件中的org.springframework.cloud.bootstrap.BootstrapConfiguration配置项的值来控制启动上下文。同时通过逗号分隔的Spring@Configuration类来建立上下文。任何main application context需要的自动注入的Bean可以在这里通过这种方式来获取。这也是ApplicationContextInitializer建立@Bean的方式。可以通过@Order来更改初始化序列，默认是”last”。
 
 > <strong>WARNING</strong><br />
-> Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.
+> Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.<br />
 > <strong>警告</strong><br />
 > 你添加的自定义BootstrapConfiguration类没有错误的把@ComponentScanned加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被@ComponentScan或者@SpringBootApplication注解覆盖到。
 
@@ -163,11 +163,10 @@ The application will listen for an EnvironmentChangedEvent and react to the chan
 
 应用程序将监听EnvironmentChangeEvent，并且响应这一些改变（添加的ApplicationListeners可以被用户用标准的方式增加到@Beans）。当EnvironmentChangeEvent事件被监听到以后，它将获取到一个已经改变了值的集合列表，同时应用程序用这个列表做如下事情：
 
-* Re-bind any @ConfigurationProperties beans in the context
-* Set the logger levels for any properties in logging.level.*
-
-* 重新把@ConfigrationProperties加入上下文。
-* 在配置项logging.level.*中设置日志级别
+* Re-bind any @ConfigurationProperties beans in the context<br />
+  重新把@ConfigrationProperties加入上下文。
+* Set the logger levels for any properties in logging.level.* <br />
+  在配置项logging.level.*中设置日志级别
 
 Note that the Config Client does not by default poll for changes in the Environment, and generally we would not recommend that approach for detecting changes (although you could set it up with a @Scheduled annotation). If you have a scaled-out client application then it is better to broadcast the EnvironmentChangedEvent to all the instances instead of having them polling for changes (e.g. using the Spring Cloud Bus).
 
@@ -192,7 +191,7 @@ The RefreshScope is a bean in the context and it has a public method refreshAll(
 @RefreshScope有一个刷新所有bean的方法refreshAll()，也有通过bean的名字刷新单个bean的方法refresh(String)。
 
 > <strong>NOTE</strong><br />
-> @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).
+> @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).<br />
 > <strong>注意</strong><br />
 > @RefreshScope注解在一个@Configuration类上面，但是它可能会产生不可预知的问题。在重新初始化的时候需要注意到可以相互依赖造成的冲突。
 
@@ -220,15 +219,14 @@ For a Spring Boot Actuator application there are some additional management endp
 
 相对于Spring Boot Actuator的应用，添加了一些管理端点：
 
-* POST to /env to update the Environment and rebind @ConfigurationProperties and log levels
-* /refresh for re-loading the boot strap context and refreshing the @RefreshScope beans
-* /restart for closing the ApplicationContext and restarting it (disabled by default)
-* /pause and /resume for calling the Lifecycle methods (stop() and start() on the ApplicationContext)
-
-* 发送到/env的POST请求，可以更新Environment重新加载@ConfigurationProperties和日志级别。
-* /refresh请求可以重新初始化添加了@RefreshScope 的bean。
-* /restart 请求可以重启初始化ApplicationContext，重启 (默认是禁用的)。
-* /pause and /resume请求可以调用ApplicationContext生命周期的方法stop()和start()。
+* POST to /env to update the Environment and rebind @ConfigurationProperties and log levels<br />
+  发送到/env的POST请求，可以更新Environment重新加载@ConfigurationProperties和日志级别。
+* /refresh for re-loading the boot strap context and refreshing the @RefreshScope beans<br />
+  /refresh请求可以重新初始化添加了@RefreshScope 的bean。
+* /restart for closing the ApplicationContext and restarting it (disabled by default)<br />
+  /restart请求可以重启初始化ApplicationContext，重启 (默认是禁用的)。
+* /pause and /resume for calling the Lifecycle methods (stop() and start() on the ApplicationContext)<br />
+  /pause和/resume请求可以调用ApplicationContext生命周期的方法stop()和start()。
 
 -----------------------------------------------
 #Spring Cloud Commons: Common Abstractions 公共抽象库
