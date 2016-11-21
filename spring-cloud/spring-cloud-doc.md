@@ -113,9 +113,9 @@ The bootstrap context can be trained to do anything you like by adding entries t
 
 可以通过修改/META-INF/spring.factories配置文件中的org.springframework.cloud.bootstrap.BootstrapConfiguration配置项的值来控制启动上下文。同时通过逗号分隔的Spring@Configuration类来建立上下文。任何main application context需要的自动注入的Bean可以在这里通过这种方式来获取。这也是ApplicationContextInitializer建立@Bean的方式。可以通过@Order来更改初始化序列，默认是”last”。
 
-> **WARNING**<br />
+> **WARNING** <br />
 > Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.<br />
-> **警告**<br />
+> **警告** <br />
 > 你添加的自定义BootstrapConfiguration类没有错误的把@ComponentScanned加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被@ComponentScan或者@SpringBootApplication注解覆盖到。
 
 The bootstrap process ends by injecting initializers into the main SpringApplication instance (i.e. the normal Spring Boot startup sequence, whether it is running as a standalone app or deployed in an application server). First a bootstrap context is created from the classes found in spring.factories and then all @Beans of type ApplicationContextInitializer are added to the main SpringApplication before it is started.
@@ -467,7 +467,7 @@ $ curl localhost:8080/env
 > **备注**<br />
 > 属性源中的 URL是git仓库的地址而不是配置服务器的URL
 
-## Spring Cloud Config Server - Spring Cloud Config服务器
+## Spring Cloud Config Server
 
 The Server provides an HTTP, resource-based API for external configuration (name-value pairs, or equivalent YAML content). The server is easily embeddable in a Spring Boot application using the @EnableConfigServer annotation. So this app is a config server:
 
@@ -486,7 +486,7 @@ public class ConfigServer {
 
 Like all Spring Boot apps it runs on port 8080 by default, but you can switch it to the conventional port 8888 in various ways. The easiest, which also sets a default configuration repository, is by launching it with spring.config.name=configserver (there is a configserver.yml in the Config Server jar). Another is to use your own application.properties, e.g.
 
-像所有的Spring Boot应用系统默认运行在8080端口一样,你也可以通过各种方式切换这个端口为Config Server默认运行端口为8888.最简单的方法是启动Config Server 时,通过spring.config.name=configserver参数(在Config Server jar中必须有一个configserver.yml文件),这种方式也可以给整个Config Server设置一个默认配置参数集合.另一种方式是使用你自己的application.properties文件，例如：
+像所有的Spring Boot应用系统默认运行在8080端口一样,你也可以通过各种方式切换这个端口为Config Server默认运行端口为8888.最简单的方法是启动Config Server 时,通过spring.config.name=configserver参数(在Config Server jar中必须有一个`configserver.yml`文件),这种方式也可以给整个Config Server设置一个默认配置参数集合.另一种方式是使用你自己的`application.properties`文件，例如：
 
 `application.properties`
 ```yaml
@@ -503,8 +503,8 @@ where `${user.home}/config-repo` is a git repository containing YAML and propert
 > **注意**：在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：`file:///${user.home}/config-repo`.
 
 >**TIP** <br />
-> Here’s a recipe for creating the git repository in the example above:<br />
-> **提示**：创建上面例子使用的git库,使用如下简单方法:
+> Here’s a recipe for creating the git repository in the example above: <br />
+> **提示**：创建上面例子使用的git库,使用如下简单方法: 
 
 > ```shell
 > $ cd $HOME
@@ -727,7 +727,7 @@ There is also a "native" profile in the Config Server that doesn’t use Git, bu
 > **注意**：牢记使用file:前缀来指示资源 (默认没有前缀是从classpath中去文件).就像任何 Spring Boot配置一样,你也可以 嵌入`${}`环境参数占位符,但是windows系统下使用绝对路径,前缀后面需要多加个"/", e.g. `file:///${user.home}/config-repo`
 
 > **WARNING** <br />
-The default value of the `searchLocations` is identical to a local Spring Boot application (so `[classpath:/, classpath:/config, file:./, file:./config]`). This does not expose the `application.properties` from the server to all clients because any property sources present in the server are removed before being sent to the client. <br />
+> The default value of the `searchLocations` is identical to a local Spring Boot application (so `[classpath:/, classpath:/config, file:./, file:./config]`). This does not expose the `application.properties` from the server to all clients because any property sources present in the server are removed before being sent to the client. <br />
 > **警告**：默认的 `searchLocations`值和本地Spring Boot 应用系统是一样的(如 `[classpath:/, classpath:/config,file:./, file:./config]`). 这种方式下,并不暴露服务器上的`application.properties`文件给客户端,因为在把属性传给客户端之前,服务器中属性源信息会被删除掉.
 
 > **TIP**<br />
@@ -989,7 +989,7 @@ Key rotation is hardly ever necessary on cryptographic grounds if the keys are o
 > the {name:value} prefixes can also be added to plaintext posted to the /encrypt endpoint, if you want to let the Config Server handle all encryption as well as decryption. <br />
 > **提示**：如果你想让 Config Server处理所有的加密和解密,{name:value}前缀也可以放到明文前面,然后通过/encrypt接口进行加密.
 
-## Serving Plain Text - 文本解释服务
+## Serving Plain Text - 文本处理过程
 
 Instead of using the Environment abstraction (or one of the alternative representations of it in YAML or properties format) your applications might need generic plain text configuration files, tailored to their environment. The Config Server provides these through an additional endpoint at /{name}/{profile}/{label}/{path} where "name", "profile" and "label" have the same meaning as the regular environment endpoint, but "path" is a file name (e.g. log.xml). The source files for this endpoint are located in the same way as for the environment endpoints: the same search path is used as for properties or YAML files, but instead of aggregating all matching resources, only the first one to match is returned.
 
@@ -1054,7 +1054,7 @@ server {
 > **注意**：就像环境配置的源文件,使用“profile”来解析文件名,那么如果你想要一个特定的profile文件`/*/development/*/logback.xml `将通过一个名为`logback-development.xml`的文件来解析(优先`logback.xml`)。
 
 
-## Embedding the Config Server 嵌入配置服务器
+## Embedding the Config Server - 嵌入配式Config Server
 
 The Config Server runs best as a standalone application, but if you need to you can embed it in another application. Just use the @EnableConfigServer annotation. An optional property that can be useful in this case is spring.cloud.config.server.bootstrap which is a flag to indicate that the server should configure itself from its own remote repository. The flag is off by default because it can delay startup, but when embedded in another application it makes sense to initialize the same way as any other application.
 
@@ -1072,7 +1072,7 @@ If you want to read the configuration for an application directly from the backe
 
 如果你想直接从程序中读取配置，而不是从配置中，那么它的路径就会从嵌入服务的根节点上开始。然后你可以关掉服务端前缀配置，省略注解`EnableConfigServer`（配置中直接设置 `spring.cloud.config.server.bootstrap=true`）。
 
-## Push Notifications and Spring Cloud Bus 推送通知和总线
+## Push Notifications and Spring Cloud Bus - 消息推送和Spring Cloud Bus
 
 Many source code repository providers (like Github, Gitlab or Bitbucket for instance) will notify you of changes in a repository through a webhook. You can configure the webhook via the provider’s user interface as a URL and a set of events in which you are interested. For instance Github will POST to the webhook with a JSON body containing a list of commits, and a header "X-Github-Event" equal to "push". If you add a dependency on the spring-cloud-config-monitor library and activate the Spring Cloud Bus in your Config Server, then a "/monitor" endpoint is enabled.
 
@@ -1095,13 +1095,13 @@ The default configuration works out of the box with Github, Gitlab or Bitbucket.
 > **注意**：默认配置也会监测到本地Git资源库文件系统的变化(此时webhook不会触发回调，但当你编辑配置文件时回调将会被广播出去)
 
 
-# Spring Cloud Config Client：Spring Cloud Config客户端
+## Spring Cloud Config Client - Spring Cloud Config客户端
 
 A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer), and it will also pick up some additional useful features related to Environment change events.
 
 一个Spring Boot应用可以很快地利用Spring配置服务器（或者应用开发者提供的外在的属性源），它也可以使用一些涉及到环境改变的额外的可用属性。
 
-## Config First Bootstrap：配置优先启动模式
+### Config First Bootstrap - 配置优先启动模式
 
 This is the default behaviour for any application which has the Spring Cloud Config Client on the classpath. When a config client starts up it binds to the Config Server (via the bootstrap configuration property spring.cloud.config.uri) and initializes Spring Environment with remote property sources.
 
@@ -1111,7 +1111,7 @@ The net result of this is that all client apps that want to consume the Config S
 
 最终结果是所有要与Config Server连接的的客户端应用在服务地址spring.cloud.config.uri (默认为 "http://localhost:8888")都需要一个bootstrap.yml（或者一个环境设置参数）
 
-## Eureka First Bootstrap：Eureka优先启动模式
+### Eureka First Bootstrap - Eureka优先启动模式
 
 If you are using Spring Cloud Netflix and Eureka Service Discovery, then you can have the Config Server register with Eureka if you want to, but in the default "Config First" mode, clients won’t be able to take advantage of the registration.
 
@@ -1136,13 +1136,13 @@ eureka:
       configPath: /config
 ```
 
-## Config Client Fail Fast：客户端快速失败配置
+### Config Client Fail Fast - 客户端快速失败配置
 
 In some cases, it may be desirable to fail startup of a service if it cannot connect to the Config Server. If this is the desired behavior, set the bootstrap configuration property spring.cloud.config.failFast=true and the client will halt with an Exception.
 
 在一些情况下，如果一个服务不能连接到Config Server，可能需要使它的启动失败。若想实现这样的效果，设置bootstrap的配置属性spring.cloud.config.failFast=true，并且客户端会调用一个异常停止。
 
-## Config Client Retry：客户端重试配置
+### Config Client Retry - 客户端重试配置
 
 If you expect that the config server may occasionally be unavailable when your app starts, you can ask it to keep trying after a failure. First you need to set spring.cloud.config.failFast=true, and then you need to add spring-retry and spring-boot-starter-aop to your classpath. The default behaviour is to retry 6 times with an initial backoff interval of 1000ms and an exponential multiplier of 1.1 for subsequent backoffs. You can configure these properties (and others) using spring.cloud.config.retry.* configuration properties.
 
@@ -1152,7 +1152,7 @@ If you expect that the config server may occasionally be unavailable when your a
 > To take full control of the retry add a `@Bean` of type `RetryOperationsInterceptor` with id "configServerRetryInterceptor". Spring Retry has a `RetryInterceptorBuilder` that makes it easy to create one. <br />
 > **提示**：要完全控制retry，可以添加类型为`RetryOperationsInterceptor`的`@Bean`，并使用idconfigServerRetryInterceptor。Spring Retry有一个`RetryInterceptorBuilder`可以轻松实现。
 
-## Locating Remote Configuration Resources：定位远程配置资源
+### Locating Remote Configuration Resources - 定位远程配置资源
 
 The Config Service serves property sources from /{name}/{profile}/{label}, where the default bindings in the client app are
 
@@ -1166,7 +1166,7 @@ All of them can be overridden by setting spring.cloud.config.* (where * is "name
 
 上面的所有值都可以被spring.cloud.config.* (* 代表"name", "profile" or "label")所重写。"label"对于回滚到配置文件的上一个版本来说，非常有用；对于默认的Config Server实现来说，它可能为一个git label，branch name 或者commit id。Label同样可以以“逗号分隔列表”（comma-separated list）的形式提供，在这种情况下，列表中的选项会被一个接一个地尝试，直到有一个成功。这个对于运行一个feature 分支来说，非常有用。比如：你如果想要使用你的分支来排列你的config label，但又将其设置为可选（spring.cloud.config.label=myfeature,develo）
 
-## Security：安全
+### Security - 安全
 
 If you use HTTP Basic security on the server then clients just need to know the password (and username if it isn’t the default). You can do that via the config server URI, or via separate username and password properties, e.g.
 
@@ -1209,6 +1209,7 @@ If you use another form of security you might need to provide a RestTemplate to 
 
 如果你使用其他安全模式，你需要为ConfigServicePropertySourceLocator提供一个RestTemplate（比如，在bootstrap上下文中捕获并注入进去）
 
+-------------------------------
 # Spring Cloud Netflix
 
 This project provides Netflix OSS integrations for Spring Boot apps through autoconfiguration and binding to the Spring Environment and other Spring programming model idioms. With a few simple annotations you can quickly enable and configure the common patterns inside your application and build large distributed systems with battle-tested Netflix components. The patterns provided include Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) and Client Side Load Balancing (Ribbon).
@@ -1221,12 +1222,17 @@ Service Discovery is one of the key tenets of a microservice based architecture.
 
 Service Discovery是基于构建的微服务的主要特性中的一个。试图通过配置每一个客户端或一些类型的组合非常难于部署并且稳定性不好。Eureka是Netflix Service Discovery Server 及 Client。服务器可以被配置并且部署地高度可用，并且每个服务器的对其他服务器的注册服务可用进行复制。
 
-### Registering with Eureka - 
+### Registering with Eureka - 注册Eureka服务
 
 When a client registers with Eureka, it provides meta-data about itself such as host and port, health indicator URL, home page etc. Eureka receives heartbeat messages from each instance belonging to a service. If the heartbeat fails over a configurable timetable, the instance is normally removed from the registry.
 
-Example eureka client:
+当一个客户端使用Eureka进行著称，它会提供关于它自己的包含host 及port, health indicator URL, home page 等信息的meta-data。Eureka从其他附属于一个服务的实例接收心跳包信息。如果心跳包在一个配置的时间里面失败，这个实例会被从注册里面移除。
 
+Example eureka client :
+
+Eureka客户端的例子：
+
+```java
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
@@ -1244,72 +1250,132 @@ public class Application {
     }
 
 }
+```
+
 (i.e. utterly normal Spring Boot app). In this example we use @EnableEurekaClient explicitly, but with only Eureka available you could also use @EnableDiscoveryClient. Configuration is required to locate the Eureka server. Example:
 
-application.yml
+（比如：完全正常的Spring Boot应用）。在这个例子里面，我们明确地使用@EnableEurekaClient，但是对于只有Eureka可用的情况，你也可以使用@EnableDiscoveryClient。配置文件需要用于定位Eureka server。示例：
+
+`application.yml`
+```yaml
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+```
+
 where "defaultZone" is a magic string fallback value that provides the service URL for any client that doesn’t express a preference (i.e. it’s a useful default).
+
+在这里，"defaultZone"是一个默认缺省值，以提供给任何没有声明属性（比如：这是一个有用的缺省值）的客户端。
 
 The default application name (service ID), virtual host and non-secure port, taken from the Environment, are ${spring.application.name}, ${spring.application.name} and ${server.port} respectively.
 
+默认的应用名（service ID），virtual host 及non-secure port是从环境配置里的${spring.application.name}, ${spring.application.name} 及${server.port}分别获取的。
+
 @EnableEurekaClient makes the app into both a Eureka "instance" (i.e. it registers itself) and a "client" (i.e. it can query the registry to locate other services). The instance behaviour is driven by eureka.instance.* configuration keys, but the defaults will be fine if you ensure that your application has a spring.application.name (this is the default for the Eureka service ID, or VIP).
+
+@EnableEurekaClient 使应用称为既是Eureka "instance" (比如：自己注册资金) 又是一个"client" (比如：它可以查询注册信息去定位其他服务).实例是通过eureka.instance.*键值去配置的，但是，如果你确定你的应用有spring.application.name，那么默认值也是可以的（对于Eureka service ID, 或者VIP来说，这是默认值）。
 
 See EurekaInstanceConfigBean and EurekaClientConfigBean for more details of the configurable options.
 
-Status Page and Health Indicator
+查看 EurekaInstanceConfigBean 及EurekaClientConfigBean 获取配置选项详细信息.
+
+
+### Status Page and Health Indicator - 状态页和健康诊断
+
 The status page and health indicators for a Eureka instance default to "/info" and "/health" respectively, which are the default locations of useful endpoints in a Spring Boot Actuator application. You need to change these, even for an Actuator application if you use a non-default context path or servlet path (e.g. server.servletPath=/foo) or management endpoint path (e.g. management.contextPath=/admin). Example:
 
-application.yml
+Eureka 实例的status page and health indicators默认值分别为"/info" 及"/health"，在Spring Boot Actuator应用里面，这些参数有用端口的位置。对于一个Actuator application来说，如果你使用非默认的context path 或者servlet path (比如： server.servletPath=/foo) 或者management endpoint path (比如：management.contextPath=/admin)你需要修改这些值，
+
+`application.yml`
+```yaml
 eureka:
   instance:
     statusPageUrlPath: ${management.context-path}/info
     healthCheckUrlPath: ${management.context-path}/health
+```
+
 These links show up in the metadata that is consumed by clients, and used in some scenarios to decide whether to send requests to your application, so it’s helpful if they are accurate.
 
-Registering a Secure Application
+这些连接展示了被客户端使用的metadata，并且被用在一些决定是否发送一些请求到你的应用里的场景，因此，你如果要精确控制，还是非常有帮助的。
+
+### Registering a Secure Application - 注册加密应用
+
 If your app wants to be contacted over HTTPS you can set two flags in the EurekaInstanceConfig, viz eureka.instance.[nonSecurePortEnabled,securePortEnabled]=[false,true] respectively. This will make Eureka publish instance information showing an explicit preference for secure communication. The Spring Cloud DiscoveryClient will always return an https://…​; URI for a service configured this way, and the Eureka (native) instance information will have a secure health check URL.
+
+如果你的应用想要使用HTTPS进行连接，你可以分别设置EurekaInstanceConfig里的两个参数值： eureka.instance.[nonSecurePortEnabled,securePortEnabled]=[false,true]。这将使Eureka发布实例展示一个明确的用于安全交互的属性信息。Spring Cloud DiscoveryClient对于一个服务将返回一个https://… ; URI，并且，Eureka（原生）示例信息会有一个安全状态校验URL。
 
 Because of the way Eureka works internally, it will still publish a non-secure URL for status and home page unless you also override those explicitly. You can use placeholders to configure the eureka instance urls, e.g.
 
-application.yml
+因为Eureka的内部运作方式，Eureka仍然会发布一个非安全的URL用于status和home page，除非你明确地重写这些值。你可以使用占位符去配置eureka实例的url，比如：
+
+`application.yml`
+```yaml
 eureka:
   instance:
     statusPageUrl: https://${eureka.hostname}/info
     healthCheckUrl: https://${eureka.hostname}/health
     homePageUrl: https://${eureka.hostname}/
+```
+
 (Note that ${eureka.hostname} is a native placeholder only available in later versions of Eureka. You could achieve the same thing with Spring placeholders as well, e.g. using ${eureka.instance.hostName}.)
 
-NOTE
-If your app is running behind a proxy, and the SSL termination is in the proxy (e.g. if you run in Cloud Foundry or other platforms as a service) then you will need to ensure that the proxy "forwarded" headers are intercepted and handled by the application. An embedded Tomcat container in a Spring Boot app does this automatically if it has explicit configuration for the 'X-Forwarded-\*` headers. A sign that you got this wrong will be that the links rendered by your app to itself will be wrong (the wrong host, port or protocol).
-Eureka’s Health Checks
+（注意${eureka.hostname}是一个只是在Eureka的后期版本中有效的原生占位符。你可以使用Spring placeholders去实现相同的功能，比如：使用${eureka.instance.hostName}）
+
+> **NOTE** <br />
+> If your app is running behind a proxy, and the SSL termination is in the proxy (e.g. if you run in Cloud Foundry or other platforms as a service) then you will need to ensure that the proxy "forwarded" headers are intercepted and handled by the application. An embedded Tomcat container in a Spring Boot app does this automatically if it has explicit configuration for the 'X-Forwarded-\*` headers. A sign that you got this wrong will be that the links rendered by your app to itself will be wrong (the wrong host, port or protocol). <br />
+> **注意**：如果你的应用在代理的后台运行，并且SSL在代理里终止，（比如：如果你在Cloud Foundry或其他平台以服务运行），那么，你需要确认代理"forwarded" headers被拦截，并且被应用实现。如果它被明确的配置'X-Forwarded-\*`headers，那么一个在Spring Boot应用里嵌入的Tomcat容器会自动执行这些操作。如果你得到了一个错误的标记值，会是提供自己给你的应用，而这样作，是错误的（错误的host, port 或protocol）
+
+
+### Eureka’s Health Checks - Eureka的健康检查
+
 By default, Eureka uses the client heartbeat to determine if a client is up. Unless specified otherwise the Discovery Client will not propagate the current health check status of the application per the Spring Boot Actuator. Which means that after successful registration Eureka will always announce that the application is in 'UP' state. This behaviour can be altered by enabling Eureka health checks, which results in propagating application status to Eureka. As a consequence every other application won’t be sending traffic to application in state other then 'UP'.
 
-application.yml
+默认情况下，Eureka使用客户端的心跳包去检测是否一个客户端正在运行。除非特定的某些方面，在每个Spring Boot Actuator ，Discovery Client对于某个应用不会增加当前健康检测的状态值。这也就意味着经过成功注册之后，Eureka会经常通知—应用是在“UP”状态。这个行为可以通过启用Eureka的健康检测去改变，而这样作的结果会增加应用的状态值给Eureka。在结果里，每个其他的应用不会发送交互值给应用，除了在“UP”
+
+`application.yml`
+```yaml
 eureka:
   client:
     healthcheck:
       enabled: true
+```
+
 If you require more control over the health checks, you may consider implementing your own com.netflix.appinfo.HealthCheckHandler.
 
-Eureka Metadata for Instances and Clients
+如果你在健康检查里，需要更多控制，你需要考虑实现com.netflix.appinfo.HealthCheckHandler.
+
+### Eureka Metadata for Instances and Clients - Eureka记录服务和客户端的元数据
+
 It’s worth spending a bit of time understanding how the Eureka metadata works, so you can use it in a way that makes sense in your platform. There is standard metadata for things like hostname, IP address, port numbers, status page and health check. These are published in the service registry and used by clients to contact the services in a straightforward way. Additional metadata can be added to the instance registration in the eureka.instance.metadataMap, and this will be accessible in the remote clients, but in general will not change the behaviour of the client, unless it is made aware of the meaning of the metadata. There are a couple of special cases described below where Spring Cloud already assigns meaning to the metadata map.
 
-Using Eureka on Cloudfoundry
+花一点时间去理解Eureka metadata是如何工作的，是非常值得的，因此，你可以在你的平台使用某一种方式去使其起作用。有一些标准的元数据：hostname, IP address, port numbers, status page 及health check.这些会在服务注册及被客户端使用去简单地连接服务时被发布。额外的元数据可以被添加的实例的注册信息eureka.instance.metadataMap里，并且这个信息可以被远程的客户端直接访问，但是，在一般情况下，不会影响客户端的行为，除非这个元数据明确指明。有一些特别的情况，在Spring Cloud里早已经排列好元数据map的含义。
+
+### Using Eureka on Cloudfoundry - 在Cloudfoundry中使用Eureka
+
 Cloudfoundry has a global router so that all instances of the same app have the same hostname (it’s the same in other PaaS solutions with a similar architecture). This isn’t necessarily a barrier to using Eureka, but if you use the router (recommended, or even mandatory depending on the way your platform was set up), you need to explicitly set the hostname and port numbers (secure or non-secure) so that they use the router. You might also want to use instance metadata so you can distinguish between the instances on the client (e.g. in a custom load balancer). By default, the eureka.instance.instanceId is vcap.application.instance_id. For example:
 
-application.yml
+Cloudfoundry有一个全局的路由，因此，所有的相同app的实例会有相同的hostname（这个与其他的PaaS解决方案有一个类似的架构类似）。因着一个障碍去使用Eureka，并不是特别必要，但是，如果你使用一个路由器（推荐的，或者强制在你的平台上搭建使用），你需要明确的设置hostname及port numbers（安全或非安全），这一它们才可以使用路由。你可能也想要区使用实例元数据，因此你可以区分客户端上的一些实例（比如：在一个通常的负载均衡里）。默认情况下，eureka.instance.instanceId 就是vcap.application.instance_id。比如：
+
+`application.yml`
+```yaml
 eureka:
   instance:
     hostname: ${vcap.application.uris[0]}
     nonSecurePort: 80
+```
+
 Depending on the way the security rules are set up in your Cloudfoundry instance, you might be able to register and use the IP address of the host VM for direct service-to-service calls. This feature is not (yet) available on Pivotal Web Services (PWS).
 
-Using Eureka on AWS
+依赖于在你的Cloudfoundry建立的安全规则，你可以注册并使用host虚拟机的IP地址区直接进行服务器到服务器的调用。这个特性在Pivotal Web Services (PWS)里还不可行。
+
+### Using Eureka on AWS - 在AWS中使用Eureka
+
 If the application is planned to be deployed to an AWS cloud, then the Eureka instance will have to be configured to be Amazon aware and this can be done by customizing the EurekaInstanceConfigBean the following way:
 
+在计划被部署到到AWS云的应用里，Eureka实例奖不得不被配置到Amazon aware，并且这种配置可以用以下方式，在EurekaInstanceConfigBean里设置：
+
+```java
 @Bean
 @Profile("!default")
 public EurekaInstanceConfigBean eurekaInstanceConfig() {
@@ -1318,20 +1384,34 @@ public EurekaInstanceConfigBean eurekaInstanceConfig() {
   b.setDataCenterInfo(info);
   return b;
 }
-Changing the Eureka Instance ID
-A vanilla Netflix Eureka instance is registered with an ID that is equal to its host name (i.e. only one service per host). Spring Cloud Eureka provides a sensible default that looks like this: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}}. For example myhost:myappname:8080.
+```
+
+### Changing the Eureka Instance ID - 更改Eureka服务ID
+
+A vanilla Netflix Eureka instance is registered with an ID that is equal to its host name (i.e. only one service per host). Spring Cloud Eureka provides a sensible default that looks like this: `${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}}`. For example `myhost:myappname:8080`.
+
+一个vanilla Netflix Eureka实例被使用ID注册与使用它自己host name同等（比如：每个host一个服务）。Spring Cloud Eureka提供了很好的默认值，比如：`${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}}`.示例：`myhost:myappname:8080`.
 
 Using Spring Cloud you can override this by providing a unique identifier in eureka.instance.instanceId. For example:
 
-application.yml
+`application.yml`
+```yaml
 eureka:
   instance:
     instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+```
+
 With this metadata, and multiple service instances deployed on localhost, the random value will kick in there to make the instance unique. In Cloudfoundry the spring.application.instance_id will be populated automatically in a Spring Boot Actuator application, so the random value will not be needed.
 
-Using the EurekaClient
+使用这个元数据，多个服务实例可以在本地部署，随机的数值会直接赋予，病使实例唯一。在Cloudfoundry，spring.application.instance_id将被自动设置在Spring Boot Actuator应用里，因此随机值就不是必须的了。
+
+### Using the EurekaClient - 使用EurekaClient
+
 Once you have an app that is @EnableDiscoveryClient (or @EnableEurekaClient) you can use it to discover service instances from the Eureka Server. One way to do that is to use the native com.netflix.discovery.EurekaClient (as opposed to the Spring Cloud DiscoveryClient), e.g.
 
+一旦你拥有一个app是@EnableDiscoveryClient (或者@EnableEurekaClient)，你可以使用它从Eureka Server去发现服务的实例。一种方式就是使用原生的com.netflix.discovery.EurekaClient (类似于 Spring Cloud DiscoveryClient), 示例.
+
+```java
 @Autowired
 private EurekaClient discoveryClient;
 
@@ -1339,9 +1419,14 @@ public String serviceUrl() {
     InstanceInfo instance = discoveryClient.getNextServerFromEureka("STORES", false);
     return instance.getHomePageUrl();
 }
-TIP
-Don’t use the EurekaClient in @PostConstruct method or in a @Scheduled method (or anywhere where the ApplicationContext might not be started yet). It is initialized in a SmartLifecycle (with phase=0) so the earliest you can rely on it being available is in another SmartLifecycle with higher phase.
-Alternatives to the native Netflix EurekaClient
+```
+
+> **TIP** <br />
+> Don’t use the EurekaClient in @PostConstruct method or in a @Scheduled method (or anywhere where the ApplicationContext might not be started yet). It is initialized in a SmartLifecycle (with phase=0) so the earliest you can rely on it being available is in another SmartLifecycle with higher phase. <br />
+> **提示**：不要在@PostConstruct 方法或者 @Scheduled method (或者任何ApplicationContext还没有启动)使用EurekaClient。它被初始化在SmartLifecycle（使用phase=0），因此，最早的你可以使用它并且可用，是在另一个SmartLifecycle的更高一级的阶段
+
+### Alternatives to the native Netflix EurekaClient - 
+
 You don’t have to use the raw Netflix EurekaClient and usually it is more convenient to use it behind a wrapper of some sort. Spring Cloud has support for Feign (a REST client builder) and also Spring RestTemplate using the logical Eureka service identifiers (VIPs) instead of physical URLs. To configure Ribbon with a fixed list of physical servers you can simply set <client>.ribbon.listOfServers to a comma-separated list of physical addresses (or hostnames), where <client> is the ID of the client.
 
 You can also use the org.springframework.cloud.client.discovery.DiscoveryClient which provides a simple API for discovery clients that is not specific to Netflix, e.g.
@@ -1419,6 +1504,7 @@ Notice that the serviceUrl is pointing to the same host as the local instance.
 Peer Awareness
 Eureka can be made even more resilient and available by running multiple instances and asking them to register with each other. In fact, this is the default behaviour, so all you need to do to make it work is add a valid serviceUrl to a peer, e.g.
 
+
 application.yml (Two Peer Aware Eureka Servers)
 ---
 spring:
@@ -1476,7 +1562,7 @@ public class StoreIntegration {
     public Object getStores(Map<String, Object> parameters) {
         //do stuff that might fail
     }
-
+    
     public Object defaultStores(Map<String, Object> parameters) {
         return /* something useful */;
     }
@@ -1627,7 +1713,7 @@ You can also use the LoadBalancerClient directly. Example:
 public class MyClass {
     @Autowired
     private LoadBalancerClient loadBalancer;
-
+    
     public void doStuff() {
         ServiceInstance instance = loadBalancer.choose("stores");
         URI storesUri = URI.create(String.format("http://%s:%s", instance.getHost(), instance.getPort()));
@@ -1656,7 +1742,7 @@ StoreClient.java
 public interface StoreClient {
     @RequestMapping(method = RequestMethod.GET, value = "/stores")
     List<Store> getStores();
-
+    
     @RequestMapping(method = RequestMethod.POST, value = "/stores/{storeId}", consumes = "application/json")
     Store update(@PathVariable("storeId") Long storeId, Store store);
 }
@@ -1719,7 +1805,7 @@ public class FooConfiguration {
     public Contract feignContractg() {
         return new feign.Contract.Default();
     }
-
+    
     @Bean
     public BasicAuthRequestInterceptor basicAuthRequestInterceptor() {
         return new BasicAuthRequestInterceptor("user", "password");
@@ -1826,7 +1912,7 @@ class ArchaiusTest {
     DynamicStringProperty myprop = DynamicPropertyFactory
             .getInstance()
             .getStringProperty("my.prop");
-
+    
     void doSomething() {
         OtherClass.someMethod(myprop.get());
     }
