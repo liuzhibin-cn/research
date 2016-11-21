@@ -1921,9 +1921,9 @@ Archaius has its own set of configuration files and loading priorities. Spring a
 
 ## Router and Filter: Zuul - 路由和过滤：Zuul
 
-Routing in an integral part of a microservice architecture. For example, / may be mapped to your web application, /api/users is mapped to the user service and /api/shop is mapped to the shop service. Zuul is a JVM based router and server side load balancer by Netflix.
+Routing in an integral part of a microservice architecture. For example, `/` may be mapped to your web application, `/api/users` is mapped to the user service and `/api/shop` is mapped to the shop service. Zuul is a JVM based router and server side load balancer by Netflix.
 
-路由是微服务架构的重要组成，例如将/映射到web应用，将/api/users映射到用户服务，/api/shop映射到购物服务等。Zuul是Netflix基于JVM开发的路由和服务端负载均衡组件。
+路由是微服务架构的重要组成，例如将`/`映射到web应用，将`/api/users`映射到用户服务，`/api/shop`映射到购物服务等。Zuul是Netflix基于JVM开发的路由和服务端负载均衡组件。
 
 Netflix uses Zuul for the following:
 
@@ -1950,13 +1950,13 @@ Spring Cloud has created an embedded Zuul proxy to ease the development of a ver
 
 Spring Cloud提供了一个嵌入式Zuul代理用于简化一些典型应用场景下的开发工作，例如在用户界面需要将请求代理到一个或多个后台服务等。这个功能非常实用，可以避免每个后台服务各自管理访问控制、权限认证等问题。
 
-To enable it, annotate a Spring Boot main class with @EnableZuulProxy, and this forwards local calls to the appropriate service. By convention, a service with the Eureka ID "users", will receive requests from the proxy located at /users (with the prefix stripped). The proxy uses Ribbon to locate an instance to forward to via Eureka, and all requests are executed in a hystrix command, so failures will show up in Hystrix metrics, and once the circuit is open the proxy will not try to contact the service.
+To enable it, annotate a Spring Boot main class with `@EnableZuulProxy`, and this forwards local calls to the appropriate service. By convention, a service with the Eureka ID "users", will receive requests from the proxy located at `/users` (with the prefix stripped). The proxy uses Ribbon to locate an instance to forward to via Eureka, and all requests are executed in a hystrix command, so failures will show up in Hystrix metrics, and once the circuit is open the proxy will not try to contact the service.
 
-在Spring Boot主类上添加@EnableZuulProxy注解即可启用嵌入式Zuul代理，这样就可以将本地调用转发给相应的服务。按照约定，Zuul将路径为/users（会去掉这个前缀）的请求转发给Erureka ID为“users”的服务。Zuul使用Ribbon从Eureka获取服务清单，确定转发目标，所有请求使用hystrix命令执行，因此失败信息会被收集到Hystrix指标中，一旦断路器发生熔断，Zuul就会停止将请求路由给服务。
+在Spring Boot主类上添加`@EnableZuulProxy`注解即可启用嵌入式Zuul代理，这样就可以将本地调用转发给相应的服务。按照约定，Zuul将路径为`/users`（会去掉这个前缀）的请求转发给Erureka ID为“users”的服务。Zuul使用Ribbon从Eureka获取服务清单，确定转发目标，所有请求使用hystrix命令执行，因此失败信息会被收集到Hystrix指标中，一旦断路器发生熔断，Zuul就会停止将请求路由给服务。
 
-To skip having a service automatically added, set zuul.ignored-services to a list of service id patterns. If a service matches a pattern that is ignored, but also included in the explicitly configured routes map, then it will be unignored. Example:
+To skip having a service automatically added, set `zuul.ignored-services` to a list of service id patterns. If a service matches a pattern that is ignored, but also included in the explicitly configured routes map, then it will be unignored. Example:
 
-可以通过 zuul.ignored-services配置禁止Zuul自动对服务进行路由。如果某个服务符合ignore配置，但又出现在routes配置中，则仍然会对这个服务进行路由，例如：
+可以通过 `zuul.ignored-services`配置禁止Zuul自动对服务进行路由。如果某个服务符合ignore配置，但又出现在routes配置中，则仍然会对这个服务进行路由，例如：
 
 `application.yml`
 ```yaml
@@ -2054,9 +2054,9 @@ This means that a serviceId "myusers-v1" will be mapped to route "/v1/myusers/{a
 
 它表示将myusers-v1的服务路由到/v1/myusers/**。可以使用任意的正则表达式，但所有命名组必须同时出现在servicePattern和routePattern之中。如果servicePattern无法匹配到serviceId，则使用默认处理方式，上面例子的默认处理方式是将serviceId为myusers的服务映射/ myusers/**（无法检测版本），这个功能默认是关闭的，并且仅适用于注册中心的服务。
 
-To add a prefix to all mappings, set zuul.prefix to a value, such as /api. The proxy prefix is stripped from the request before the request is forwarded by default (switch this behaviour off with zuul.stripPrefix=false). You can also switch off the stripping of the service-specific prefix from individual routes, e.g.
+To add a prefix to all mappings, set `zuul.prefix` to a value, such as `/api`. The proxy prefix is stripped from the request before the request is forwarded by default (switch this behaviour off with `zuul.stripPrefix=false`). You can also switch off the stripping of the service-specific prefix from individual routes, e.g.
 
-设置 zuul.prefix 可以为所有的路由映射增加前缀，例如 /api 。默认情况下，路由时会从请求路径中移除路由前缀（通过 zuul.stripPrefix=false 可以关闭这个功能），你也可以针对特定服务关闭这个功能，例如：
+设置 `zuul.prefix` 可以为所有的路由映射增加前缀，例如 `/api` 。默认情况下，路由时会从请求路径中移除路由前缀（通过 `zuul.stripPrefix=false` 可以关闭这个功能），你也可以针对特定服务关闭这个功能，例如：
 
 `application.yml`
 ```yaml
@@ -2071,17 +2071,17 @@ In this example requests to "/myusers/101" will be forwarded to "/myusers/101" o
 
 在这个例子中/myusers/101的请求会被转发给users服务的/myusers/101。
 
-The zuul.routes entries actually bind to an object of type ProxyRouteLocator. If you look at the properties of that object you will see that it also has a "retryable" flag. Set that flag to "true" to have the Ribbon client automatically retry failed requests (and if you need to you can modify the parameters of the retry operations using the Ribbon client configuration).
+The `zuul.routes` entries actually bind to an object of type `ProxyRouteLocator`. If you look at the properties of that object you will see that it also has a "retryable" flag. Set that flag to "true" to have the Ribbon client automatically retry failed requests (and if you need to you can modify the parameters of the retry operations using the Ribbon client configuration).
 
-zuul.routes 下的各个条目使用ProxyRouteLocator对象表示，查看这个类的属性可以发现它有一个retryable参数，将该参数设为true，Ribbon会对失败请求自动重试（如果需要，你还可以通过Ribbon客户端配置修改重试操作的其它参数）。
+`zuul.routes` 下的各个条目使用`ProxyRouteLocator`对象表示，查看这个类的属性可以发现它有一个retryable参数，将该参数设为true，Ribbon会对失败请求自动重试（如果需要，你还可以通过Ribbon客户端配置修改重试操作的其它参数）。
 
-The X-Forwarded-Host header is added to the forwarded requests by default. To turn it off set zuul.addProxyHeaders = false. The prefix path is stripped by default, and the request to the backend picks up a header "X-Forwarded-Prefix" ("/myusers" in the examples above).
+The `X-Forwarded-Host` header is added to the forwarded requests by default. To turn it off set `zuul.addProxyHeaders = false`. The prefix path is stripped by default, and the request to the backend picks up a header "X-Forwarded-Prefix" ("/myusers" in the examples above).
 
-路由转发时会默认添加X-Forwarded-Host请求头，可以通过zuul.addProxyHeaders = false关闭。默认情况下会删除路由前缀，后端服务可以通过X-Forwarded-Prefix请求头获取（例如上面示例中的/myusers）。
+路由转发时会默认添加`X-Forwarded-Host`请求头，可以通过`zuul.addProxyHeaders = false`关闭。默认情况下会删除路由前缀，后端服务可以通过X-Forwarded-Prefix请求头获取（例如上面示例中的/myusers）。
 
-An application with the @EnableZuulProxy could act as a standalone server if you set a default route ("/"), for example zuul.route.home: / would route all traffic (i.e. "/{asterisk}{asterisk}") to the "home" service.
+An application with the `@EnableZuulProxy` could act as a standalone server if you set a default route ("/"), for example `zuul.route.home: /` would route all traffic (i.e. "/{asterisk}{asterisk}") to the "home" service.
 
-如果设置一个根路径路由规则，那么使用 @EnableZuulProxy 注解的应用可以作为一个单独的服务器。例如 zuul.route.home: / 会将所有请求（/**）路由到home服务。
+如果设置一个根路径路由规则，那么使用 `@EnableZuulProxy` 注解的应用可以作为一个单独的服务器。例如 `zuul.route.home: /` 会将所有请求（/**）路由到home服务。
 
 If more fine-grained ignoring is needed, you can specify specific patterns to ignore. These patterns are being evaluated at the start of the route location process, which means prefixes should be included in the pattern to warrant a match. Ignored patterns span all services and supersede any other route specification.
 
@@ -2125,9 +2125,9 @@ Example configuration: 示例配置：
       url: http://legacy.example.com
 ```
 
-In this example we are strangling the "legacy" app which is mapped to all requests that do not match one of the other patterns. Paths in /first/{asterisk}{asterisk} have been extracted into a new service with an external URL. And paths in /second/{asterisk}{asterisk} are forwared so they can be handled locally, e.g. with a normal Spring @RequestMapping. Paths in /third/{asterisk}{asterisk} are also forwarded, but with a different prefix (i.e. /third/foo is forwarded to /3rd/foo).
+In this example we are strangling the "legacy" app which is mapped to all requests that do not match one of the other patterns. Paths in `/first/{asterisk}{asterisk}` have been extracted into a new service with an external URL. And paths in `/second/{asterisk}{asterisk}` are forwared so they can be handled locally, e.g. with a normal Spring `@RequestMapping`. Paths in `/third/{asterisk}{asterisk}` are also forwarded, but with a different prefix (i.e. `/third/foo` is forwarded to `/3rd/foo`).
 
-上面例子对一个老系统进行路由，除了几个规则外，请求都被路由到原系统。路径/first/**切换到了新的服务中，路径 /second/**在本地进行一次转发，例如可以使用Spring的@RequestMapping重新实现，路径/third/**同样被转发一次，使用了另外一个不同的路径（例如/third/foo会转发到/3rd/foo）。
+上面例子对一个老系统进行路由，除了几个规则外，请求都被路由到原系统。路径`/first/**`切换到了新的服务中，路径 `/second/**`在本地进行一次转发，例如可以使用Spring的`@RequestMapping`重新实现，路径`/third/**`同样被转发一次，使用了另外一个不同的路径（例如`/third/foo`会转发到`/3rd/foo`）。
 
 > **NOTE** <br />
 > The ignored pattterns aren’t completely ignored, they just aren’t handled by the proxy (so they are also effectively forwarded locally). <br />
@@ -2135,9 +2135,9 @@ In this example we are strangling the "legacy" app which is mapped to all reques
 
 ### Uploading Files through Zuul - 通过Zuul上传文件
 
-If you @EnableZuulProxy you can use the proxy paths to upload files and it should just work as long as the files are small. For large files there is an alternative path which bypasses the Spring DispatcherServlet (to avoid multipart processing) in "/zuul/*". I.e. if zuul.routes.customers=/customers/{asterisk}{asterisk} then you can POST large files to "/zuul/customers/*". The servlet path is externalized via zuul.servletPath. Extremely large files will also require elevated timeout settings if the proxy route takes you through a Ribbon load balancer, e.g.
+If you `@EnableZuulProxy` you can use the proxy paths to upload files and it should just work as long as the files are small. For large files there is an alternative path which bypasses the Spring `DispatcherServlet` (to avoid multipart processing) in "/zuul/*". I.e. if `zuul.routes.customers=/customers/{asterisk}{asterisk}` then you can POST large files to "/zuul/customers/*". The servlet path is externalized via `zuul.servletPath`. Extremely large files will also require elevated timeout settings if the proxy route takes you through a Ribbon load balancer, e.g.
 
-使用了@EnableZuulProxy后，你可以使用代理路径上传文件，但只适用于小文件的情况。对于大文件可以使用另外一个路径/zuul/\*，它绕开了Spring的DispatcherServlet （为了避免multipart处理），例如对于zuul.routes.customers=/customers/\*\*，你可以将大文件POST到/zuul/customers/\*。这个路径可以通过zuul.servletPath修改。如果通过代理上传超大文件并且使用了Ribbon的负载均衡，还需要设置超时等配置：
+使用了@EnableZuulProxy后，你可以使用代理路径上传文件，但只适用于小文件的情况。对于大文件可以使用另外一个路径/zuul/\*，它绕开了Spring的`DispatcherServlet` （为了避免multipart处理），例如对于`zuul.routes.customers=/customers/**`，你可以将大文件POST到/zuul/customers/\*。这个路径可以通过`zuul.servletPath`修改。如果通过代理上传超大文件并且使用了Ribbon的负载均衡，还需要设置超时等配置：
 
 `application.yml`
 ```yaml
