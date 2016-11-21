@@ -2052,7 +2052,7 @@ public PatternServiceRouteMapper serviceRouteMapper() {
 
 This means that a serviceId "myusers-v1" will be mapped to route "/v1/myusers/{asterisk}{asterisk}". Any regular expression is accepted but all named group must be present in both servicePattern and routePattern. If servicePattern do not match a serviceId, the default behavior is used. In exemple above, a serviceId "myusers" will be mapped to route "/myusers/{asterisk}{asterisk}" (no version detected) These feature is disable by default and is only applied to discovered services.
 
-它表示将myusers-v1的服务路由到/v1/myusers/**。可以使用任意的正则表达式，但所有命名组必须同时出现在servicePattern和routePattern之中。如果servicePattern无法匹配到serviceId，则使用默认处理方式，上面例子的默认处理方式是将serviceId为myusers的服务映射/ myusers/**（无法检测版本），这个功能默认是关闭的，并且仅适用于注册中心的服务。
+它表示将myusers-v1的服务路由到/v1/myusers/\*\*。可以使用任意的正则表达式，但所有命名组必须同时出现在servicePattern和routePattern之中。如果servicePattern无法匹配到serviceId，则使用默认处理方式，上面例子的默认处理方式是将serviceId为myusers的服务映射/ myusers/**（无法检测版本），这个功能默认是关闭的，并且仅适用于注册中心的服务。
 
 To add a prefix to all mappings, set `zuul.prefix` to a value, such as `/api`. The proxy prefix is stripped from the request before the request is forwarded by default (switch this behaviour off with `zuul.stripPrefix=false`). You can also switch off the stripping of the service-specific prefix from individual routes, e.g.
 
