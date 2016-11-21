@@ -1,5 +1,4 @@
 # Spring Cloud
-------------------------------------------------
 
 Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state). Coordination of distributed systems leads to boiler plate patterns, and using Spring Cloud developers can quickly stand up services and applications that implement those patterns. They will work well in any distributed environment, including the developer’s own laptop, bare metal data centres, and managed platforms such as Cloud Foundry.
 
@@ -50,7 +49,7 @@ Spring Boot has an opinionated view of how to build an application with Spring: 
 
 Spring Boot有自己的方式来创建一个应用程序：比如它约定了配置文件的位置、通用的端点管理和监控任务。Spring Cloud构建在应用程序的基础之上，并且增加了许多分布式系统可能需要的组件。
 
-### The Bootstrap Application Context 启动上下文
+## The Bootstrap Application Context 启动上下文
 
 A Spring Cloud application operates by creating a "bootstrap" context, which is a parent context for the main application. Out of the box it is responsible for loading configuration properties from the external sources, and also decrypting properties in the local external configuration files. The two contexts share an Environment which is the source of external properties for any Spring application. Bootstrap properties are added with high precedence, so they cannot be overridden by local configuration.
 
@@ -78,7 +77,7 @@ You can disable the bootstrap process completely by setting spring.cloud.bootstr
 
 你可以通过设置spring.cloud.bootstrap.enabled=false来禁用bootstrap。
 
-### Application Context Hierarchies 应用上下文层次结构
+## Application Context Hierarchies 应用上下文层次结构
 
 If you build an application context from SpringApplication or SpringApplicationBuilder, then the Bootstrap context is added as a parent to that context. It is a feature of Spring that child contexts inherit property sources and profiles from their parent, so the "main" application context will contain additional property sources, compared to building the same context without Spring Cloud Config. The additional property sources are:
 
