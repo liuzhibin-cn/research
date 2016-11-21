@@ -2137,7 +2137,7 @@ In this example we are strangling the "legacy" app which is mapped to all reques
 
 If you @EnableZuulProxy you can use the proxy paths to upload files and it should just work as long as the files are small. For large files there is an alternative path which bypasses the Spring DispatcherServlet (to avoid multipart processing) in "/zuul/*". I.e. if zuul.routes.customers=/customers/{asterisk}{asterisk} then you can POST large files to "/zuul/customers/*". The servlet path is externalized via zuul.servletPath. Extremely large files will also require elevated timeout settings if the proxy route takes you through a Ribbon load balancer, e.g.
 
-使用了@EnableZuulProxy后，你可以使用代理路径上传文件，但只适用于小文件的情况。对于大文件可以使用另外一个路径/zuul/*，它绕开了Spring的DispatcherServlet （为了避免multipart处理），例如对于zuul.routes.customers=/customers/**，你可以将大文件POST到/zuul/customers/*。这个路径可以通过zuul.servletPath修改。如果通过代理上传超大文件并且使用了Ribbon的负载均衡，还需要设置超时等配置：
+使用了@EnableZuulProxy后，你可以使用代理路径上传文件，但只适用于小文件的情况。对于大文件可以使用另外一个路径/zuul/\*，它绕开了Spring的DispatcherServlet （为了避免multipart处理），例如对于zuul.routes.customers=/customers/\*\*，你可以将大文件POST到/zuul/customers/\*。这个路径可以通过zuul.servletPath修改。如果通过代理上传超大文件并且使用了Ribbon的负载均衡，还需要设置超时等配置：
 
 `application.yml`
 ```yaml
@@ -2247,10 +2247,17 @@ The api for the `DiscoveryClient.getInstances()` method is `/hosts/{serviceId}`.
 
 The Zuul proxy automatically adds routes for each service known in eureka to /<serviceId>, so the customers service is available at /customers. The Non-jvm app can access the customer service via http://localhost:5678/customers (assuming the sidecar is listening on port 5678).
 
+Zuul代理会对erueka服务自动添加/<serviceId>路径，因此需要通过/customers访问customers服务，非jvm应用可以通过http://localhost:5678/customers访问costumers服务（假设sidecar使用的5678端口）。
+
 If the Config Server is registered with Eureka, non-jvm application can access it via the Zuul proxy. If the serviceId of the ConfigServer is configserver and the Sidecar is on port 5678, then it can be accessed at http://localhost:5678/configserver
+
+如果Config Server通过Eureka注册，非jvm应用就可以通过Zuul代理访问。如果ConofigServer的serviceId为configserver ，Sidecar使用的5678端口，可以通过thttp://localhost:5678/configserver访问。
 
 Non-jvm app can take advantage of the Config Server’s ability to return YAML documents. For example, a call to http://sidecar.local.spring.io:5678/configserver/default-master.yml might result in a YAML document like the following
 
+非jvm应用也能使用ConfigServer返回YAML文档，例如调用http://sidecar.local.spring.io:5678/configserver/default-master.yml后返回如下的YAML文档：
+
+```yaml
 eureka:
   client:
     serviceUrl:
@@ -2259,29 +2266,53 @@ eureka:
 info:
   description: Spring Cloud Samples
   url: https://github.com/spring-cloud-samples
-Metrics: Spectator, Servo, and Atlas
+```
+
+## Metrics: Spectator, Servo, and Atlas - 监控指标：Spectator、Servo和Atlas
+
 When used together, Spectator/Servo and Atlas provide a near real-time operational insight platform.
+
+Spectator/Servo和Atlas结合使用能够提供一个近乎实时的运维监控平台。
 
 Spectator and Servo are Netflix’s metrics collection libraries. Atlas is a Netflix metrics backend to manage dimensional time series data.
 
+Spectator和Servo是Netflix的指标收集组件，Atlas是Netflix用来管理维度型时序指标数据的后端应用。
+
 Servo served Netflix for several years and is still usable, but is gradually being phased out in favor of Spectator, which is only designed to work with Java 8. Spring Cloud Netflix provides support for both, but Java 8 based applications are encouraged to use Spectator.
 
-Dimensional vs. Hierarchical Metrics
+Servo在Netflix运用了多年，目前仍在使用，但很快会被基于Java 8的Spectator替代。Spring Cloud Netflix对两者都提供支持，但推荐Java 8应用使用Spectator。
+
+### Dimensional vs. Hierarchical Metrics - 维度型指标与层级型指标对比
+
 Spring Boot Actuator metrics are hierarchical and metrics are separated only by name. These names often follow a naming convention that embeds key/value attribute pairs (dimensions) into the name separated by periods. Consider the following metrics for two endpoints, root and star-star:
 
+Spring Boot Actuator采用层级型指标，每个指标有一个名称，按照约定，名称通常由一些键值对（维度）组成，使用点号分隔。下面是root和start-star两个终端的指标示例：
+
+```json
 {
     "counter.status.200.root": 20,
     "counter.status.400.root": 3,
     "counter.status.200.star-star": 5,
 }
+```
+
 The first metric gives us a normalized count of successful requests against the root endpoint per unit of time. But what if the system had 20 endpoints and you want to get a count of successful requests against all the endpoints? Some hierarchical metrics backends would allow you to specify a wild card such as counter.status.200. that would read all 20 metrics and aggregate the results. Alternatively, you could provide a HandlerInterceptorAdapter that intercepts and records a metric like counter.status.200.all for all successful requests irrespective of the endpoint, but now you must write 20+1 different metrics. Similarly if you want to know the total number of successful requests for all endpoints in the service, you could specify a wild card such as counter.status.2.*.
 
-Even in the presence of wildcarding support on a hierarchical metrics backend, naming consistency can be difficult. Specifically the position of these tags in the name string can slip with time, breaking queries. For example, suppose we add an additional dimension to the hierarchical metrics above for HTTP method. Then counter.status.200.root becomes counter.status.200.method.get.root, etc. Our counter.status.200.* suddenly no longer has the same semantic meaning. Furthermore, if the new dimension is not applied uniformly across the codebase, certain queries may become impossible. This can quickly get out of hand.
+第一个指标是root终端每单位时间内的成功请求数。假如有20个终端，我们需要统计这20个终端的所有成功请求数呢？某些层级型指标允许你使用counter.status.200形式的模糊匹配，它会将20个终端的指标值汇总，另外你可以提供一个HandlerInterceptorAdapter 进行拦截，计算出一个类似counter.status.200.all的指标来表示20个终端的成功请求数，但现在你制造了20+1个监控指标，同理，如果你需要统计某个服务所有节点的成功请求数，你需要使用counter.status.2.*这样的模糊匹配。
+
+Even in the presence of wildcarding support on a hierarchical metrics backend, naming consistency can be difficult. Specifically the position of these tags in the name string can slip with time, breaking queries. For example, suppose we add an additional dimension to the hierarchical metrics above for HTTP method. Then `counter.status.200.root` becomes `counter.status.200.method.get.root`, etc. Our `counter.status.200.*` suddenly no longer has the same semantic meaning. Furthermore, if the new dimension is not applied uniformly across the codebase, certain queries may become impossible. This can quickly get out of hand.
+
+在层级型监控指标中即使提供了模糊匹配支持，命名一致性仍然比较麻烦，尤其是随着版本更新，这些名称中的标签还会发生变化，破坏某些统计查询。例如，我们新添加一个HTTP method的维度，则`counter.status.200.root`变成`counter.status.200.method.get.root`，则统计查询`counter.status.200.*`的意思就变得不一样了，另外，如果代码中新添加的维度没有统一起来，某些统计查询根本无法工作，这样的情况是很容易发生。
 
 Netflix metrics are tagged (a.k.a. dimensional). Each metric has a name, but this single named metric can contain multiple statistics and 'tag' key/value pairs that allows more querying flexibility. In fact, the statistics themselves are recorded in a special tag.
 
+Netflix的监控指标采用标签的方式（即维度型）。每个指标有一个名称，可以包含多个统计值，采用键值对方式标记，这样查询起来更灵活，并且每个统计值对应的统计方法也记录在了一个特殊标签中。
+
 Recorded with Netflix Servo or Spectator, a timer for the root endpoint described above contains 4 statistics per status code, where the count statistic is identical to Spring Boot Actuator’s counter. In the event that we have encountered an HTTP 200 and 400 thus far, there will be 8 available data points:
 
+将上面的例子采用Netflix的Servo或Spectator的timer来记录，对每个状态码会包含4个统计值，其中count统计值等同于Spring Boot Actuator的counter。对应于HTTP码200、400，会有8个统计值：
+
+```json
 {
     "root(status=200,stastic=count)": 20,
     "root(status=200,stastic=max)": 0.7265630630000001,
@@ -2292,57 +2323,83 @@ Recorded with Netflix Servo or Spectator, a timer for the root endpoint describe
     "root(status=400,stastic=totalOfSquares)": 0,
     "root(status=400,stastic=totalTime)": 0,
 }
-Default Metrics Collection
+```
+
+### Default Metrics Collection - 默认指标集
+
 Without any additional dependencies or configuration, a Spring Cloud based service will autoconfigure a Servo MonitorRegistry and begin collecting metrics on every Spring MVC request. By default, a Servo timer with the name rest will be recorded for each MVC request which is tagged with:
 
-HTTP method
+无需任何额外的依赖和配置，基于Spring Cloud的服务会自动配置一个Servo MonitorRegistry ，对Spring MVC请求自动收集指标数据。默认情况下，对应每个MVC请求都有一个名为rest的Servo timer指标，记录了以下信息：
 
-HTTP status (e.g. 200, 400, 500)
+1. HTTP method
+2. HTTP status (e.g. 200, 400, 500)
+3. URI (or "root" if the URI is empty), sanitized for Atlas
+4. The exception class name, if the request handler threw an exception 如果发生异常，记录异常类名称
+5. The caller, if a request header with a key matching `netflix.metrics.rest.callerHeader` is set on the request. There is no default key for `netflix.metrics.rest.callerHeader`. You must add it to your application properties if you wish to collect caller information. <br />
+   如果请求头中包含`netflix.metrics.rest.callerHeader`则记录调用者。默认情况下不会添加这个请求头，如果你需要收集调用者信息，必须手工添加。
 
-URI (or "root" if the URI is empty), sanitized for Atlas
+Set the `netflix.metrics.rest.metricName` property to change the name of the metric from rest to a name you provide.
 
-The exception class name, if the request handler threw an exception
+可以通过`netflix.metrics.rest.metricName`配置属性将指标名称rest修改为你的配置值。
 
-The caller, if a request header with a key matching netflix.metrics.rest.callerHeader is set on the request. There is no default key for netflix.metrics.rest.callerHeader. You must add it to your application properties if you wish to collect caller information.
+If Spring AOP is enabled and `org.aspectj:aspectjweaver` is present on your runtime classpath, Spring Cloud will also collect metrics on every client call made with `RestTemplate`. A Servo timer with the name of `restclient` will be recorded for each MVC request which is tagged with:
 
-Set the netflix.metrics.rest.metricName property to change the name of the metric from rest to a name you provide.
+如果启用了Spring AOP并且classpath中包含`org.aspectj:aspectjweaver`，Spring Cloud会对使用`RestTemplate`的客户端请求收集指标数据，对应每个MVC请求都有一个名为`restclient` 的Servo timer指标，记录了以下信息：
 
-If Spring AOP is enabled and org.aspectj:aspectjweaver is present on your runtime classpath, Spring Cloud will also collect metrics on every client call made with RestTemplate. A Servo timer with the name of restclient will be recorded for each MVC request which is tagged with:
+1. HTTP method
+2. HTTP status (e.g. 200, 400, 500), "CLIENT_ERROR" if the response returned null, or "IO_ERROR" if an IOException occurred during the execution of the RestTemplate method <br />
+   响应内容为null时其值为CLIENT_ERROR，如果执行RestTemplate 方法时发生IOException异常，其值为IO_ERROR。
+3. URI, sanitized for Atlas
+4. Client name
 
-HTTP method
+### Metrics Collection: Spectator - Spectator指标集
 
-HTTP status (e.g. 200, 400, 500), "CLIENT_ERROR" if the response returned null, or "IO_ERROR" if an IOException occurred during the execution of the RestTemplate method
+To enable Spectator metrics, include a dependency on `spring-boot-starter-spectator`:
 
-URI, sanitized for Atlas
+在依赖项中添加`spring-boot-starter-spectator`可以启用Spectator：
 
-Client name
-
-Metrics Collection: Spectator
-To enable Spectator metrics, include a dependency on spring-boot-starter-spectator:
-
+```xml
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-spectator</artifactId>
     </dependency>
+```
+
 In Spectator parlance, a meter is a named, typed, and tagged configuration and a metric represents the value of a given meter at a point in time. Spectator meters are created and controlled by a registry, which currently has several different implementations. Spectator provides 4 meter types: counter, timer, gauge, and distribution summary.
 
-Spring Cloud Spectator integration configures an injectable com.netflix.spectator.api.Registry instance for you. Specifically, it configures a ServoRegistry instance in order to unify the collection of REST metrics and the exporting of metrics to the Atlas backend under a single Servo API. Practically, this means that your code may use a mixture of Servo monitors and Spectator meters and both will be scooped up by Spring Boot Actuator MetricReader instances and both will be shipped to the Atlas backend.
+Spectator中，meter是一个带有名称、类型和标签的配置，metric表示一个meter在某个时间的值。Meter由一个注册表创建和管理，目前有多个具体实现。Spectator提供4种meter类型：counter, timer, gauge和distribution summary。
 
-Spectator Counter
+Spring Cloud Spectator integration configures an injectable `com.netflix.spectator.api.Registry` instance for you. Specifically, it configures a `ServoRegistry` instance in order to unify the collection of REST metrics and the exporting of metrics to the Atlas backend under a single Servo API. Practically, this means that your code may use a mixture of Servo monitors and Spectator meters and both will be scooped up by Spring Boot Actuator MetricReader instances and both will be shipped to the Atlas backend.
+
+Spring Cloud中配置了一个`com.netflix.spectator.api.Registry`实例用于IoC注入，使用的`ServoRegistry` 实现类，将Servo API作为统一API，这样可以统一REST指标以及向Atlas后端导出数据。
+
+#### Spectator Counter
+
 A counter is used to measure the rate at which some event is occurring.
 
+Counter用于记录事件发生的频率。
+
+```java
 // create a counter with a name and a set of tags
 Counter counter = registry.counter("counterName", "tagKey1", "tagValue1", ...);
 counter.increment(); // increment when an event occurs
 counter.increment(10); // increment by a discrete amount
+```
+
 The counter records a single time-normalized statistic.
 
-Spectator Timer
+Counter按时间进行统计。
+
+#### Spectator Timer
+
 A timer is used to measure how long some event is taking. Spring Cloud automatically records timers for Spring MVC requests and conditionally RestTemplate requests, which can later be used to create dashboards for request related metrics like latency:
 
-Request Latency
+Timer用于记录事件耗时，Spring Cloud自动为Spring MVC请求和符合条件的RestTemplate 请求记录timer，可以用于展示请求延迟等相关的仪表盘中。
+
+`Request Latency`
 image::RequestLatency.png []
 
+```java
 // create a timer with a name and a set of tags
 Timer timer = registry.timer("timerName", "tagKey1", "tagValue1", ...);
 
@@ -2353,75 +2410,146 @@ T result = timer.record(() -> fooReturnsT());
 Long start = System.nanoTime();
 T result = fooReturnsT();
 timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+```
+
 The timer simultaneously records 4 statistics: count, max, totalOfSquares, and totalTime. The count statistic will always match the single normalized value provided by a counter if you had called increment() once on the counter for each time you recorded a timing, so it is rarely necessary to count and time separately for a single operation.
 
-For long running operations, Spectator provides a special LongTaskTimer.
+Timer会同时记录4个指标值：次数、最长时间、加权平均时间和总时间，timer记录的次数与单独使用counter相同，因此对一个操作没有必要同时使用counter和timer。
 
-Spectator Gauge
+For long running operations, Spectator provides a special `LongTaskTimer`.
+
+对于耗时长的操作，Spectator额外提供了`LongTaskTimer`。
+
+#### Spectator Gauge
+
 Gauges are used to determine some current value like the size of a queue or number of threads in a running state. Since gauges are sampled, they provide no information about how these values fluctuate between samples.
+
+Gauge用于记录某些运行期的统计值，例如队列的长度、当前线程数等。Gauge通过采样方式记录数据，无法追踪采样点之间的情况。
 
 The normal use of a gauge involves registering the gauge once in initialization with an id, a reference to the object to be sampled, and a function to get or compute a numeric value based on the object. The reference to the object is passed in separately and the Spectator registry will keep a weak reference to the object. If the object is garbage collected, then Spectator will automatically drop the registration. See the note in Spectator’s documentation about potential memory leaks if this API is misused.
 
+通常gauge的使用方式为用一个id创建gauge并进行注册，提供一个获取或计算相关对象采样数据的函数。对相关对象的引用需要单独传递给Spectator，Spectator会保留一个弱引用。如果该对象被垃圾回收，Spectator会自动注销对应的gauge。请参考Spectator文档，避免不正确地使用造成内存泄漏。
+
+```java
 // the registry will automatically sample this gauge periodically
 registry.gauge("gaugeName", pool, Pool::numberOfRunningThreads);
 
 // manually sample a value in code at periodic intervals -- last resort!
 registry.gauge("gaugeName", Arrays.asList("tagKey1", "tagValue1", ...), 1000);
-Spectator Distribution Summaries
+```
+
+#### Spectator Distribution Summaries - Spectator分布统计信息
+
 A distribution summary is used to track the distribution of events. It is similar to a timer, but more general in that the size does not have to be a period of time. For example, a distribution summary could be used to measure the payload sizes of requests hitting a server.
 
+分布统计信息用于追踪事件分发情况，有点类似于timer，但通常不是针对一个时间段。例如可以用分布统计信息来记录分发到某个服务器的请求负载情况。
+
+```java
 // the registry will automatically sample this gauge periodically
 DistributionSummary ds = registry.distributionSummary("dsName", "tagKey1", "tagValue1", ...);
 ds.record(request.sizeInBytes());
-Metrics Collection: Servo
-WARNING
-If your code is compiled on Java 8, please use Spectator instead of Servo as Spectator is destined to replace Servo entirely in the long term.
-In Servo parlance, a monitor is a named, typed, and tagged configuration and a metric represents the value of a given monitor at a point in time. Servo monitors are logically equivalent to Spectator meters. Servo monitors are created and controlled by a MonitorRegistry. In spite of the above warning, Servo does have a wider array of monitor options than Spectator has meters.
+```
 
-Spring Cloud integration configures an injectable com.netflix.servo.MonitorRegistry instance for you. Once you have created the appropriate Monitor type in Servo, the process of recording data is wholly similar to Spectator.
+### Metrics Collection: Servo - Servo指标集
 
-Creating Servo Monitors
-If you are using the Servo MonitorRegistry instance provided by Spring Cloud (specifically, an instance of DefaultMonitorRegistry), Servo provides convenience classes for retrieving counters and timers. These convenience classes ensure that only one Monitor is registered for each unique combination of name and tags.
+> **WARNING** <br />
+> If your code is compiled on Java 8, please use Spectator instead of Servo as Spectator is destined to replace Servo entirely in the long term. <br />
+> **警告**：如果你的代码在Java 8中编译，请使用Spectator，因为长期规划中会使用Spectator替换掉Servo。<br />
 
-To manually create a Monitor type in Servo, especially for the more exotic monitor types for which convenience methods are not provided, instantiate the appropriate type by providing a MonitorConfig instance:
+In Servo parlance, a monitor is a named, typed, and tagged configuration and a metric represents the value of a given monitor at a point in time. Servo monitors are logically equivalent to Spectator meters. Servo monitors are created and controlled by a `MonitorRegistry`. In spite of the above warning, Servo does have a wider array of monitor options than Spectator has meters.
 
+在Servo中，monitor是一项带有名称、类型和标签的配置，metric代表某个monitor在某个时间的值。Servo的monitor逻辑上等同于Spectator中的meter，由`MonitorRegistry`创建和管理，抛开上面警告内容，Servo的monitor选项比Spectator的meter更多。
+
+Spring Cloud integration configures an injectable `com.netflix.servo.MonitorRegistry` instance for you. Once you have created the appropriate `Monitor` type in Servo, the process of recording data is wholly similar to Spectator.
+
+Spring Cloud中配置了一个`com.netflix.servo.MonitorRegistry` 实例，只要你在Servo中创建了正确的`Monitor`类型，记录数据的过程就完全和Spectator类似。
+
+#### Creating Servo Monitors - 创建Servo Monitor
+
+If you are using the Servo `MonitorRegistry` instance provided by Spring Cloud (specifically, an instance of `DefaultMonitorRegistry`), Servo provides convenience classes for retrieving counters and timers. These convenience classes ensure that only one `Monitor` is registered for each unique combination of name and tags.
+
+如果你使用Spring Cloud提供的`Servo MonitorRegistry` 实例（`DefaultMonitorRegistry`实例），Servo提供了方便的工具类用于创建counter和timer，这些类确保对于每个name和tag组合只注册一个`Monitor`。
+
+To manually create a Monitor type in Servo, especially for the more exotic monitor types for which convenience methods are not provided, instantiate the appropriate type by providing a `MonitorConfig` instance:
+
+在Servo中可以通过提供一个`MonitorConfig` 对象实例化相应类型手工创建一个Monitor，尤其是对于那些没有提供工具类的monitor。
+
+```java
 MonitorConfig config = MonitorConfig.builder("timerName").withTag("tagKey1", "tagValue1").build();
 
 // somewhere we should cache this Monitor by MonitorConfig
 Timer timer = new BasicTimer(config);
 monitorRegistry.register(timer);
-Metrics Backend: Atlas
+```
+
+### Metrics Backend: Atlas - 后端指标服务：Atlas 
+
 Atlas was developed by Netflix to manage dimensional time series data for near real-time operational insight. Atlas features in-memory data storage, allowing it to gather and report very large numbers of metrics, very quickly.
+
+Atlas由Netflix开发，用于监控管理实时的多维时序数据，它采用内存存储数据，可以非常快速地对大量指标数据进行收集和报表展示。
 
 Atlas captures operational intelligence. Whereas business intelligence is data gathered for analyzing trends over time, operational intelligence provides a picture of what is currently happening within a system.
 
-Spring Cloud provides a spring-cloud-starter-atlas that has all the dependencies you need. Then just annotate your Spring Boot application with @EnableAtlas and provide a location for your running Atlas server with the netflix.atlas.uri property.
+Atlas用于捕获操作智能，类似于商业智能捕获数据用于趋势分析，操作智能则为系统当前运行状态提供一副全景图。
 
-Global tags
+Spring Cloud provides a `spring-cloud-starter-atlas` that has all the dependencies you need. Then just annotate your Spring Boot application with `@EnableAtlas` and provide a location for your running Atlas server with the `netflix.atlas.uri` property.
+
+Spring Cloud提供一个`spring-cloud-starter-atlas`，其中包含了所有的依赖项。在Spring Boot应用中使用 `@EnableAtlas`注解，并通过`netflix.atlas.uri` 配置Atlas服务器地址即可。
+
+#### Global tags - 全局标签
+
 Spring Cloud enables you to add tags to every metric sent to the Atlas backend. Global tags can be used to separate metrics by application name, environment, region, etc.
 
-Each bean implementing AtlasTagProvider will contribute to the global tag list:
+Spring Cloud为发送给后端Atlas的指标提供标签功能，全局标签可以用来区分应用、运行环境、地区等。
 
+Each bean implementing `AtlasTagProvider` will contribute to the global tag list:
+
+每个实现了`AtlasTagProvider` 的bean都会用作全局标签列表。
+
+```java
 @Bean
 AtlasTagProvider atlasCommonTags(
     @Value("${spring.application.name}") String appName) {
   return () -> Collections.singletonMap("app", appName);
 }
-Using Atlas
+```
+
+#### Using Atlas - 使用Atlas
+
 To bootstrap a in-memory standalone Atlas instance:
 
+单独启动一个Atlas实例：
+
+```shell
 $ curl -LO https://github.com/Netflix/atlas/releases/download/v1.4.2/atlas-1.4.2-standalone.jar
 $ java -jar atlas-1.4.2-standalone.jar
-TIP
-An Atlas standalone node running on an r3.2xlarge (61GB RAM) can handle roughly 2 million metrics per minute for a given 6 hour window.
+```
+
+> **TIP** <br />
+> An Atlas standalone node running on an r3.2xlarge (61GB RAM) can handle roughly 2 million metrics per minute for a given 6 hour window. <br />
+> **提示**： 一个运行在r3.2xlarge（61GB内存）上的独立Atlas节点，每分钟处理200万指标，大约可以运行6个小时。
+
+
 Once running and you have collected a handful of metrics, verify that your setup is correct by listing tags on the Atlas server:
 
+运行起来并收集到一定指标后，可以通过列举Altas服务器上的标签来校验安装是否正确：
+
+```shell
 $ curl http://ATLAS/api/v1/tags
-TIP
-After executing several requests against your service, you can gather some very basic information on the request latency of every request by pasting the following url in your browser: http://ATLAS/api/v1/graph?q=name,rest,:eq,:avg
+```
+
+> **TIP** <br />
+> After executing several requests against your service, you can gather some very basic information on the request latency of every request by pasting the following url in your browser: http://ATLAS/api/v1/graph?q=name,rest,:eq,:avg <br />
+> **提示**：对服务执行几次请求之后，可以在浏览器中通过http://ATLAS/api/v1/graph?q=name,rest,:eq,:avg查看每次请求的一些基本信息。
+
+
 The Atlas wiki contains a compilation of sample queries for various scenarios.
 
+Atlas wiki上给出了一些用于不同场景的样例查询汇总。
+
 Make sure to check out the alerting philosophy and docs on using double exponential smoothing to generate dynamic alert thresholds.
+
+基于双重指数平滑生成动态预警阈值请参考alerting philosophy 及相关文档。
 
 Spring Cloud Bus
 
