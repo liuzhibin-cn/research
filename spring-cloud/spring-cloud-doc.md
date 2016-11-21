@@ -2,7 +2,7 @@
 
 Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state). Coordination of distributed systems leads to boiler plate patterns, and using Spring Cloud developers can quickly stand up services and applications that implement those patterns. They will work well in any distributed environment, including the developer’s own laptop, bare metal data centres, and managed platforms such as Cloud Foundry.
 
-# Features Spring Cloud中的功能模块
+## Features - 功能特性
 Spring Cloud focuses on providing good out of box experience for typical use cases and extensibility mechanism to cover others.
 
 对于系统架构中多种典型场景的实现和可扩展性的要求，Spring Cloud提供了很好的开箱即用的解决方案。如下：
@@ -17,7 +17,8 @@ Spring Cloud focuses on providing good out of box experience for typical use cas
 * Leadership election and cluster state 主节点选举和集群状态
 * Distributed messaging 分布式消息
 
-# Cloud Native Applications
+---------------------------------
+# Cloud Native Applications - Cloud原生应用
 
 Cloud Native is a style of application development that encourages easy adoption of best practices in the areas of continuous delivery and value-driven development. A related discipline is that of building 12-factor Apps in which development practices are aligned with delivery and operations goals, for instance by using declarative programming and management and monitoring. Spring Cloud facilitates these styles of development in a number of specific ways and the starting point is a set of features that all components in a distributed system either need or need easy access to when required.
 
@@ -43,13 +44,13 @@ Extract files into JDK/jre/lib/security folder (whichever version of JRE/JDK x64
 > **NOTE**<br />
 > Spring Cloud is released under the non-restrictive Apache 2.0 license. If you would like to contribute to this section of the documentation or if you find an error, please find the source code and issue trackers in the project at {githubmaster}/docs/src/main/asciidoc[github].
 
-# Spring Cloud Context: Application Context Services 应用上下文服务
+## Spring Cloud Context: Application Context Services - Spring Cloud上下文：应用上下文服务
 
 Spring Boot has an opinionated view of how to build an application with Spring: for instance it has conventional locations for common configuration file, and endpoints for common management and monitoring tasks. Spring Cloud builds on top of that and adds a few features that probably all components in a system would use or occasionally need.
 
 Spring Boot有自己的方式来创建一个应用程序：比如它约定了配置文件的位置、通用的端点管理和监控任务。Spring Cloud构建在应用程序的基础之上，并且增加了许多分布式系统可能需要的组件。
 
-## The Bootstrap Application Context 启动上下文
+### The Bootstrap Application Context - 启动上下文
 
 A Spring Cloud application operates by creating a "bootstrap" context, which is a parent context for the main application. Out of the box it is responsible for loading configuration properties from the external sources, and also decrypting properties in the local external configuration files. The two contexts share an Environment which is the source of external properties for any Spring application. Bootstrap properties are added with high precedence, so they cannot be overridden by local configuration.
 
@@ -77,7 +78,7 @@ You can disable the bootstrap process completely by setting spring.cloud.bootstr
 
 你可以通过设置spring.cloud.bootstrap.enabled=false来禁用bootstrap。
 
-## Application Context Hierarchies 应用上下文层次结构
+### Application Context Hierarchies - 应用上下文体系结构
 
 If you build an application context from SpringApplication or SpringApplicationBuilder, then the Bootstrap context is added as a parent to that context. It is a feature of Spring that child contexts inherit property sources and profiles from their parent, so the "main" application context will contain additional property sources, compared to building the same context without Spring Cloud Config. The additional property sources are:
 
@@ -100,13 +101,13 @@ Note that the SpringApplicationBuilder allows you to share an Environment amongs
 
 注意允许共享Environment到所有层次，但不是默认的。因此，同级的兄弟上下文不在和父类共享一些东西的时候不一定有相同的profiles或者property sources源码位置。
 
-## Changing the Location of Bootstrap Properties 修改启动文件的位置
+### Changing the Location of Bootstrap Properties - 修改启动文件位置
 
 The bootstrap.yml (or .properties) location can be specified using spring.cloud.bootstrap.name (default "bootstrap") or spring.cloud.bootstrap.location (default empty), e.g. in System properties. Those properties behave like the spring.config.* variants with the same name, in fact they are used to set up the bootstrap ApplicationContext by setting those properties in its Environment. If there is an active profile (from spring.profiles.active or through the Environment API in the context you are building) then properties in that profile will be loaded as well, just like in a regular Spring Boot app, e.g. from bootstrap-development.properties for a "development" profile.
 
 bootstrap.yml的位置可以由spring.cloud.bootstrap.name（默认:bootstrap）或者spring.cloud.bootstrap.location（默认空）来进行指定。这些属性行为与spring.config.*类似，通过它的Environment来配置引导ApplicationContext进行加载。如果有一个激活的profile（来源于spring.profiles.active或者正在构建的Environment  Api）然后其中的属性即将被加载，就像Spring Boot应用通过 bootstrap-development.properties对开发环境进行了配置。
 
-## Customizing the Bootstrap Configuration 自定义启动配置
+### Customizing the Bootstrap Configuration - 自定义启动配置
 
 The bootstrap context can be trained to do anything you like by adding entries to /META-INF/spring.factories under the key org.springframework.cloud.bootstrap.BootstrapConfiguration. This is a comma-separated list of Spring @Configuration classes which will be used to create the context. Any beans that you want to be available to the main application context for autowiring can be created here, and also there is a special contract for @Beans of type ApplicationContextInitializer. Classes can be marked with an @Order if you want to control the startup sequence (the default order is "last").
 
@@ -121,7 +122,7 @@ The bootstrap process ends by injecting initializers into the main SpringApplica
 
 通过spring.factories配置的类初始化的所有的Bean都会在SpingApplicatin启动前加入到它的上下文里去
 
-## Customizing the Bootstrap Property Sources 自定义启动属性源
+### Customizing the Bootstrap Property Sources - 自定义启动属性源
 
 The default property source for external configuration added by the bootstrap process is the Config Server, but you can add additional sources by adding beans of type PropertySourceLocator to the bootstrap context (via spring.factories). You could use this to insert additional properties from a different server, or from a database, for instance.
 
@@ -156,7 +157,7 @@ then the "customProperty" PropertySource will show up in any application that in
 
 那么，customProperty的PropertySource将会被包含到应用。
 
-## Environment Changes 修改Environment
+### Environment Changes - 修改Environment
 
 The application will listen for an EnvironmentChangedEvent and react to the change in a couple of standard ways (additional ApplicationListeners can be added as @Beans by the user in the normal way). When an EnvironmentChangedEvent is observed it will have a list of key values that have changed, and the application will use those to:
 
@@ -175,7 +176,7 @@ The EnvironmentChangedEvent covers a large class of refresh use cases, as long a
 
 EnvironmentChangedEvent覆盖了非常大一部分刷新场景的用例，只要，只要对对Environment进行修改并且发布这个事件（这些是Spring核心API的一部分）。你可以通过观察/configprops端点（Spring Boot Actuator的特性）来检查这些改变绑定到@ConfigurationProperties的bean的情况。对于DataSource这样一个实例，在运行的时候修改maxPoolSize增加大小，修改的变化不会通知实例里面，可以使用@RefreshScope来初始化Bean。
 
-### Refresh Scope 刷新作用域
+### Refresh Scope - 刷新作用域
 
 A Spring @Bean that is marked as @RefreshScope will get special treatment when there is a configuration change. This addresses the problem of stateful beans that only get their configuration injected when they are initialized. For instance if a DataSource has open connections when the database URL is changed via the Environment, we probably want the holders of those connections to be able to complete what they are doing. Then the next time someone borrows a connection from the pool he gets one with the new URL.
 
@@ -194,7 +195,7 @@ The RefreshScope is a bean in the context and it has a public method refreshAll(
 > **注意**<br />
 > @RefreshScope注解在一个@Configuration类上面，但是它可能会产生不可预知的问题。在重新初始化的时候需要注意到可以相互依赖造成的冲突。
 
-## Encryption and Decryption 加密和解密
+### Encryption and Decryption - 加密和解密
 
 The Config Client has an Environment pre-processor for decrypting property values locally. It follows the same rules as the Config Server, and has the same external configuration via encrypt.*. Thus you can use encrypted values in the form {cipher}* and as long as there is a valid key then they will be decrypted before the main application context gets the Environment. To use the encryption features in a client you need to include Spring Security RSA in your classpath (Maven co-ordinates "org.springframework.security:spring-security-rsa") and you also need the full strength JCE extensions in your JVM.
 
@@ -212,7 +213,7 @@ Extract files into JDK/jre/lib/security folder (whichever version of JRE/JDK x64
 
 进入目录JDK/jre/lib/security提取文件（无论您正在使用的是JDK/JRE的哪个版本，x64/x86）。
 
-### Endpoints
+### Endpoints - 
 
 For a Spring Boot Actuator application there are some additional management endpoints:
 
@@ -228,13 +229,13 @@ For a Spring Boot Actuator application there are some additional management endp
   /pause和/resume请求可以调用ApplicationContext生命周期的方法stop()和start()。
 
 -----------------------------------------------
-#Spring Cloud Commons: Common Abstractions 公共抽象库
+## Spring Cloud Commons: Common Abstractions - 公共抽象库
 
 Patterns such as service discovery, load balancing and circuit breakers lend themselves to a common abstraction layer that can be consumed by all Spring Cloud clients, independent of the implementation (e.g. discovery via Eureka or Consul).
 
 比如服务发现、负载平衡和断路器等通用的模型，它们本身是一个抽象层，可以被所有Spring Cloud组件独立的实现，例如服务发现的具体实现Eureka、Consul。
 
-## Spring RestTemplate as a Load Balancer Client 作为负载均衡客户端
+### Spring RestTemplate as a Load Balancer Client - 将RestTemplate用作负载均衡客户端
 
 You can use Ribbon indirectly via an autoconfigured RestTemplate when RestTemplate is on the classpath and a LoadBalancerClient bean is defined):
 
@@ -256,7 +257,7 @@ The URI needs to use a virtual host name (ie. service name, not a host name). Th
 
 访问的地址使用虚拟地址（比如服务名，而不是主机名）。Bibbon客户端负责连接物理地址。
 
-## Multiple RestTemplate objects 多个RestTemplate 对象
+### Multiple RestTemplate objects - 多种类型的RestTemplate共存
 
 If you want a RestTemplate that is not load balanced, create a RestTemplate bean and inject it as normal. To access the load balanced RestTemplate use the provided `@LoadBalanced Qualifier:
 
@@ -281,7 +282,7 @@ public class MyClass {
 }
 ```
 
-## Ignore Network Interfaces 忽略网络接口
+### Ignore Network Interfaces - 屏蔽网卡
 
 Sometimes it is useful to ignore certain named network interfaces so they can be excluded from Service Discovery registration (eg. running in a Docker container). A list of regular expressions can be set that will cause the desired network interfaces to be ignored. The following configuration will ignore the "docker0" interface and all interfaces that start with "veth".
 
@@ -304,7 +305,7 @@ Spring Cloud Config provides server and client-side support for externalized con
 
 Spring Cloud Config项目提供了一个解决分布式系统的配置管理方案，它包含了客户端和服务器两个部分。在客户机和服务器的概念中，Spring环境可以和外部资源的属性直接映射，所以这样的做法很适合与Spring应用程序开发，并且可以被用于任何语言与项目中。随着项目的部署，从开发环境、到测试环境、到生产环节，使用Spring管理这些环境之间的配置，以确保项目拥有他们所需要的一切配置信息都能够安全迁移。后端存储默认使用Git工具实现，因此很容易支持配置环境的版本管理，同时也能够使用其它的工具来管理这部分内容。在Spring Configuration中很容易地利用可插拔方式来添加替代实现。
 
-## Quick Start 快速入门
+## Quick Start - 快速入门
 Start the server:
 
 启动服务：
@@ -361,7 +362,7 @@ spring:
           uri: https://github.com/spring-cloud-samples/config-repo
 ```
 
-## Client Side Usage 客户端示例
+### Client Side Usage - 客户端示例
 
 To use these features in an application, just build it as a Spring Boot application that depends on spring-cloud-config-client (e.g. see the test cases for the config-client, or the sample app). The most convenient way to add the dependency is via a Spring Boot starter org.springframework.cloud:spring-cloud-starter-config. There is also a parent pom and BOM (spring-cloud-starter-parent) for Maven users and a Spring IO version management properties file for Gradle and Spring CLI users. Example Maven configuration:
 
@@ -466,7 +467,7 @@ $ curl localhost:8080/env
 > **备注**<br />
 > 属性源中的 URL是git仓库的地址而不是配置服务器的URL
 
-## Spring Cloud Config Server 配置服务
+## Spring Cloud Config Server - Spring Cloud Config服务器
 
 The Server provides an HTTP, resource-based API for external configuration (name-value pairs, or equivalent YAML content). The server is easily embeddable in a Spring Boot application using the @EnableConfigServer annotation. So this app is a config server:
 
@@ -523,7 +524,7 @@ where `${user.home}/config-repo` is a git repository containing YAML and propert
 > the initial clone of your configuration repository will be quick and efficient if you only keep text files in it. If you start to store binary files, especially large ones, you may experience delays on the first request for configuration and/or out of memory errors in the server.<br />
 > **警告**：在配置库中,你如果只存储文本文件,初始clone配置库是非常快捷和高效的.如果你开始存储二进制文件特别是大型的二进制文件,你可能会遇到第一次请求配置文件比较慢或遇到发生在配置服务器上的内存溢出.
 
-## Environment Repository 资源库环境
+### Environment Repository - 资源库环境
 
 Where do you want to store the configuration data for the Config Server? The strategy that governs this behaviour is the EnvironmentRepository, serving Environment objects. This Environment is a shallow copy of the domain from the Spring Environment (including propertySources as the main feature). The Environment resources are parametrized by three variables:
 
@@ -561,7 +562,7 @@ If the repository is file-based, the server will create an Environment from appl
 
 如果配置库是基于文件的,服务器将从application.yml(所有的客户端共享)和 foo.yml(foo.yml拥有高优先级)中创建一个Environment对象. 如果这些 YAML文件中有指定Spring profiles,那么这些profiles将有较高优先级(按在profiles列出的顺序),同时如果存在指定profile的YAML(或properties)文件,这些文件就比default文件具有较高优先级.高优先级的配置优先转成Environment对象中的PropertySource.(这和单独的Spring Boot系统使用的规则是一样的.)
 
-## Git Backend Git后端
+#### Git Backend - Git存储
 
 The default implementation of EnvironmentRepository uses a Git backend, which is very convenient for managing upgrades and physical environments, and also for auditing changes. To change the location of the repository you can set the "spring.cloud.config.server.git.uri" configuration property in the Config Server (e.g. in application.yml). If you set it with a file: prefix it should work from a local repository so you can get started quickly and easily without a server, but in that case the server operates directly on the local repository without cloning it (it doesn’t matter if it’s not bare because the Config Server never makes changes to the "remote" repository). To scale the Config Server up and make it highly available, you would need to have all instances of the server pointing to the same repository, so only a shared file system would work. Even in that case it is better to use the ssh: protocol for a shared filesystem repository, so that the server can clone it and use a local working copy as a cache.
 
@@ -571,7 +572,7 @@ This repository implementation maps the {label} parameter of the HTTP resource t
 
 这个配置库的实现通过映射HTTP资源的{label}参数为git label(提交id,分支名称或tag).如果git分支或tag的名称包含一个斜杠 ("/"),此时HTTP URL中的label需要使用特殊字符串"(_)"来替代(为了避免与其他URL路径相互混淆).如果使用了命令行客户端如 curl,请谨慎处理URL中的括号(例如：在shell下请使用引号''来转移他们).
 
-## Placeholders in Git URI Git URI占位符
+##### Placeholders in Git URI - Git URI占位符
 
 Spring Cloud Config Server supports a git repository URL with placeholders for the {application} and {profile} (and {label} if you need it, but remember that the label is applied as a git label anyway). So you can easily support a "one repo per application" policy using (for example):
 
@@ -590,7 +591,7 @@ or a "one repo per profile" policy using a similar pattern but with {profile}.
 
 或者"一个profile一个配置库"策略,这两种策略的使用模式是一样的,后者使用{profile}进行配置.
 
-## Pattern Matching and Multiple Repositories 模式匹配和多资源库
+##### Pattern Matching and Multiple Repositories - 模式匹配和多资源库
 
 There is also support for more complex requirements with pattern matching on the application and profile name. The pattern format is a comma-separated list of {application}/{profile} names with wildcards (where a pattern beginning with a wildcard may need to be quoted). Example:
 
@@ -715,7 +716,7 @@ If you don’t use HTTPS and user credentials, SSH should also work out of the b
 
 如果你没有使用HTTPS和用户凭证,当你在默认目录(~/.ssh)中存储了key,并且uri参数配置了SSH地址,如配置了"git@github.com:configuration/cloud-configuration",SSH应该是你非常容易使用的方式.这种方式下,是使用JGit来访问配置库的,比较适合查找任何文档.HTTPS proxy 可以在 ~/.git/config中进行设置, 通过JVM的系统属性(-Dhttps.proxyHost and -Dhttps.proxyPort)设置可以完成此功能.
 
-## File System Backend 文件系统后端
+#### File System Backend - 文件存储
 
 There is also a "native" profile in the Config Server that doesn’t use Git, but just loads the config files from the local classpath or file system (any static URL you want to point to with "spring.cloud.config.server.native.searchLocations"). To use the native profile just launch the Config Server with "spring.profiles.active=native".
 
@@ -741,7 +742,7 @@ If you don’t use placeholders in the search locations, this repository also ap
 
 如果你在在查找位置中不指定占位符,可以把在HTTP资源请求参数{label}追加到查询路径的后面,此时是从查询路径和用label名称一样的子目录中加载配置文件的(在Spring环境下,被打标记的属性具有较高优先级别).因此,没有占位符的默认特性和以/{label}/结尾的结果一样.举例`file:/tmp/config和 file:/tmp/config,file:/tmp/config/{label}请求效果等同.
 
-## Sharing Configiration With All Applications 共享配置给所有应用
+#### Sharing Configiration With All Applications - 应用间共享配置
 
 With file-based (i.e. git, svn and native) repositories, resources with file names in application* are shared between all client applications (so application.properties, application.yml, application-*.properties etc.). You can use resources with these file names to configure global defaults and have them overridden by application-specific files as necessary.
 
@@ -755,7 +756,7 @@ The #_property_overrides[property overrides] feature can also be used for settin
 > With the "native" profile (local file system backend) it is recommended that you use an explicit search location that isn’t part of the server’s own configuration. Otherwise the application* resources in the default search locations are removed because they are part of the server. <br />
 > **注意**：对于"native" profile(本地文件系统作为后端),推荐你使用指定查询路径进行配置，这个路径不是服务器自己配置的一部分.除此之外,默认查询路径中的application*资源都会被删除,因为这些资源都是服务器的一部分.
 
-## Property Overrides 属性覆盖
+#### Property Overrides - 属性覆盖
 
 The Config Server has an "overrides" feature that allows the operator to provide configuration properties to all applications that cannot be accidentally changed by the application using the normal Spring Boot hooks. To declare overrides just add a map of name-value pairs to spring.cloud.config.server.overrides. For example
 
@@ -782,7 +783,7 @@ You can change the priority of all overrides in the client to be more like defau
 
 你可以改变客户端所有的覆盖参数的优先级,而使这些值更像默认值,在环境变量或系统属性中提供自己的参数值来修改这些值.
 
-## Health Indicator 健康指示器
+### Health Indicator - 健康指示器
 
 Config Server comes with a Health Indicator that checks if the configured EnvironmentRepository is working. By default it asks the EnvironmentRepository for an application named app, the default profile and the default label provided by the EnvironmentRepository implementation.
 
@@ -810,7 +811,7 @@ You can disable the Health Indicator by setting spring.cloud.config.server.healt
 
 你也可以通过设置 spring.cloud.config.server.health.enabled=false参数来禁用健康指示器.
 
-## Security 安全
+### Security - 安全
 
 You are free to secure your Config Server in any way that makes sense to you (from physical network security to OAuth2 bearer tokens), and Spring Security and Spring Boot make it easy to do pretty much anything.
 
@@ -820,7 +821,7 @@ To use the default Spring Boot configured HTTP Basic security, just include Spri
 
 为了使用默认的Spring Boot HTTP Basic 安全,只需要把Spring Security 增加到classpath中(如通过spring-boot-starter-security).默认的用户名是"user",对应的会生成一个随机密码,这种情况在实际使用中并没有意义,我们建议你配置一个密码(通过 security.user.password属性进行配置)并对这个密码进行加密(下面章节有关于怎么加密的步骤).
 
-## Encryption and Decryption 加密与解密
+### Encryption and Decryption - 加密与解密
 
 > **IMPORTANT** <br />
 > **Prerequisites**: to use the encryption and decryption features you need the full-strength JCE installed in your JVM (it’s not there by default). You can download the "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files" from Oracle, and follow instructions for installation (essentially replace the 2 policy files in the JRE lib/security directory with the ones that you downloaded). <br />
@@ -915,7 +916,7 @@ The key argument is mandatory (despite having a -- prefix).
 
 key 参数是必填的(尽管有--前缀).
 
-## Key Management 密钥管理
+### Key Management - 密钥管理
 
 The Config Server can use a symmetric (shared) key or an asymmetric one (RSA key pair). The asymmetric choice is superior in terms of security, but it is often more convenient to use a symmetric key since it is just a single property value to configure.
 
@@ -940,7 +941,7 @@ The encryption is done with the public key, and a private key is needed for decr
 
 加密使用公钥完成,私钥用来解密.原则上，如果你只想加密，服务器上只配置公钥(用私钥在本地自行解密).实际中,你可能不想这样做,原因是这种方式会把密钥管理过程让所有的客户端都知道，而不是把焦点聚集在服务器上.从另外一个方面讲,一个非常有益的建议是如果你的配置服务器 相对不安全,只能有少数客户端需要加密配置属性.
 
-## Creating a Key Store for Testing 创建一个测试密钥库
+### Creating a Key Store for Testing - 创建测试密钥库
 
 To create a keystore for testing you can do something like this:
 
@@ -965,7 +966,7 @@ encrypt:
     secret: changeme
 ```
 
-## Using Multiple Keys and Key Rotation 使用多密钥和循环密钥
+### Using Multiple Keys and Key Rotation - 使用多密钥和循环密钥
 
 In addition to the {cipher} prefix in encrypted property values, the Config Server looks for {name:value} prefixes (zero or many) before the start of the (Base64 encoded) cipher text. The keys are passed to a TextEncryptorLocator which can do whatever logic it needs to locate a TextEncryptor for the cipher. If you have configured a keystore (encrypt.keystore.location) the default locator will look for keys in the store with aliases as supplied by the "key" prefix, i.e. with a cipher text like this:
 
@@ -988,7 +989,7 @@ Key rotation is hardly ever necessary on cryptographic grounds if the keys are o
 > the {name:value} prefixes can also be added to plaintext posted to the /encrypt endpoint, if you want to let the Config Server handle all encryption as well as decryption. <br />
 > **提示**：如果你想让 Config Server处理所有的加密和解密,{name:value}前缀也可以放到明文前面,然后通过/encrypt接口进行加密.
 
-## Serving Plain Text 文本解释服务 
+## Serving Plain Text - 文本解释服务
 
 Instead of using the Environment abstraction (or one of the alternative representations of it in YAML or properties format) your applications might need generic plain text configuration files, tailored to their environment. The Config Server provides these through an additional endpoint at /{name}/{profile}/{label}/{path} where "name", "profile" and "label" have the same meaning as the regular environment endpoint, but "path" is a file name (e.g. log.xml). The source files for this endpoint are located in the same way as for the environment endpoints: the same search path is used as for properties or YAML files, but instead of aggregating all matching resources, only the first one to match is returned.
 
@@ -1094,22 +1095,38 @@ The default configuration works out of the box with Github, Gitlab or Bitbucket.
 > **注意**：默认配置也会监测到本地Git资源库文件系统的变化(此时webhook不会触发回调，但当你编辑配置文件时回调将会被广播出去)
 
 
-Spring Cloud Config Client
+# Spring Cloud Config Client：Spring Cloud Config客户端
+
 A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer), and it will also pick up some additional useful features related to Environment change events.
 
-Config First Bootstrap
+一个Spring Boot应用可以很快地利用Spring配置服务器（或者应用开发者提供的外在的属性源），它也可以使用一些涉及到环境改变的额外的可用属性。
+
+## Config First Bootstrap：配置优先启动模式
+
 This is the default behaviour for any application which has the Spring Cloud Config Client on the classpath. When a config client starts up it binds to the Config Server (via the bootstrap configuration property spring.cloud.config.uri) and initializes Spring Environment with remote property sources.
+
+对于任何应用来说，在classpath里有Spring Cloud Config Client文件，会有这样的默认行为。当一个绑定到Config Server端的Config Client端启动（通过bootstrap配置文件的spring.cloud.config.uri属性）并且通过远程的参数资源束初始化Spring环境。
 
 The net result of this is that all client apps that want to consume the Config Server need a bootstrap.yml (or an environment variable) with the server address in spring.cloud.config.uri (defaults to "http://localhost:8888").
 
-Eureka First Bootstrap
+最终结果是所有要与Config Server连接的的客户端应用在服务地址spring.cloud.config.uri (默认为 "http://localhost:8888")都需要一个bootstrap.yml（或者一个环境设置参数）
+
+## Eureka First Bootstrap：Eureka优先启动模式
+
 If you are using Spring Cloud Netflix and Eureka Service Discovery, then you can have the Config Server register with Eureka if you want to, but in the default "Config First" mode, clients won’t be able to take advantage of the registration.
+
+如果你正在使用Spring Cloud Netflix及Eureka Service Discovery，那么你会有一个使用Eureka注册的Config Server（想要这样使用的话），但是在默认的"Config First"节点，这些客户端不能使用这个注册的服务器。
 
 If you prefer to use Eureka to locate the Config Server, you can do that by setting spring.cloud.config.discovery.enabled=true (default "false"). The net result of that is that client apps all need a bootstrap.yml (or an environment variable) with the Eureka server address, e.g. in eureka.client.serviceUrl.defaultZone. The price for using this option is an extra network round trip on start up to locate the service registration. The benefit is that the Config Server can change its co-ordinates, as long as Eureka is a fixed point. The default service id is "CONFIGSERVER" but you can change that on the client with spring.cloud.config.discovery.serviceId (and on the server in the usual way for a service, e.g. by setting spring.application.name).
 
+如果你想要使用Eureka去定位Config Server，你可以设置spring.cloud.config.discovery.enabled=true（默认为false），那接下来的结果是所有的客户端应用都需要在bootstrap.yml（或者环境变量）设置Eureka服务器地址，比如：eureka.client.serviceUrl.defaultZone。设置这个选项需要在开始定位服务注册的时候，付出额外的网络往返开销。好处是只要Eureka 是一个固定的节点，Config Server就可以改变它自己的合作定位信息。默认的服务id是"CONFIGSERVER"，但是你可以在客户端通过修改spring.cloud.config.discovery.serviceId去修改它（并且在服务器端，对于一个服务，一个不常用的方式是设置spring.application.name）。
+
 The discovery client implementations all support some kind of metadata map (e.g. for Eureka we have eureka.instance.metadataMap). Some additional properties of the Config Server may need to be configured in its service registration metadata so that clients can connect correctly. If the Config Server is secured with HTTP Basic you can configure the credentials as "username" and "password". And if the Config Server has a context path you can set "configPath". Example, for a Config Server that is a Eureka client:
 
-bootstrap.yml
+所有的discovery客户端的实现都支持一些metadata map（比如：对于Eureka来说，我们有eureka.instance.metadataMap）。一些Config Server的额外属性可能需要在它自己的服务注册metadata里配置，以便于客户端可以正确的连接。如果Config Server是通过HTTP Base的方式保证安全的，你可以通过配置"username" 和"password"来设置证书。并且，如果Config Server有上下文路径，你可以设置"configPath"参数。比如，对于一个是Eureka client 的Config Server来说：
+
+`bootstrap.yml`
+```yaml
 eureka:
   instance:
     ...
@@ -1117,60 +1134,95 @@ eureka:
       username: osufhalskjrtl
       password: lviuhlszvaorhvlo5847
       configPath: /config
-Config Client Fail Fast
+```
+
+## Config Client Fail Fast：客户端快速失败配置
+
 In some cases, it may be desirable to fail startup of a service if it cannot connect to the Config Server. If this is the desired behavior, set the bootstrap configuration property spring.cloud.config.failFast=true and the client will halt with an Exception.
 
-Config Client Retry
+在一些情况下，如果一个服务不能连接到Config Server，可能需要使它的启动失败。若想实现这样的效果，设置bootstrap的配置属性spring.cloud.config.failFast=true，并且客户端会调用一个异常停止。
+
+## Config Client Retry：客户端重试配置
+
 If you expect that the config server may occasionally be unavailable when your app starts, you can ask it to keep trying after a failure. First you need to set spring.cloud.config.failFast=true, and then you need to add spring-retry and spring-boot-starter-aop to your classpath. The default behaviour is to retry 6 times with an initial backoff interval of 1000ms and an exponential multiplier of 1.1 for subsequent backoffs. You can configure these properties (and others) using spring.cloud.config.retry.* configuration properties.
 
-TIP
-To take full control of the retry add a @Bean of type RetryOperationsInterceptor with id "configServerRetryInterceptor". Spring Retry has a RetryInterceptorBuilder that makes it easy to create one.
-Locating Remote Configuration Resources
+如果你预计Config Server在你启用应用的时候，可能偶尔会不可用，可以要求它在失败一次之后不断重试。首先需要设置spring.cloud.config.failFast=true，之后需要添加spring-retry 和spring-boot-starter-aop 到你的classpath。默认情况下，它会重试6次，重试退避间隔时间初始值为1000ms，之后每次都为上次值的1.1倍。你可以使用spring.cloud.config.retry.*这些参数（或其他）进行设置。
+
+> **TIP** <br />
+> To take full control of the retry add a `@Bean` of type `RetryOperationsInterceptor` with id "configServerRetryInterceptor". Spring Retry has a `RetryInterceptorBuilder` that makes it easy to create one. <br />
+> **提示**：要完全控制retry，可以添加类型为`RetryOperationsInterceptor`的`@Bean`，并使用idconfigServerRetryInterceptor。Spring Retry有一个`RetryInterceptorBuilder`可以轻松实现。
+
+## Locating Remote Configuration Resources：定位远程配置资源
+
 The Config Service serves property sources from /{name}/{profile}/{label}, where the default bindings in the client app are
 
-"name" = ${spring.application.name}
+Config Service通过/{name}/{profile}/{label}来设置属性资源，而这些值的默认值为
 
-"profile" = ${spring.profiles.active} (actually Environment.getActiveProfiles())
-
-"label" = "master"
+* "name" = ${spring.application.name} 
+* "profile" = ${spring.profiles.active} (actually Environment.getActiveProfiles())
+* "label" = "master"
 
 All of them can be overridden by setting spring.cloud.config.* (where * is "name", "profile" or "label"). The "label" is useful for rolling back to previous versions of configuration; with the default Config Server implementation it can be a git label, branch name or commit id. Label can also be provided as a comma-separated list, in which case the items in the list are tried on-by-one until one succeeds. This can be useful when working on a feature branch, for instance, when you might want to align the config label with your branch, but make it optional (e.g. spring.cloud.config.label=myfeature,develop).
 
-Security
+上面的所有值都可以被spring.cloud.config.* (* 代表"name", "profile" or "label")所重写。"label"对于回滚到配置文件的上一个版本来说，非常有用；对于默认的Config Server实现来说，它可能为一个git label，branch name 或者commit id。Label同样可以以“逗号分隔列表”（comma-separated list）的形式提供，在这种情况下，列表中的选项会被一个接一个地尝试，直到有一个成功。这个对于运行一个feature 分支来说，非常有用。比如：你如果想要使用你的分支来排列你的config label，但又将其设置为可选（spring.cloud.config.label=myfeature,develo）
+
+## Security：安全
+
 If you use HTTP Basic security on the server then clients just need to know the password (and username if it isn’t the default). You can do that via the config server URI, or via separate username and password properties, e.g.
 
-bootstrap.yml
+如果你在服务器使用HTTP Basic的安全策略，那么客户端只需要知道密码（如果用户名不为默认值，则需要知道用户名）。你可以通过访问config server URI去实现，也可以分别设置username 及password属性，比如：
+
+`bootstrap.yml`
+```yaml
 spring:
   cloud:
     config:
      uri: https://user:secret@myconfig.mycompany.com
+```
 or
 
-bootstrap.yml
+`bootstrap.yml`
+```yaml
 spring:
   cloud:
     config:
      uri: https://myconfig.mycompany.com
      username: user
      password: secret
+```
+
 The spring.cloud.config.password and spring.cloud.config.username values override anything that is provided in the URI.
 
 If you deploy your apps on Cloud Foundry then the best way to provide the password is through service credentials, e.g. in the URI, since then it doesn’t even need to be in a config file. An example which works locally and for a user-provided service on Cloud Foundry named "configserver":
 
-bootstrap.yml
+如果你部署你的应用到Cloud Foundry，那么最好的提供密码的方式是通过服务证书，比如：通过URI，尽管不需要在配置文件里设置。一个在本地运行的，在Cloud Foundry上部署的用户提供的服务名字为"configserver":
+
+`bootstrap.yml`
+```yaml
 spring:
   cloud:
     config:
      uri: ${vcap.services.configserver.credentials.uri:http://user:password@localhost:8888}
+```
+
 If you use another form of security you might need to provide a RestTemplate to the ConfigServicePropertySourceLocator (e.g. by grabbing it in the bootstrap context and injecting one).
 
-Spring Cloud Netflix
+如果你使用其他安全模式，你需要为ConfigServicePropertySourceLocator提供一个RestTemplate（比如，在bootstrap上下文中捕获并注入进去）
+
+# Spring Cloud Netflix
 
 This project provides Netflix OSS integrations for Spring Boot apps through autoconfiguration and binding to the Spring Environment and other Spring programming model idioms. With a few simple annotations you can quickly enable and configure the common patterns inside your application and build large distributed systems with battle-tested Netflix components. The patterns provided include Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) and Client Side Load Balancing (Ribbon).
-Service Discovery: Eureka Clients
+
+这个工程通过自动的配置文件为Spring Boot应用提供了Netflix OSS的整合，而且可以绑定到Spring环境及其他Spring模式的编程里面。通过一些简单的注解，你可以很快地启用并配置你应用里常用的模式，并且使用battle-tested Netflix 组建来构建大型的分发系统。这些模式在Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) 及Client Side Load Balancing (Ribbon)里面都有提供。
+
+## Service Discovery: Eureka Clients - 服务发现：Eureka客户端
+
 Service Discovery is one of the key tenets of a microservice based architecture. Trying to hand configure each client or some form of convention can be very difficult to do and can be very brittle. Eureka is the Netflix Service Discovery Server and Client. The server can be configured and deployed to be highly available, with each server replicating state about the registered services to the others.
 
-Registering with Eureka
+Service Discovery是基于构建的微服务的主要特性中的一个。试图通过配置每一个客户端或一些类型的组合非常难于部署并且稳定性不好。Eureka是Netflix Service Discovery Server 及 Client。服务器可以被配置并且部署地高度可用，并且每个服务器的对其他服务器的注册服务可用进行复制。
+
+### Registering with Eureka - 
+
 When a client registers with Eureka, it provides meta-data about itself such as host and port, health indicator URL, home page etc. Eureka receives heartbeat messages from each instance belonging to a service. If the heartbeat fails over a configurable timetable, the instance is normally removed from the registry.
 
 Example eureka client:
