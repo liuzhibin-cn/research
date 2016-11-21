@@ -1005,13 +1005,16 @@ nginx.conf
 
 where nginx.conf looks like this:
 
-```conf
+```
 server {
     listen              80;
     server_name         ${nginx.server.name};
 }
+```
+
 and application.yml like this:
 
+```yaml
 nginx:
   server:
     name: example.com
@@ -1027,36 +1030,60 @@ then the /foo/default/master/nginx.conf resource looks like this:
 
 接着有一个/foo/default/master/nginx.conf 文件:
 
-```conf
+```
 server {
     listen              80;
     server_name         example.com;
 }
+```
+
 and /foo/development/master/nginx.conf like this:
 
+同时还有一个`/foo/development/master/nginx.conf`文件：
+
+```
 server {
     listen              80;
     server_name         develop.com;
 }
 ```
 
-NOTE
-just like the source files for environment configuration, the "profile" is used to resolve the file name, so if you want a profile-specific file then /*/development/*/logback.xml will be resolved by a file called logback-development.xml (in preference to logback.xml).
-Embedding the Config Server
+> **NOTE** <br />
+> just like the source files for environment configuration, the "profile" is used to resolve the file name, so if you want a profile-specific file then `/*/development/*/logback.xml` will be resolved by a file called `logback-development.xml` (in preference to `logback.xml`). <br />
+> **注意**：就像环境配置的源文件,使用“profile”来解析文件名,那么如果你想要一个特定的profile文件`/*/development/*/logback.xml `将通过一个名为`logback-development.xml`的文件来解析(优先`logback.xml`)。
+
+
+## Embedding the Config Server 嵌入配置服务器
+
 The Config Server runs best as a standalone application, but if you need to you can embed it in another application. Just use the @EnableConfigServer annotation. An optional property that can be useful in this case is spring.cloud.config.server.bootstrap which is a flag to indicate that the server should configure itself from its own remote repository. The flag is off by default because it can delay startup, but when embedded in another application it makes sense to initialize the same way as any other application.
 
-NOTE
-It should be obvious, but remember that if you use the bootstrap flag the config server will need to have its name and repository URI configured in bootstrap.yml.
-To change the location of the server endpoints you can (optionally) set spring.cloud.config.server.prefix, e.g. "/config", to serve the resources under a prefix. The prefix should start but not end with a "/". It is applied to the @RequestMappings in the Config Server (i.e. underneath the Spring Boot prefixes server.servletPath and server.contextPath).
+Spring Cloud的服务最好是作为一个独立的项目运行，但是如果有需要你也可以将它嵌入到另一个项目中。只要使用注解 @EnableConfigServer，并打开一个可选配置"spring.cloud.config.server.bootstrap"来指明服务的配置文件应该从自己的远程资源中读取。这个配置在默认下是关闭的，因为默认时是延迟启动的，但当嵌入到另一个项目中时将它立即启动，就可以像其他程序一样进行初始化。
 
-If you want to read the configuration for an application directly from the backend repository (instead of from the config server) that’s basically an embedded config server with no endpoints. You can switch off the endpoints entirely if you don’t use the @EnableConfigServer annotation (just set spring.cloud.config.server.bootstrap=true).
+> **NOTE** <br />
+> It should be obvious, but remember that if you use the bootstrap flag the config server will need to have its name and repository URI configured in `bootstrap.yml`. <br />
+> **注意**：虽然这样很简单，但记住，如果你使用bootstrap引导标志配置服务器，就必须把远程库的name和URI配置到`bootstrap.yml`中。
 
-Push Notifications and Spring Cloud Bus
+To change the location of the server endpoints you can (optionally) set `spring.cloud.config.server.prefix`, e.g. "/config", to serve the resources under a prefix. The prefix should start but not end with a "/". It is applied to the `@RequestMappings` in the Config Server (i.e. underneath the Spring Boot prefixes `server.servletPath` and `server.contextPath`).
+
+修改服务端端地址时，你可以设置可选项 `spring.cloud.config.server.prefix`，例如"/config"配置成另一个资源的前缀。这个前缀必须以"/"开头，并且不能在结尾出现。这个配置将作用于`@RequestMappings`的属性中作为`server.servletPath`或`server.contextPath`路径前缀。
+
+If you want to read the configuration for an application directly from the backend repository (instead of from the config server) that’s basically an embedded config server with no endpoints. You can switch off the endpoints entirely if you don’t use the `@EnableConfigServer` annotation (just set `spring.cloud.config.server.bootstrap=true`).
+
+如果你想直接从程序中读取配置，而不是从配置中，那么它的路径就会从嵌入服务的根节点上开始。然后你可以关掉服务端前缀配置，省略注解`EnableConfigServer`（配置中直接设置 `spring.cloud.config.server.bootstrap=true`）。
+
+## Push Notifications and Spring Cloud Bus 推送通知和总线
+
 Many source code repository providers (like Github, Gitlab or Bitbucket for instance) will notify you of changes in a repository through a webhook. You can configure the webhook via the provider’s user interface as a URL and a set of events in which you are interested. For instance Github will POST to the webhook with a JSON body containing a list of commits, and a header "X-Github-Event" equal to "push". If you add a dependency on the spring-cloud-config-monitor library and activate the Spring Cloud Bus in your Config Server, then a "/monitor" endpoint is enabled.
+
+很多源代码库，比如Github，Gitlab或者Bitbucket，在资源发生修改时就会通过webhook（钩子）回调机制来通知你。只要你有兴趣，你可以通过提供者的用户界面设置URL和一系列事件来配置webhook(钩子)。比如Github将提交的内容列表以JSON格式的方式提交到webhook，请求头"X-Github-Event"等同于"推送"。Config Server 也提供了一个类似的功能。如果你添加一个spring-cloud-config-monitor依赖库并且在Config Server中激活Spring Cloud总线，接着就会开启一个访问端点"/moinitor"。
 
 When the webhook is activated the Config Server will send a RefreshRemoteApplicationEvent targeted at the applications it thinks might have changed. The change detection can be strategized, but by default it just looks for changes in files that match the application name (e.g. "foo.properties" is targeted at the "foo" application, and "application.properties" is targeted at all applications). The strategy if you want to override the behaviour is PropertyPathNotificationExtractor which accepts the request headers and body as parameters and returns a list of file paths that changed.
 
+当webhook已经激活Config Server将针对它认为已发生变动的应用发送一个RefreshRemoteApplicationEvent事件。 一旦发生修改，就可以监测到。当然，默认情况下，只会根据修改的文件来查找哪些应用程序需要回调通知(比如，"foo.properties"针对"foo"应用，"application.properties"则针对所有的应用)。你也可以通过"PropertyPathNotificationExtractor"来自己实现这，该实现只接受请求头和请求体作为参数，并且返回的是一组修改过的文件路径。
+
 The default configuration works out of the box with Github, Gitlab or Bitbucket. In addition to the JSON notifications from Github, Gitlab or Bitbucket you can trigger a change notification by POSTing to "/monitor" with a form-encoded body parameters path={name}. This will broadcast to applications matching the "{name}" pattern (can contain wildcards).
+
+缺省配置都能在Github、Gitlab或Bitbucket很好地工作。除了JSON通知外，Github、Gitlab或Bitbucket都可以触发一个更改通知以Form表单方式参数path= {name}提交到“/monitor”访问端点。这将广播到所有和“{ name }”模式匹配的应用程序(可以包含通配符)。
 
 NOTE
 the RefreshRemoteApplicationEvent will only be transmitted if the spring-cloud-bus is activated in the Config Server and in the client application.
