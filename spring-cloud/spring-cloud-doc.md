@@ -81,33 +81,56 @@ You can disable the bootstrap process completely by setting spring.cloud.bootstr
 
 If you build an application context from SpringApplication or SpringApplicationBuilder, then the Bootstrap context is added as a parent to that context. It is a feature of Spring that child contexts inherit property sources and profiles from their parent, so the "main" application context will contain additional property sources, compared to building the same context without Spring Cloud Config. The additional property sources are:
 
+如果你通过SpringApplication或者SpringApplicationBuilder创建一个Application Context,那么会为spring应用的Application Context创建父上下文Bootstrap Context。在Spring里有个特性，子上下文会继承父类的“property sources” and “profiles” ，所以“main application context” 相对于没有使用Spring Cloud Config，会新增额外的property sources。额外的property sources有：
+
 * "bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.
 * "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.
 
+* "bootstrap" : 如果在Bootstrap Context扫描到PropertySourceLocators并且有属性，则会添加到CompositePropertySource。Spirng Cloud Config就是通过这种方式来添加的属性的。详见下面的说明如何自定义属性源的内容。
+* "applicationConfig: [classpath:bootstrap.yml]": 如果你使用bootstrap.yml来配置，他比application.yml优先级要低。它将添加到子上下文，作为Spring Boot应用程序的一部分。下文有介绍。
+
 Because of the ordering rules of property sources the "bootstrap" entries take precedence, but note that these do not contain any data from bootstrap.yml, which has very low precedence, but can be used to set defaults.
+
+由于优先级规则，不包含从bootstrap.yml来的数据，但是可以用它作为默认设置。
 
 You can extend the context hierarchy by simply setting the parent context of any ApplicationContext you create, e.g. using its own interface, or with the SpringApplicationBuilder convenience methods (parent(), child() and sibling()). The bootstrap context will be the parent of the most senior ancestor that you create yourself. Every context in the hierarchy will have its own "bootstrap" property source (possibly empty) to avoid promoting values inadvertently from parents down to their descendants. Every context in the hierarchy can also (in principle) have a different spring.application.name and hence a different remote property source if there is a Config Server. Normal Spring application context behaviour rules apply to property resolution: properties from a child context override those in the parent, by name and also by property source name (if the child has a property source with the same name as the parent, the one from the parent is not included in the child).
 
+你可以很容易的扩展任何你建立的上下文层次，可以使用它提供的接口，或者使用SpringApplicationBuilder的一些方法（parent(),child()sibling()）。启动上线问将是最高级别的父类。扩展的每一个Context都有有自己的bootstrap property source（有可能是空的）。扩展的每一个Context都有不同spring.application.name。同一层层次的父子上下文原则上也有一有不同的名称，因此，也会有不同的Config Server配置。子上下文的属性在相同名字的情况下将覆盖父上下文的属性。
+
 Note that the SpringApplicationBuilder allows you to share an Environment amongst the whole hierarchy, but that is not the default. Thus, sibling contexts in particular do not need to have the same profiles or property sources, even though they will share common things with their parent.
 
-### Changing the Location of Bootstrap Properties
+注意允许共享Environment到所有层次，但不是默认的。因此，同级的兄弟上下文不在和父类共享一些东西的时候不一定有相同的profiles或者property sources源码位置。
+
+## Changing the Location of Bootstrap Properties 修改启动文件的位置
 
 The bootstrap.yml (or .properties) location can be specified using spring.cloud.bootstrap.name (default "bootstrap") or spring.cloud.bootstrap.location (default empty), e.g. in System properties. Those properties behave like the spring.config.* variants with the same name, in fact they are used to set up the bootstrap ApplicationContext by setting those properties in its Environment. If there is an active profile (from spring.profiles.active or through the Environment API in the context you are building) then properties in that profile will be loaded as well, just like in a regular Spring Boot app, e.g. from bootstrap-development.properties for a "development" profile.
 
-### Customizing the Bootstrap Configuration
+bootstrap.yml的位置可以由spring.cloud.bootstrap.name（默认:bootstrap）或者spring.cloud.bootstrap.location（默认空）来进行指定。这些属性行为与spring.config.*类似，通过它的Environment来配置引导ApplicationContext进行加载。如果有一个激活的profile（来源于spring.profiles.active或者正在构建的Environment  Api）然后其中的属性即将被加载，就像Spring Boot应用通过 bootstrap-development.properties对开发环境进行了配置。
+
+## Customizing the Bootstrap Configuration 自定义启动配置
 
 The bootstrap context can be trained to do anything you like by adding entries to /META-INF/spring.factories under the key org.springframework.cloud.bootstrap.BootstrapConfiguration. This is a comma-separated list of Spring @Configuration classes which will be used to create the context. Any beans that you want to be available to the main application context for autowiring can be created here, and also there is a special contract for @Beans of type ApplicationContextInitializer. Classes can be marked with an @Order if you want to control the startup sequence (the default order is "last").
 
-> <strong>WARNING</strong>
+可以通过修改/META-INF/spring.factories配置文件中的org.springframework.cloud.bootstrap.BootstrapConfiguration配置项的值来控制启动上下文。同时通过逗号分隔的Spring@Configuration类来建立上下文。任何main application context需要的自动注入的Bean可以在这里通过这种方式来获取。这也是ApplicationContextInitializer建立@Bean的方式。可以通过@Order来更改初始化序列，默认是”last”。
+
+> <strong>WARNING</strong><br />
 > Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.
+> <strong>警告</strong><br />
+> 你添加的自定义BootstrapConfiguration类没有错误的把@ComponentScanned加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被@ComponentScan或者@SpringBootApplication注解覆盖到。
 
 The bootstrap process ends by injecting initializers into the main SpringApplication instance (i.e. the normal Spring Boot startup sequence, whether it is running as a standalone app or deployed in an application server). First a bootstrap context is created from the classes found in spring.factories and then all @Beans of type ApplicationContextInitializer are added to the main SpringApplication before it is started.
 
-### Customizing the Bootstrap Property Sources
+通过spring.factories配置的类初始化的所有的Bean都会在SpingApplicatin启动前加入到它的上下文里去
+
+## Customizing the Bootstrap Property Sources 自定义启动属性源
 
 The default property source for external configuration added by the bootstrap process is the Config Server, but you can add additional sources by adding beans of type PropertySourceLocator to the bootstrap context (via spring.factories). You could use this to insert additional properties from a different server, or from a database, for instance.
 
+默认的property source添加额外的配置是通过配置服务（Config Server），你也可以自定义添加property source通过实现PropertySourceLocator接口来添加。你可以从不同的服务或者数据库等使用它增加配置属性。
+
 As an example, consider the following trivial custom locator:
+
+示例：
 
 ```java
 @Configuration
@@ -126,37 +149,62 @@ The Environment that is passed in is the one for the ApplicationContext about to
 
 If you create a jar with this class in it and then add a META-INF/spring.factories containing:
 
+Environment在上述代码中被建立并且并传入，就像定义了一个额外的属性源一样。对于一个Spring Boot应用来说已经有自己的属性源，那么你能有这种方式提供自定义的属性源。如果你建立了一个jar包，在META-INF/spring.factories文件中包含属性：
+
 `org.springframework.cloud.bootstrap.BootstrapConfiguration=sample.custom.CustomPropertySourceLocator`
 
 then the "customProperty" PropertySource will show up in any application that includes that jar on its classpath.
 
-### Environment Changes
+那么，customProperty的PropertySource将会被包含到应用。
+
+## Environment Changes 修改Environment
 
 The application will listen for an EnvironmentChangedEvent and react to the change in a couple of standard ways (additional ApplicationListeners can be added as @Beans by the user in the normal way). When an EnvironmentChangedEvent is observed it will have a list of key values that have changed, and the application will use those to:
+
+应用程序将监听EnvironmentChangeEvent，并且响应这一些改变（添加的ApplicationListeners可以被用户用标准的方式增加到@Beans）。当EnvironmentChangeEvent事件被监听到以后，它将获取到一个已经改变了值的集合列表，同时应用程序用这个列表做如下事情：
 
 * Re-bind any @ConfigurationProperties beans in the context
 * Set the logger levels for any properties in logging.level.*
 
+* 重新把@ConfigrationProperties加入上下文。
+* 在配置项logging.level.*中设置日志级别
+
 Note that the Config Client does not by default poll for changes in the Environment, and generally we would not recommend that approach for detecting changes (although you could set it up with a @Scheduled annotation). If you have a scaled-out client application then it is better to broadcast the EnvironmentChangedEvent to all the instances instead of having them polling for changes (e.g. using the Spring Cloud Bus).
+
+默认情况下，Config Client不轮询Environment的改变。一般情况，不建议使用这种方式来监测变化（虽然你可以通过@Scheduled注解来设置）。对于可扩展的应用程序，使用广播到所有实例的方式，好过轮询的方式。（比如使用Spring Cloud Bus项目）。
 
 The EnvironmentChangedEvent covers a large class of refresh use cases, as long as you can actually make a change to the Environment and publish the event (those APIs are public and part of core Spring). You can verify the changes are bound to @ConfigurationProperties beans by visiting the /configprops endpoint (normal Spring Boot Actuator feature). For instance a DataSource can have its maxPoolSize changed at runtime (the default DataSource created by Spring Boot is an @ConfigurationProperties bean) and grow capacity dynamically. Re-binding @ConfigurationProperties does not cover another large class of use cases, where you need more control over the refresh, and where you need a change to be atomic over the whole ApplicationContext. To address those concerns we have @RefreshScope.
 
-### Refresh Scope
+EnvironmentChangedEvent覆盖了非常大一部分刷新场景的用例，只要，只要对对Environment进行修改并且发布这个事件（这些是Spring核心API的一部分）。你可以通过观察/configprops端点（Spring Boot Actuator的特性）来检查这些改变绑定到@ConfigurationProperties的bean的情况。对于DataSource这样一个实例，在运行的时候修改maxPoolSize增加大小，修改的变化不会通知实例里面，可以使用@RefreshScope来初始化Bean。
+
+### Refresh Scope 刷新作用域
 
 A Spring @Bean that is marked as @RefreshScope will get special treatment when there is a configuration change. This addresses the problem of stateful beans that only get their configuration injected when they are initialized. For instance if a DataSource has open connections when the database URL is changed via the Environment, we probably want the holders of those connections to be able to complete what they are doing. Then the next time someone borrows a connection from the pool he gets one with the new URL.
 
+一个Spring的@Bean在添加了@RefreshScope注解，可以解决Bean初始化的时候只能获得初始配置的问题。比如，在使用DataSource获得一个数据库连接的时候，当通过Environment修改数据库连接字符串的时候，我们可以通过执行@RefreshScope俩根据修改的配置获取一个新的URL的连接。
+
 Refresh scope beans are lazy proxies that initialize when they are used (i.e. when a method is called), and the scope acts as a cache of initialized values. To force a bean to re-initialize on the next method call you just need to invalidate its cache entry.
+
+@RefreshScope的beans，在使用它初始化的时候是延迟代理的，并且初始化的值放在缓存中。为了在访问下一个方法的时候重新初始化bean，只需要让它的缓存实体失效即可。
 
 The RefreshScope is a bean in the context and it has a public method refreshAll() to refresh all beans in the scope by clearing the target cache. There is also a refresh(String) method to refresh an individual bean by name. This functionality is exposed in the /refresh endpoint (over HTTP or JMX).
 
-> NOTE
-> @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).
+@RefreshScope有一个刷新所有bean的方法refreshAll()，也有通过bean的名字刷新单个bean的方法refresh(String)。
 
-### Encryption and Decryption
+> <strong>NOTE</strong><br />
+> @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).
+> <strong>注意</strong><br />
+> @RefreshScope注解在一个@Configuration类上面，但是它可能会产生不可预知的问题。在重新初始化的时候需要注意到可以相互依赖造成的冲突。
+
+## Encryption and Decryption 加密和解密
 
 The Config Client has an Environment pre-processor for decrypting property values locally. It follows the same rules as the Config Server, and has the same external configuration via encrypt.*. Thus you can use encrypted values in the form {cipher}* and as long as there is a valid key then they will be decrypted before the main application context gets the Environment. To use the encryption features in a client you need to include Spring Security RSA in your classpath (Maven co-ordinates "org.springframework.security:spring-security-rsa") and you also need the full strength JCE extensions in your JVM.
 
+Config Client可以在本地进行预处理的解密，与Config Server有相同的规则，通过设置相同的encrypt.*来实现。因此，可以使用加密的值在{cipher}*上，同时该有效值在应用通过Environment获得属值之前进行解密。使用加密特性需要包含Spring Security RSA的包到classpath。Maven依赖”org.springframework.security:spring-security-rsa”。并且，需要在JVM添加JCE扩展。
+
 If you are getting an exception due to "Illegal key size" and you are using Sun’s JDK, you need to install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files. See the following links for more information:
+
+如果你正是用sun公司的JDK，因为“非法键值长度”产生一个异常，那么你需要安装Java加密扩展包（JCE）的无限制权限策略文件。更多信息查看以下链接：
 
 * Java 6 JCE
 * Java 7 JCE
@@ -164,23 +212,36 @@ If you are getting an exception due to "Illegal key size" and you are using Sun�
 
 Extract files into JDK/jre/lib/security folder (whichever version of JRE/JDK x64/x86 you are using).
 
+进入目录JDK/jre/lib/security提取文件（无论您正在使用的是JDK/JRE的哪个版本，x64/x86）。
+
 ### Endpoints
 
 For a Spring Boot Actuator application there are some additional management endpoints:
+
+相对于Spring Boot Actuator的应用，添加了一些管理端点：
 
 * POST to /env to update the Environment and rebind @ConfigurationProperties and log levels
 * /refresh for re-loading the boot strap context and refreshing the @RefreshScope beans
 * /restart for closing the ApplicationContext and restarting it (disabled by default)
 * /pause and /resume for calling the Lifecycle methods (stop() and start() on the ApplicationContext)
 
+* 发送到/env的POST请求，可以更新Environment重新加载@ConfigurationProperties和日志级别。
+* /refresh请求可以重新初始化添加了@RefreshScope 的bean。
+* /restart 请求可以重启初始化ApplicationContext，重启 (默认是禁用的)。
+* /pause and /resume请求可以调用ApplicationContext生命周期的方法stop()和start()。
+
 -----------------------------------------------
-#Spring Cloud Commons: Common Abstractions
+#Spring Cloud Commons: Common Abstractions 公共抽象库
 
 Patterns such as service discovery, load balancing and circuit breakers lend themselves to a common abstraction layer that can be consumed by all Spring Cloud clients, independent of the implementation (e.g. discovery via Eureka or Consul).
 
-### Spring RestTemplate as a Load Balancer Client
+比如服务发现、负载平衡和断路器等通用的模型，它们本身是一个抽象层，可以被所有Spring Cloud组件独立的实现，例如服务发现的具体实现Eureka、Consul。
+
+## Spring RestTemplate as a Load Balancer Client 作为负载均衡客户端
 
 You can use Ribbon indirectly via an autoconfigured RestTemplate when RestTemplate is on the classpath and a LoadBalancerClient bean is defined):
+
+当RestTemplate可以引入工程并且LoadBalancerClient已经存在的情况下，RestTemplate可以使用ribbon进行自动配置。
 
 ```java
 public class MyClass {
@@ -196,9 +257,13 @@ public class MyClass {
 
 The URI needs to use a virtual host name (ie. service name, not a host name). The Ribbon client is used to create a full physical address. See RibbonAutoConfiguration for details of how the RestTemplate is set up.
 
-### Multiple RestTemplate objects
+访问的地址使用虚拟地址（比如服务名，而不是主机名）。Bibbon客户端负责连接物理地址。
+
+## Multiple RestTemplate objects 多个RestTemplate 对象
 
 If you want a RestTemplate that is not load balanced, create a RestTemplate bean and inject it as normal. To access the load balanced RestTemplate use the provided `@LoadBalanced Qualifier:
+
+如果你希望创建一个不是负载均衡器的RestTemplate，可以用正常的方式来注入。访问负载均衡器的RestTemplate使用@LoadBalanced来注解。
 
 ```java
 public class MyClass {
@@ -219,9 +284,11 @@ public class MyClass {
 }
 ```
 
-### Ignore Network Interfaces
+## Ignore Network Interfaces 忽略网络接口
 
 Sometimes it is useful to ignore certain named network interfaces so they can be excluded from Service Discovery registration (eg. running in a Docker container). A list of regular expressions can be set that will cause the desired network interfaces to be ignored. The following configuration will ignore the "docker0" interface and all interfaces that start with "veth".
+
+有的时候，对于服务发现注册，忽略某些命名的网络接口是非常有用的，比如使用Docker容器的时候。可以通过一些规则设置来忽略这些网络接口，下面这个配置显示了忽略“docker0”的入口，所有的入口以“veth.*”来匹配。详细的配置类见`InetUtilsProperties`。
 
 `application.yml`
 ```yaml
