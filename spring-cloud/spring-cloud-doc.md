@@ -494,18 +494,17 @@ server.port: 8888
 spring.cloud.config.server.git.uri: file://${user.home}/config-repo
 ```
 
-where ${user.home}/config-repo is a git repository containing YAML and properties files.
+where `${user.home}/config-repo` is a git repository containing YAML and properties files.
 
-其中${user.home}/config-repo包含了YAML 和 properties文件的git库.
+其中`${user.home}/config-repo`包含了YAML 和 properties文件的git库.
 
 > *NOTE* <br />
-> in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. file:///${user.home}/config-repo.<br />
-> 在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：file:///${user.home}/config-repo.
-
+> in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. `file:///${user.home}/config-repo`.<br />
+> *注意*：在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：`file:///${user.home}/config-repo`.
 
 >*TIP* <br />
 > Here’s a recipe for creating the git repository in the example above:<br />
-> 创建上面例子使用的git库,使用如下简单方法:
+> *提示*：创建上面例子使用的git库,使用如下简单方法:
 
 > ```shell
 > $ cd $HOME
@@ -517,52 +516,88 @@ where ${user.home}/config-repo is a git repository containing YAML and propertie
 > $ git commit -m "Add application.properties"
 > ```
 
-WARNING
-using the local filesystem for your git repository is intended for testing only. Use a server to host your configuration repositories in production.
-Environment Repository
+> *WARNING*<br />
+> using the local filesystem for your git repository is intended for testing only. Use a server to host your configuration repositories in production.<br />
+> *警告*：你的git库使用本地文件系统目的是为了测试.在生产环境中,你需要使用服务器来运行你的git库.
+
+> *WARNING*<br />
+> the initial clone of your configuration repository will be quick and efficient if you only keep text files in it. If you start to store binary files, especially large ones, you may experience delays on the first request for configuration and/or out of memory errors in the server.<br />
+> *警告*：在配置库中,你如果只存储文本文件,初始clone配置库是非常快捷和高效的.如果你开始存储二进制文件特别是大型的二进制文件,你可能会遇到第一次请求配置文件比较慢或遇到发生在配置服务器上的内存溢出.
+
+## Environment Repository 资源库环境
+
 Where do you want to store the configuration data for the Config Server? The strategy that governs this behaviour is the EnvironmentRepository, serving Environment objects. This Environment is a shallow copy of the domain from the Spring Environment (including propertySources as the main feature). The Environment resources are parametrized by three variables:
 
-{application} maps to "spring.application.name" on the client side;
+你想把Config Server的配置数据存储到哪里?解决这个问题的策略是EnvironmentRepository,并提供Environment对象.Environment对象是对Spring的Environment(其中包括 propertySources做为主要属性)的浅拷贝. Environment资源被参数化成了3个变量:
 
-{profile} maps to "spring.active.profiles" on the client (comma separated list); and
-
-{label} which is a server side feature labelling a "versioned" set of config files.
+* {application} maps to "spring.application.name" on the client side;<br />
+  {application} 对应客户端的"spring.application.name"属性;
+* {profile} maps to "spring.active.profiles" on the client (comma separated list); and<br />
+  {profile} 对应客户端的 "spring.profiles.active"属性(逗号分隔的列表); 和
+* {label} which is a server side feature labelling a "versioned" set of config files.
+  {label} 对应服务端属性,这个属性能标示一组配置文件的版本
 
 Repository implementations generally behave just like a Spring Boot application loading configuration files from a "spring.config.name" equal to the {application} parameter, and "spring.profiles.active" equal to the {profiles} parameter. Precedence rules for profiles are also the same as in a regular Boot application: active profiles take precedence over defaults, and if there are multiple profiles the last one wins (like adding entries to a Map).
 
+Repository的通常实现特征,非常像SpringBoot系统加载配置文件,从"spring.config.name"加载配置相当于从{application}参数加载,从"spring.profiles.active"加载配置相当于从{profiles}参数加载. profiles的优先级规则也和通常的Spring Boot系统一样:激活的profiles的优先级高于defaults,有多个profiles,最后一个起作用 (像往Map中增加entries).
+
 Example: a client application has this bootstrap configuration:
 
-bootstrap.yml
+举例: 一个客户端应用系统有这样一个bootstrap 配置:
+
+`bootstrap.yml`
+```yaml
 spring:
   application:
     name: foo
   profiles:
     active: dev,mysql
+```
+
 (as usual with a Spring Boot application, these properties could also be set as environment variables or command line arguments).
+
+(像通常的Spring Boot应用程序一样, 这些参数也可以通过环境变量或命令行参数进行设置).
 
 If the repository is file-based, the server will create an Environment from application.yml (shared between all clients), and foo.yml (with foo.yml taking precedence). If the YAML files have documents inside them that point to Spring profiles, those are applied with higher precendence (in order of the profiles listed), and if there are profile-specific YAML (or properties) files these are also applied with higher precedence than the defaults. Higher precendence translates to a PropertySource listed earlier in the Environment. (These are the same rules as apply in a standalone Spring Boot application.)
 
-Git Backend
+如果配置库是基于文件的,服务器将从application.yml(所有的客户端共享)和 foo.yml(foo.yml拥有高优先级)中创建一个Environment对象. 如果这些 YAML文件中有指定Spring profiles,那么这些profiles将有较高优先级(按在profiles列出的顺序),同时如果存在指定profile的YAML(或properties)文件,这些文件就比default文件具有较高优先级.高优先级的配置优先转成Environment对象中的PropertySource.(这和单独的Spring Boot系统使用的规则是一样的.)
+
+## Git Backend Git后端
+
 The default implementation of EnvironmentRepository uses a Git backend, which is very convenient for managing upgrades and physical environments, and also for auditing changes. To change the location of the repository you can set the "spring.cloud.config.server.git.uri" configuration property in the Config Server (e.g. in application.yml). If you set it with a file: prefix it should work from a local repository so you can get started quickly and easily without a server, but in that case the server operates directly on the local repository without cloning it (it doesn’t matter if it’s not bare because the Config Server never makes changes to the "remote" repository). To scale the Config Server up and make it highly available, you would need to have all instances of the server pointing to the same repository, so only a shared file system would work. Even in that case it is better to use the ssh: protocol for a shared filesystem repository, so that the server can clone it and use a local working copy as a cache.
+
+EnvironmentRepository的默认实现是使用Git后端,Git后端对于管理升级和物理环境是很方便的,对审计配置变更也很方便.想改变配置库的位置,你可以在Config Server中设置"spring.cloud.config.server.git.uri"配置项的值(e.g. 如在 application.yml文件中).如果你设置这个属性使用 file:前缀,Config Server 是从本地配置库中取数据,这种方式可以不使用Git的情况下,快速和简单的运行起来,但是这种情况下,Config Server不通过Clone Git配置库直接操作本地库(如果本地配置库不为空,也不用担心,因为Config Server不会把变更推送到"remote"库中). 为了增强Config Server 的高可靠性,需要按比例增加Config Server的数量,这时候需要让所有的Config Server 实例指向相同的配置库,此种情况下只能有一个共享的文件系统才能很好的运行.即使在这种情况下,最好还是使用ssh: 协议来访问共享文件系统库,以便让服务器能够克隆Git库并可以让本地工作副本当作缓存来使用.
 
 This repository implementation maps the {label} parameter of the HTTP resource to a git label (commit id, branch name or tag). If the git branch or tag name contains a slash ("/") then the label in the HTTP URL should be specified with the special string "(_)" instead (to avoid ambiguity with other URL paths). Be careful with the brackets in the URL if you are using a command line client like curl (e.g. escape them from the shell with quotes '').
 
-Placeholders in Git URI
+这个配置库的实现通过映射HTTP资源的{label}参数为git label(提交id,分支名称或tag).如果git分支或tag的名称包含一个斜杠 ("/"),此时HTTP URL中的label需要使用特殊字符串"(_)"来替代(为了避免与其他URL路径相互混淆).如果使用了命令行客户端如 curl,请谨慎处理URL中的括号(例如：在shell下请使用引号''来转移他们).
+
+## Placeholders in Git URI Git URI占位符
 
 Spring Cloud Config Server supports a git repository URL with placeholders for the {application} and {profile} (and {label} if you need it, but remember that the label is applied as a git label anyway). So you can easily support a "one repo per application" policy using (for example):
 
+Spring Cloud Config Server支持git库URL中包含针对{application}和 {profile}的占位符(如果你需要,{label}也可包含占位符, 不过要牢记的是任何情况下label只指git的label).所以,你可以很容易的支持"一个应用系统一个配置库"策略(举例):
+
+```yaml
 spring:
   cloud:
     config:
       server:
         git:
           uri: https://github.com/myorg/{application}
+```
+
 or a "one repo per profile" policy using a similar pattern but with {profile}.
 
-Pattern Matching and Multiple Repositories
+或者"一个profile一个配置库"策略,这两种策略的使用模式是一样的,后者使用{profile}进行配置.
+
+## Pattern Matching and Multiple Repositories 模式匹配和多资源库
 
 There is also support for more complex requirements with pattern matching on the application and profile name. The pattern format is a comma-separated list of {application}/{profile} names with wildcards (where a pattern beginning with a wildcard may need to be quoted). Example:
 
+针对application和profile名称的模式匹配,Config Server也支持更复杂的需求.匹配的表达式格式是用带有通配符号的{application}/{profile}名称列表,这些名称列表用逗号分隔. (如果这个表达式用通配符开始,则这个表达式需要用引号括住). 例如:
+
+```yaml
 spring:
   cloud:
     config:
@@ -577,12 +612,21 @@ spring:
             local:
               pattern: local*
               uri: file:/home/configsvc/config-repo
+```
+
 If {application}/{profile} does not match any of the patterns, it will use the default uri defined under "spring.cloud.config.server.git.uri". In the above example, for the "simple" repository, the pattern is simple/* (i.e. it only matches one application named "simple" in all profiles). The "local" repository matches all application names beginning with "local" in all profiles (the /* suffix is added automatically to any pattern that doesn’t have a profile matcher).
 
-NOTE
-the "one-liner" short cut used in the "simple" example above can only be used if the only property to be set is the URI. If you need to set anything else (credentials, pattern, etc.) you need to use the full form.
+如果 {application}/{profile}不能匹配任何表达式, 那么将使用"spring.cloud.config.server.git.uri"对应的值. 在上例子中, 对于 "simple" 配置库, 匹配模式是simple/* (也就说,无论profile是什么，它只匹配application 名称为"simple"应用系统)."local"库匹配所有application名称以"local"开头任何应用系统,不管profiles是什么(因没有配置对profile的匹配规则,/*后缀会被自动的增加到任何的匹配表达式中 ).
+
+> *NOTE*<br />
+> the "one-liner" short cut used in the "simple" example above can only be used if the only property to be set is the URI. If you need to set anything else (credentials, pattern, etc.) you need to use the full form.<br />
+> *注意*：在上述"simple"例子中,如果设置的属性只是一个URI,只使用一行就能完整的表示清楚. 如果你需要设置其他属性(如credentials, pattern, etc.),你需要使用完整的格式才能表示清楚.
+
 The pattern property in the repo is actually an array, so you can use a YAML array (or [0], [1], etc. suffixes in properties files) to bind to multiple patterns. You may need to do this if you are going to run apps with multiple profiles. Example:
 
+在配置参数中pattern本质上讲,其实是个数组, 因此你可以使用一个YAML 数组(或在properties类型文件中使用 [0],[1],etc.为配置后缀)来绑定多个匹配表达式.当你想使用多个了profile 来运行应用程序时,你可能需要采用数组匹配模式.
+
+```yaml
 spring:
   cloud:
     config:
@@ -600,10 +644,17 @@ spring:
                 - */qa
                 - */production
               uri: https://github.com/staging/config-repo
-NOTE
-Spring Cloud will guess that a pattern containing a profile that doesn’t end in * implies that you actually want to match a list of profiles starting with this pattern (so */staging is a shortcut for ["*/staging", "*/staging,*"]). This is common where you need to run apps in the "development" profile locally but also the "cloud" profile remotely, for instance.
+```
+
+> *NOTE*<br />
+> Spring Cloud will guess that a pattern containing a profile that doesn’t end in \* implies that you actually want to match a list of profiles starting with this pattern (so `\*/staging` is a shortcut for `\["\*/staging", "\*/staging,\*"\])`. This is common where you need to run apps in the "development" profile locally but also the "cloud" profile remotely, for instance.<br />
+> *注意*：如果 profile 不是以\*结尾的,Spring Cloud 会猜想实际的profile值, 这意味着你实际上是匹配以这个表达式开头的一个profile列表(因此 `*/staging` 只是 `["*/staging", "*/staging,*"]`的 简单表示法)。举例，普遍\*\*\*\*的一种方法是在本地环境中使用"development" profile 来运行系统,在远程环境中运行"cloud" profile.
+
 Every repository can also optionally store config files in sub-directories, and patterns to search for those directories can be specified as searchPaths. For example at the top level:
 
+每个配置库也可以选择存储配置文件到子目录中,用searchPaths属性来指定配置的子目录,搜索匹配的表达式就在此子目录中进行的. 大概的例子如下:
+
+```yaml
 spring:
   cloud:
     config:
@@ -611,10 +662,17 @@ spring:
         git:
           uri: https://github.com/spring-cloud-samples/config-repo
           searchPaths: foo,bar*
+```
+
 In this example the server searches for config files in the top level and in the "foo/" sub-directory and also any sub-directory whose name begins with "bar".
+
+在这个例子中,服务会在顶层目录、"foo/"子目录和以"bar"开头的子目录中查找文件.
 
 By default the server clones remote repositories when configuration is first requested. The server can be configured to clone the repositories at startup. For example at the top level:
 
+当配置文件第一次被请求时,默认地服务器会clone远程的配置库.服务器也可以配置在启动时clone远程的配置库.下面就是一个简单的例子:
+
+```yaml
 spring:
   cloud:
     config:
@@ -633,10 +691,17 @@ spring:
             team-c:
                 pattern: team-c-*
                 uri: http://git/team-a/config-repo.git
+```
+
 In this example the server clones team-a’s config-repo on startup before it accepts any requests. All other repositories will not be cloned until configuration from the repository is requested.
+
+在这个例子中, 服务器在启动未接收任何请求的过程中,会clone team-a的配置库.其他的配置库都只在请求时才会clone远程的配置.
 
 To use HTTP basic authentication on the remote repository add the "username" and "password" properties separately (not in the URL), e.g.
 
+对于远程配置库,为了使用HTTP的 basic authentication 方法进行认证,需要分开增加 "username" and "password" 属性 (不在URL中增加),
+
+```yaml
 spring:
   cloud:
     config:
@@ -645,10 +710,17 @@ spring:
           uri: https://github.com/spring-cloud-samples/config-repo
           username: trolley
           password: strongpassword
+```
+
 If you don’t use HTTPS and user credentials, SSH should also work out of the box when you store keys in the default directories (~/.ssh) and the uri points to an SSH location, e.g. "git@github.com:configuration/cloud-configuration". The repository is accessed using JGit, so any documentation you find on that should be applicable. HTTPS proxy settings can be set in ~/.git/config or in the same way as for any other JVM process via system properties (-Dhttps.proxyHost and -Dhttps.proxyPort).
 
-File System Backend
+如果你没有使用HTTPS和用户凭证,当你在默认目录(~/.ssh)中存储了key,并且uri参数配置了SSH地址,如配置了"git@github.com:configuration/cloud-configuration",SSH应该是你非常容易使用的方式.这种方式下,是使用JGit来访问配置库的,比较适合查找任何文档.HTTPS proxy 可以在 ~/.git/config中进行设置, 通过JVM的系统属性(-Dhttps.proxyHost and -Dhttps.proxyPort)设置可以完成此功能.
+
+## File System Backend 文件系统后端
+
 There is also a "native" profile in the Config Server that doesn’t use Git, but just loads the config files from the local classpath or file system (any static URL you want to point to with "spring.cloud.config.server.native.searchLocations"). To use the native profile just launch the Config Server with "spring.profiles.active=native".
+
+在Config Server中,还有一种不使用Git的"native"的配置方式,这种方式是从本地classpath 或文件系统中加载配置文件(使用 "spring.cloud.config.server.native.searchLocations"配置项进行设置). 加载Config Server 的"spring.profiles.active=native"配置项可以开启native配置.
 
 NOTE
 Remember to use the file: prefix for file resources (the default without a prefix is usually the classpath). Just as with any Spring Boot configuration you can embed ${}-style environment placeholders, but remember that absolute paths in Windows require an extra "/", e.g. file:///${user.home}/config-repo
