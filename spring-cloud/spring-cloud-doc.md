@@ -6,27 +6,17 @@ Spring Cloud provides tools for developers to quickly build some of the common p
 # Features Spring Cloud中的功能模块
 Spring Cloud focuses on providing good out of box experience for typical use cases and extensibility mechanism to cover others.
 
-* Distributed/versioned configuration
-* Service registration and discovery
-* Routing
-* Service-to-service calls
-* Load balancing
-* Circuit Breakers
-* Global locks
-* Leadership election and cluster state
-* Distributed messaging
-
 对于系统架构中多种典型场景的实现和可扩展性的要求，Spring Cloud提供了很好的开箱即用的解决方案。如下：
 
-* 分布式的/版本化的配置管理
-* 服务的注册和发现
-* 路由
-* 服务间的调用
-* 负载均衡
-* 断路器
-* 全局锁
-* 主节点选举和集群状态
-* 分布式消息
+* Distributed/versioned configuration 分布式的/版本化的配置管理
+* Service registration and discovery 服务的注册和发现
+* Routing 路由
+* Service-to-service calls 服务间的调用
+* Load balancing 负载均衡
+* Circuit Breakers 断路器
+* Global locks 全局锁
+* Leadership election and cluster state 主节点选举和集群状态
+* Distributed messaging 分布式消息
 
 # Cloud Native Applications
 
@@ -39,10 +29,6 @@ Many of those features are covered by Spring Boot, which we build on in Spring C
 Spring Cloud的大部分功能是基于Spring Boot的。Spring Cloud通过两个库实现了更多的功能：Spring Cloud Context和Spring Cloud Commons。Spring Cloud Context提供了针对于Spring Cloud应用上下文的相关服务（例如：启动上下文，加密服务，刷新作用域和环境端点服务）。Spring Cloud Commons针对在不同的SpringCloud实现中提供了一组公共类的集合（例如：Spring Cloud Netflix 和 Spring Cloud Consul）。
 
 If you are getting an exception due to "Illegal key size" and you are using Sun’s JDK, you need to install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files. See the following links for more information:
-
-* Java 6 JCE
-* Java 7 JCE
-* Java 8 JCE
 
 如果你正是用sun公司的JDK，因为“非法键值长度”产生一个异常，那么你需要安装Java加密扩展包（JCE）的无限制权限策略文件。更多信息查看以下链接：
 
@@ -72,16 +58,6 @@ A Spring Cloud application operates by creating a "bootstrap" context, which is 
 
 The bootstrap context uses a different convention for locating external configuration than the main application context, so instead of application.yml (or .properties) you use bootstrap.yml, keeping the external configuration for bootstrap and main context nicely separate. Example:
 
-`bootstrap.yml`
-```yaml
-spring:
-  application:
-    name: foo
-  cloud:
-    config:
-      uri: ${SPRING_CONFIG_URI:http://localhost:8888}
-```
-
 Bootstrap context和Application Context有着不同的约定，所以新增了一个bootstrap.yml文件，而不是使用“application.yml” (或者application.properties)，保证Bootstrap Context和Application Context配置的分离。例如：
 
 `bootstrap.yml`
@@ -94,18 +70,20 @@ spring:
       uri: ${SPRING_CONFIG_URI:http://localhost:8888}
 ```
 
-
 It is a good idea to set the spring.application.name (in bootstrap.yml or application.yml) if your application needs any application-specific configuration from the server.
+
+如果你想在服务端设置应用的名字，以上可以通过在bootstrap.yml中配置spring.application.name来实现。
 
 You can disable the bootstrap process completely by setting spring.cloud.bootstrap.enabled=false (e.g. in System properties).
 
-### Application Context Hierarchies
+你可以通过设置spring.cloud.bootstrap.enabled=false来禁用bootstrap。
+
+### Application Context Hierarchies 应用上下文层次结构
 
 If you build an application context from SpringApplication or SpringApplicationBuilder, then the Bootstrap context is added as a parent to that context. It is a feature of Spring that child contexts inherit property sources and profiles from their parent, so the "main" application context will contain additional property sources, compared to building the same context without Spring Cloud Config. The additional property sources are:
 
-"bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.
-
-"applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.
+* "bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.
+* "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.
 
 Because of the ordering rules of property sources the "bootstrap" entries take precedence, but note that these do not contain any data from bootstrap.yml, which has very low precedence, but can be used to set defaults.
 
@@ -113,21 +91,26 @@ You can extend the context hierarchy by simply setting the parent context of any
 
 Note that the SpringApplicationBuilder allows you to share an Environment amongst the whole hierarchy, but that is not the default. Thus, sibling contexts in particular do not need to have the same profiles or property sources, even though they will share common things with their parent.
 
-Changing the Location of Bootstrap Properties
+### Changing the Location of Bootstrap Properties
+
 The bootstrap.yml (or .properties) location can be specified using spring.cloud.bootstrap.name (default "bootstrap") or spring.cloud.bootstrap.location (default empty), e.g. in System properties. Those properties behave like the spring.config.* variants with the same name, in fact they are used to set up the bootstrap ApplicationContext by setting those properties in its Environment. If there is an active profile (from spring.profiles.active or through the Environment API in the context you are building) then properties in that profile will be loaded as well, just like in a regular Spring Boot app, e.g. from bootstrap-development.properties for a "development" profile.
 
-Customizing the Bootstrap Configuration
+### Customizing the Bootstrap Configuration
+
 The bootstrap context can be trained to do anything you like by adding entries to /META-INF/spring.factories under the key org.springframework.cloud.bootstrap.BootstrapConfiguration. This is a comma-separated list of Spring @Configuration classes which will be used to create the context. Any beans that you want to be available to the main application context for autowiring can be created here, and also there is a special contract for @Beans of type ApplicationContextInitializer. Classes can be marked with an @Order if you want to control the startup sequence (the default order is "last").
 
-WARNING
-Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.
+> <strong>WARNING</strong>
+> Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.
+
 The bootstrap process ends by injecting initializers into the main SpringApplication instance (i.e. the normal Spring Boot startup sequence, whether it is running as a standalone app or deployed in an application server). First a bootstrap context is created from the classes found in spring.factories and then all @Beans of type ApplicationContextInitializer are added to the main SpringApplication before it is started.
 
-Customizing the Bootstrap Property Sources
+### Customizing the Bootstrap Property Sources
+
 The default property source for external configuration added by the bootstrap process is the Config Server, but you can add additional sources by adding beans of type PropertySourceLocator to the bootstrap context (via spring.factories). You could use this to insert additional properties from a different server, or from a database, for instance.
 
 As an example, consider the following trivial custom locator:
 
+```java
 @Configuration
 public class CustomPropertySourceLocator implements PropertySourceLocator {
 
@@ -138,63 +121,69 @@ public class CustomPropertySourceLocator implements PropertySourceLocator {
     }
 
 }
+```
+
 The Environment that is passed in is the one for the ApplicationContext about to be created, i.e. the one that we are supplying additional property sources for. It will already have its normal Spring Boot-provided property sources, so you can use those to locate a property source specific to this Environment (e.g. by keying it on the spring.application.name, as is done in the default Config Server property source locator).
 
 If you create a jar with this class in it and then add a META-INF/spring.factories containing:
 
-org.springframework.cloud.bootstrap.BootstrapConfiguration=sample.custom.CustomPropertySourceLocator
+`org.springframework.cloud.bootstrap.BootstrapConfiguration=sample.custom.CustomPropertySourceLocator`
+
 then the "customProperty" PropertySource will show up in any application that includes that jar on its classpath.
 
-Environment Changes
+### Environment Changes
+
 The application will listen for an EnvironmentChangedEvent and react to the change in a couple of standard ways (additional ApplicationListeners can be added as @Beans by the user in the normal way). When an EnvironmentChangedEvent is observed it will have a list of key values that have changed, and the application will use those to:
 
-Re-bind any @ConfigurationProperties beans in the context
-
-Set the logger levels for any properties in logging.level.*
+* Re-bind any @ConfigurationProperties beans in the context
+* Set the logger levels for any properties in logging.level.*
 
 Note that the Config Client does not by default poll for changes in the Environment, and generally we would not recommend that approach for detecting changes (although you could set it up with a @Scheduled annotation). If you have a scaled-out client application then it is better to broadcast the EnvironmentChangedEvent to all the instances instead of having them polling for changes (e.g. using the Spring Cloud Bus).
 
 The EnvironmentChangedEvent covers a large class of refresh use cases, as long as you can actually make a change to the Environment and publish the event (those APIs are public and part of core Spring). You can verify the changes are bound to @ConfigurationProperties beans by visiting the /configprops endpoint (normal Spring Boot Actuator feature). For instance a DataSource can have its maxPoolSize changed at runtime (the default DataSource created by Spring Boot is an @ConfigurationProperties bean) and grow capacity dynamically. Re-binding @ConfigurationProperties does not cover another large class of use cases, where you need more control over the refresh, and where you need a change to be atomic over the whole ApplicationContext. To address those concerns we have @RefreshScope.
 
-Refresh Scope
+### Refresh Scope
+
 A Spring @Bean that is marked as @RefreshScope will get special treatment when there is a configuration change. This addresses the problem of stateful beans that only get their configuration injected when they are initialized. For instance if a DataSource has open connections when the database URL is changed via the Environment, we probably want the holders of those connections to be able to complete what they are doing. Then the next time someone borrows a connection from the pool he gets one with the new URL.
 
 Refresh scope beans are lazy proxies that initialize when they are used (i.e. when a method is called), and the scope acts as a cache of initialized values. To force a bean to re-initialize on the next method call you just need to invalidate its cache entry.
 
 The RefreshScope is a bean in the context and it has a public method refreshAll() to refresh all beans in the scope by clearing the target cache. There is also a refresh(String) method to refresh an individual bean by name. This functionality is exposed in the /refresh endpoint (over HTTP or JMX).
 
-NOTE
-@RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).
-Encryption and Decryption
+> NOTE
+> @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).
+
+### Encryption and Decryption
+
 The Config Client has an Environment pre-processor for decrypting property values locally. It follows the same rules as the Config Server, and has the same external configuration via encrypt.*. Thus you can use encrypted values in the form {cipher}* and as long as there is a valid key then they will be decrypted before the main application context gets the Environment. To use the encryption features in a client you need to include Spring Security RSA in your classpath (Maven co-ordinates "org.springframework.security:spring-security-rsa") and you also need the full strength JCE extensions in your JVM.
 
 If you are getting an exception due to "Illegal key size" and you are using Sun’s JDK, you need to install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files. See the following links for more information:
 
-Java 6 JCE
-
-Java 7 JCE
-
-Java 8 JCE
+* Java 6 JCE
+* Java 7 JCE
+* Java 8 JCE
 
 Extract files into JDK/jre/lib/security folder (whichever version of JRE/JDK x64/x86 you are using).
 
-Endpoints
+### Endpoints
+
 For a Spring Boot Actuator application there are some additional management endpoints:
 
-POST to /env to update the Environment and rebind @ConfigurationProperties and log levels
+* POST to /env to update the Environment and rebind @ConfigurationProperties and log levels
+* /refresh for re-loading the boot strap context and refreshing the @RefreshScope beans
+* /restart for closing the ApplicationContext and restarting it (disabled by default)
+* /pause and /resume for calling the Lifecycle methods (stop() and start() on the ApplicationContext)
 
-/refresh for re-loading the boot strap context and refreshing the @RefreshScope beans
+-----------------------------------------------
+#Spring Cloud Commons: Common Abstractions
 
-/restart for closing the ApplicationContext and restarting it (disabled by default)
-
-/pause and /resume for calling the Lifecycle methods (stop() and start() on the ApplicationContext)
-
-Spring Cloud Commons: Common Abstractions
 Patterns such as service discovery, load balancing and circuit breakers lend themselves to a common abstraction layer that can be consumed by all Spring Cloud clients, independent of the implementation (e.g. discovery via Eureka or Consul).
 
-Spring RestTemplate as a Load Balancer Client
+### Spring RestTemplate as a Load Balancer Client
+
 You can use Ribbon indirectly via an autoconfigured RestTemplate when RestTemplate is on the classpath and a LoadBalancerClient bean is defined):
 
+```java
 public class MyClass {
     @Autowired
     private RestTemplate restTemplate;
@@ -204,11 +193,15 @@ public class MyClass {
         return results;
     }
 }
+```
+
 The URI needs to use a virtual host name (ie. service name, not a host name). The Ribbon client is used to create a full physical address. See RibbonAutoConfiguration for details of how the RestTemplate is set up.
 
-Multiple RestTemplate objects
+### Multiple RestTemplate objects
+
 If you want a RestTemplate that is not load balanced, create a RestTemplate bean and inject it as normal. To access the load balanced RestTemplate use the provided `@LoadBalanced Qualifier:
 
+```java
 public class MyClass {
     @Autowired
     private RestTemplate restTemplate;
@@ -225,56 +218,79 @@ public class MyClass {
         return restTemplate.getForObject("http://example.com", String.class);
     }
 }
-Ignore Network Interfaces
+```
+
+### Ignore Network Interfaces
+
 Sometimes it is useful to ignore certain named network interfaces so they can be excluded from Service Discovery registration (eg. running in a Docker container). A list of regular expressions can be set that will cause the desired network interfaces to be ignored. The following configuration will ignore the "docker0" interface and all interfaces that start with "veth".
 
-application.yml
+`application.yml`
+```yaml
 spring:
   cloud:
     inetutils:
       ignoredInterfaces:
         - docker0
         - veth.*
-Spring Cloud Config
+```
+
+---------------------------------
+# Spring Cloud Config
 
 Spring Cloud Config provides server and client-side support for externalized configuration in a distributed system. With the Config Server you have a central place to manage external properties for applications across all environments. The concepts on both client and server map identically to the Spring Environment and PropertySource abstractions, so they fit very well with Spring applications, but can be used with any application running in any language. As an application moves through the deployment pipeline from dev to test and into production you can manage the configuration between those environments and be certain that applications have everything they need to run when they migrate. The default implementation of the server storage backend uses git so it easily supports labelled versions of configuration environments, as well as being accessible to a wide range of tooling for managing the content. It is easy to add alternative implementations and plug them in with Spring configuration.
-Quick Start
+
+### Quick Start
 Start the server:
 
+```shell
 $ cd spring-cloud-config-server
 $ mvn spring-boot:run
+```
+
 The server is a Spring Boot application so you can run it from your IDE instead if you prefer (the main class is ConfigServerApplication). Then try it out a client:
 
+```shell
 $ curl localhost:8888/foo/development
 {"name":"development","label":"master","propertySources":[
   {"name":"https://github.com/scratches/config-repo/foo-development.properties","source":{"bar":"spam"}},
   {"name":"https://github.com/scratches/config-repo/foo.properties","source":{"foo":"bar"}}
 ]}
+```
+
 The default strategy for locating property sources is to clone a git repository (at spring.cloud.config.server.git.uri) and use it to initialize a mini SpringApplication. The mini-application’s Environment is used to enumerate property sources and publish them via a JSON endpoint.
 
 The HTTP service has resources in the form:
 
+```shell
 /{application}/{profile}[/{label}]
 /{application}-{profile}.yml
 /{label}/{application}-{profile}.yml
 /{application}-{profile}.properties
 /{label}/{application}-{profile}.properties
+```
+
 where the "application" is injected as the spring.config.name in the SpringApplication (i.e. what is normally "application" in a regular Spring Boot app), "profile" is an active profile (or comma-separated list of properties), and "label" is an optional git label (defaults to "master".)
 
 The YAML and properties forms are coalesced into a single map, even if the origin of the values (reflected in the "propertySources" of the "standard" form) has multiple sources.
 
 Spring Cloud Config Server pulls configuration for remote clients from a git repository (which must be provided):
 
+```yaml
 spring:
   cloud:
     config:
       server:
         git:
           uri: https://github.com/spring-cloud-samples/config-repo
-Client Side Usage
+```
+
+### Client Side Usage
+
 To use these features in an application, just build it as a Spring Boot application that depends on spring-cloud-config-client (e.g. see the test cases for the config-client, or the sample app). The most convenient way to add the dependency is via a Spring Boot starter org.springframework.cloud:spring-cloud-starter-config. There is also a parent pom and BOM (spring-cloud-starter-parent) for Maven users and a Spring IO version management properties file for Gradle and Spring CLI users. Example Maven configuration:
 
-pom.xml
+`pom.xml`
+
+```xml
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -316,8 +332,11 @@ pom.xml
 </build>
 
 <!-- repositories also needed for snapshots and milestones -->
+```
+
 Then you can create a standard Spring Boot application, like this simple HTTP server:
 
+```java
 @SpringBootApplication
 @RestController
 public class Application {
@@ -332,6 +351,8 @@ public class Application {
     }
 
 }
+```
+
 When it runs it will pick up the external configuration from the default local config server on port 8888 if it is running. To modify the startup behaviour you can change the location of the config server using bootstrap.properties (like application.properties but for the bootstrap phase of an application context), e.g.
 
 spring.cloud.config.uri: http://myconfigserver.com
