@@ -495,20 +495,28 @@ spring.cloud.config.server.git.uri: file://${user.home}/config-repo
 ```
 
 where ${user.home}/config-repo is a git repository containing YAML and properties files.
+
 其中${user.home}/config-repo包含了YAML 和 properties文件的git库.
 
-NOTE
-in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. file:///${user.home}/config-repo.
-TIP
-Here’s a recipe for creating the git repository in the example above:
+> *NOTE* <br />
+> in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. file:///${user.home}/config-repo.<br />
+> 在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：file:///${user.home}/config-repo.
 
-$ cd $HOME
-$ mkdir config-repo
-$ cd config-repo
-$ git init .
-$ echo info.foo: bar > application.properties
-$ git add -A .
-$ git commit -m "Add application.properties"
+
+>*TIP* <br />
+> Here’s a recipe for creating the git repository in the example above:<br />
+> 创建上面例子使用的git库,使用如下简单方法:
+
+> ```shell
+> $ cd $HOME
+> $ mkdir config-repo
+> $ cd config-repo
+> $ git init .
+> $ echo info.foo: bar > application.properties
+> $ git add -A .
+> $ git commit -m "Add application.properties"
+> ```
+
 WARNING
 using the local filesystem for your git repository is intended for testing only. Use a server to host your configuration repositories in production.
 Environment Repository
