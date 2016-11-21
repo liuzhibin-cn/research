@@ -52,13 +52,13 @@ Spring Boot有自己的方式来创建一个应用程序：比如它约定了配
 
 ### The Bootstrap Application Context - 启动上下文
 
-A Spring Cloud application operates by creating a "bootstrap" context, which is a parent context for the main application. Out of the box it is responsible for loading configuration properties from the external sources, and also decrypting properties in the local external configuration files. The two contexts share an Environment which is the source of external properties for any Spring application. Bootstrap properties are added with high precedence, so they cannot be overridden by local configuration.
+A Spring Cloud application operates by creating a "bootstrap" context, which is a parent context for the main application. Out of the box it is responsible for loading configuration properties from the external sources, and also decrypting properties in the local external configuration files. The two contexts share an `Environment` which is the source of external properties for any Spring application. Bootstrap properties are added with high precedence, so they cannot be overridden by local configuration.
 
-启动上下文对于Spring应用的Application Context来说是一个父上下文，一个Spring Cloud应用通过创建它来运行。它也是开箱即用的，负责从外部资源中加载配置属性，同时可以在本地的外部配置文件中解析相关属性。对于任意的Spring应用来说，两个上下文可以共享同一个外部获取的属性“Environment”。因为Bootstrap属性被优先加载，所以他们不能被本地配置重写。
+启动上下文对于Spring应用的Application Context来说是一个父上下文，一个Spring Cloud应用通过创建它来运行。它也是开箱即用的，负责从外部资源中加载配置属性，同时可以在本地的外部配置文件中解析相关属性。对于任意的Spring应用来说，两个上下文可以共享同一个外部获取的属性`Environment`。因为Bootstrap属性被优先加载，所以他们不能被本地配置重写。
 
-The bootstrap context uses a different convention for locating external configuration than the main application context, so instead of application.yml (or .properties) you use bootstrap.yml, keeping the external configuration for bootstrap and main context nicely separate. Example:
+The bootstrap context uses a different convention for locating external configuration than the main application context, so instead of `application.yml` (or .properties) you use `bootstrap.yml`, keeping the external configuration for bootstrap and main context nicely separate. Example:
 
-Bootstrap context和Application Context有着不同的约定，所以新增了一个bootstrap.yml文件，而不是使用“application.yml” (或者application.properties)，保证Bootstrap Context和Application Context配置的分离。例如：
+Bootstrap context和Application Context有着不同的约定，所以新增了一个`bootstrap.yml`文件，而不是使用`application.yml` (或者application.properties)，保证Bootstrap Context和Application Context配置的分离。例如：
 
 `bootstrap.yml`
 ```yaml
@@ -70,13 +70,13 @@ spring:
       uri: ${SPRING_CONFIG_URI:http://localhost:8888}
 ```
 
-It is a good idea to set the spring.application.name (in bootstrap.yml or application.yml) if your application needs any application-specific configuration from the server.
+It is a good idea to set the `spring.application.name` (in `bootstrap.yml` or `application.yml`) if your application needs any application-specific configuration from the server.
 
-如果你想在服务端设置应用的名字，以上可以通过在bootstrap.yml中配置spring.application.name来实现。
+如果你想在服务端设置应用的名字，以上可以通过在`bootstrap.yml`中配置`spring.application.name`来实现。
 
-You can disable the bootstrap process completely by setting spring.cloud.bootstrap.enabled=false (e.g. in System properties).
+You can disable the bootstrap process completely by setting `spring.cloud.bootstrap.enabled=false` (e.g. in System properties).
 
-你可以通过设置spring.cloud.bootstrap.enabled=false来禁用bootstrap。
+你可以通过设置`spring.cloud.bootstrap.enabled=false`来禁用bootstrap。
 
 ### Application Context Hierarchies - 应用上下文体系结构
 
@@ -86,26 +86,26 @@ If you build an application context from SpringApplication or SpringApplicationB
 
 * "bootstrap": an optional CompositePropertySource appears with high priority if any PropertySourceLocators are found in the Bootstrap context, and they have non-empty properties. An example would be properties from the Spring Cloud Config Server. See below for instructions on how to customize the contents of this property source.<br />
   "bootstrap" : 如果在Bootstrap Context扫描到PropertySourceLocators并且有属性，则会添加到CompositePropertySource。Spirng Cloud Config就是通过这种方式来添加的属性的。详见下面的说明如何自定义属性源的内容。
-* "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a bootstrap.yml (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the application.yml (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.<br />
-  "applicationConfig: [classpath:bootstrap.yml]": 如果你使用bootstrap.yml来配置，他比application.yml优先级要低。它将添加到子上下文，作为Spring Boot应用程序的一部分。下文有介绍。
+* "applicationConfig: [classpath:bootstrap.yml]" (and friends if Spring profiles are active). If you have a `bootstrap.yml` (or properties) then those properties are used to configure the Bootstrap context, and then they get added to the child context when its parent is set. They have lower precedence than the `application.yml` (or properties) and any other property sources that are added to the child as a normal part of the process of creating a Spring Boot application. See below for instructions on how to customize the contents of these property sources.<br />
+  "applicationConfig: [classpath:bootstrap.yml]": 如果你使用`bootstrap.yml`来配置，他比`application.yml`优先级要低。它将添加到子上下文，作为Spring Boot应用程序的一部分。下文有介绍。
 
-Because of the ordering rules of property sources the "bootstrap" entries take precedence, but note that these do not contain any data from bootstrap.yml, which has very low precedence, but can be used to set defaults.
+Because of the ordering rules of property sources the "bootstrap" entries take precedence, but note that these do not contain any data from `bootstrap.yml`, which has very low precedence, but can be used to set defaults.
 
-由于优先级规则，不包含从bootstrap.yml来的数据，但是可以用它作为默认设置。
+由于优先级规则，不包含从`bootstrap.yml`来的数据，但是可以用它作为默认设置。
 
-You can extend the context hierarchy by simply setting the parent context of any ApplicationContext you create, e.g. using its own interface, or with the SpringApplicationBuilder convenience methods (parent(), child() and sibling()). The bootstrap context will be the parent of the most senior ancestor that you create yourself. Every context in the hierarchy will have its own "bootstrap" property source (possibly empty) to avoid promoting values inadvertently from parents down to their descendants. Every context in the hierarchy can also (in principle) have a different spring.application.name and hence a different remote property source if there is a Config Server. Normal Spring application context behaviour rules apply to property resolution: properties from a child context override those in the parent, by name and also by property source name (if the child has a property source with the same name as the parent, the one from the parent is not included in the child).
+You can extend the context hierarchy by simply setting the parent context of any ApplicationContext you create, e.g. using its own interface, or with the SpringApplicationBuilder convenience methods (parent(), child() and sibling()). The bootstrap context will be the parent of the most senior ancestor that you create yourself. Every context in the hierarchy will have its own "bootstrap" property source (possibly empty) to avoid promoting values inadvertently from parents down to their descendants. Every context in the hierarchy can also (in principle) have a different `spring.application.name` and hence a different remote property source if there is a Config Server. Normal Spring application context behaviour rules apply to property resolution: properties from a child context override those in the parent, by name and also by property source name (if the child has a property source with the same name as the parent, the one from the parent is not included in the child).
 
-你可以很容易的扩展任何你建立的上下文层次，可以使用它提供的接口，或者使用SpringApplicationBuilder的一些方法（parent(),child()sibling()）。启动上线问将是最高级别的父类。扩展的每一个Context都有有自己的bootstrap property source（有可能是空的）。扩展的每一个Context都有不同spring.application.name。同一层层次的父子上下文原则上也有一有不同的名称，因此，也会有不同的Config Server配置。子上下文的属性在相同名字的情况下将覆盖父上下文的属性。
+你可以很容易的扩展任何你建立的上下文层次，可以使用它提供的接口，或者使用SpringApplicationBuilder的一些方法（parent(),child()sibling()）。启动上线问将是最高级别的父类。扩展的每一个Context都有有自己的bootstrap property source（有可能是空的）。扩展的每一个Context都有不同`spring.application.name`。同一层层次的父子上下文原则上也有一有不同的名称，因此，也会有不同的Config Server配置。子上下文的属性在相同名字的情况下将覆盖父上下文的属性。
 
-Note that the SpringApplicationBuilder allows you to share an Environment amongst the whole hierarchy, but that is not the default. Thus, sibling contexts in particular do not need to have the same profiles or property sources, even though they will share common things with their parent.
+Note that the SpringApplicationBuilder allows you to share an `Environment` amongst the whole hierarchy, but that is not the default. Thus, sibling contexts in particular do not need to have the same profiles or property sources, even though they will share common things with their parent.
 
-注意允许共享Environment到所有层次，但不是默认的。因此，同级的兄弟上下文不在和父类共享一些东西的时候不一定有相同的profiles或者property sources源码位置。
+注意允许共享`Environment`到所有层次，但不是默认的。因此，同级的兄弟上下文不在和父类共享一些东西的时候不一定有相同的profiles或者property sources源码位置。
 
 ### Changing the Location of Bootstrap Properties - 修改启动文件位置
 
-The bootstrap.yml (or .properties) location can be specified using spring.cloud.bootstrap.name (default "bootstrap") or spring.cloud.bootstrap.location (default empty), e.g. in System properties. Those properties behave like the spring.config.* variants with the same name, in fact they are used to set up the bootstrap ApplicationContext by setting those properties in its Environment. If there is an active profile (from spring.profiles.active or through the Environment API in the context you are building) then properties in that profile will be loaded as well, just like in a regular Spring Boot app, e.g. from bootstrap-development.properties for a "development" profile.
+The `bootstrap.yml` (or .properties) location can be specified using spring.cloud.bootstrap.name (default "bootstrap") or spring.cloud.bootstrap.location (default empty), e.g. in System properties. Those properties behave like the spring.config.* variants with the same name, in fact they are used to set up the bootstrap ApplicationContext by setting those properties in its `Environment`. If there is an active profile (from spring.profiles.active or through the `Environment` API in the context you are building) then properties in that profile will be loaded as well, just like in a regular Spring Boot app, e.g. from bootstrap-development.properties for a "development" profile.
 
-bootstrap.yml的位置可以由spring.cloud.bootstrap.name（默认:bootstrap）或者spring.cloud.bootstrap.location（默认空）来进行指定。这些属性行为与spring.config.*类似，通过它的Environment来配置引导ApplicationContext进行加载。如果有一个激活的profile（来源于spring.profiles.active或者正在构建的Environment  Api）然后其中的属性即将被加载，就像Spring Boot应用通过 bootstrap-development.properties对开发环境进行了配置。
+`bootstrap.yml`的位置可以由spring.cloud.bootstrap.name（默认:bootstrap）或者spring.cloud.bootstrap.location（默认空）来进行指定。这些属性行为与spring.config.*类似，通过它的`Environment`来配置引导ApplicationContext进行加载。如果有一个激活的profile（来源于spring.profiles.active或者正在构建的`Environment`  Api）然后其中的属性即将被加载，就像Spring Boot应用通过 bootstrap-development.properties对开发环境进行了配置。
 
 ### Customizing the Bootstrap Configuration - 自定义启动配置
 
@@ -114,9 +114,9 @@ The bootstrap context can be trained to do anything you like by adding entries t
 可以通过修改/META-INF/spring.factories配置文件中的org.springframework.cloud.bootstrap.BootstrapConfiguration配置项的值来控制启动上下文。同时通过逗号分隔的Spring@Configuration类来建立上下文。任何main application context需要的自动注入的Bean可以在这里通过这种方式来获取。这也是ApplicationContextInitializer建立@Bean的方式。可以通过@Order来更改初始化序列，默认是”last”。
 
 > **WARNING** <br />
-> Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.<br />
+> Be careful when adding custom `BootstrapConfiguration` that the classes you add are not `@ComponentScanned` by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your `@ComponentScan` or `@SpringBootApplication` annotated configuration classes.<br />
 > **警告** <br />
-> 你添加的自定义BootstrapConfiguration类没有错误的把@ComponentScanned加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被@ComponentScan或者@SpringBootApplication注解覆盖到。
+> 你添加的自定义`BootstrapConfiguration`类没有错误的把`@ComponentScanned`加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被`@ComponentScan`或者`@SpringBootApplication`注解覆盖到。
 
 The bootstrap process ends by injecting initializers into the main SpringApplication instance (i.e. the normal Spring Boot startup sequence, whether it is running as a standalone app or deployed in an application server). First a bootstrap context is created from the classes found in spring.factories and then all @Beans of type ApplicationContextInitializer are added to the main SpringApplication before it is started.
 
@@ -145,11 +145,11 @@ public class CustomPropertySourceLocator implements PropertySourceLocator {
 }
 ```
 
-The Environment that is passed in is the one for the ApplicationContext about to be created, i.e. the one that we are supplying additional property sources for. It will already have its normal Spring Boot-provided property sources, so you can use those to locate a property source specific to this Environment (e.g. by keying it on the spring.application.name, as is done in the default Config Server property source locator).
+The `Environment` that is passed in is the one for the ApplicationContext about to be created, i.e. the one that we are supplying additional property sources for. It will already have its normal Spring Boot-provided property sources, so you can use those to locate a property source specific to this `Environment` (e.g. by keying it on the `spring.application.name`, as is done in the default Config Server property source locator).
 
 If you create a jar with this class in it and then add a META-INF/spring.factories containing:
 
-Environment在上述代码中被建立并且并传入，就像定义了一个额外的属性源一样。对于一个Spring Boot应用来说已经有自己的属性源，那么你能有这种方式提供自定义的属性源。如果你建立了一个jar包，在META-INF/spring.factories文件中包含属性：
+`Environment`在上述代码中被建立并且并传入，就像定义了一个额外的属性源一样。对于一个Spring Boot应用来说已经有自己的属性源，那么你能有这种方式提供自定义的属性源。如果你建立了一个jar包，在META-INF/spring.factories文件中包含属性：
 
 `org.springframework.cloud.bootstrap.BootstrapConfiguration=sample.custom.CustomPropertySourceLocator`
 
@@ -168,19 +168,19 @@ The application will listen for an EnvironmentChangedEvent and react to the chan
 * Set the logger levels for any properties in logging.level.* <br />
   在配置项logging.level.*中设置日志级别
 
-Note that the Config Client does not by default poll for changes in the Environment, and generally we would not recommend that approach for detecting changes (although you could set it up with a @Scheduled annotation). If you have a scaled-out client application then it is better to broadcast the EnvironmentChangedEvent to all the instances instead of having them polling for changes (e.g. using the Spring Cloud Bus).
+Note that the Config Client does not by default poll for changes in the `Environment`, and generally we would not recommend that approach for detecting changes (although you could set it up with a @Scheduled annotation). If you have a scaled-out client application then it is better to broadcast the EnvironmentChangedEvent to all the instances instead of having them polling for changes (e.g. using the Spring Cloud Bus).
 
-默认情况下，Config Client不轮询Environment的改变。一般情况，不建议使用这种方式来监测变化（虽然你可以通过@Scheduled注解来设置）。对于可扩展的应用程序，使用广播到所有实例的方式，好过轮询的方式。（比如使用Spring Cloud Bus项目）。
+默认情况下，Config Client不轮询`Environment`的改变。一般情况，不建议使用这种方式来监测变化（虽然你可以通过@Scheduled注解来设置）。对于可扩展的应用程序，使用广播到所有实例的方式，好过轮询的方式。（比如使用Spring Cloud Bus项目）。
 
 The EnvironmentChangedEvent covers a large class of refresh use cases, as long as you can actually make a change to the Environment and publish the event (those APIs are public and part of core Spring). You can verify the changes are bound to @ConfigurationProperties beans by visiting the /configprops endpoint (normal Spring Boot Actuator feature). For instance a DataSource can have its maxPoolSize changed at runtime (the default DataSource created by Spring Boot is an @ConfigurationProperties bean) and grow capacity dynamically. Re-binding @ConfigurationProperties does not cover another large class of use cases, where you need more control over the refresh, and where you need a change to be atomic over the whole ApplicationContext. To address those concerns we have @RefreshScope.
 
-EnvironmentChangedEvent覆盖了非常大一部分刷新场景的用例，只要，只要对对Environment进行修改并且发布这个事件（这些是Spring核心API的一部分）。你可以通过观察/configprops端点（Spring Boot Actuator的特性）来检查这些改变绑定到@ConfigurationProperties的bean的情况。对于DataSource这样一个实例，在运行的时候修改maxPoolSize增加大小，修改的变化不会通知实例里面，可以使用@RefreshScope来初始化Bean。
+EnvironmentChangedEvent覆盖了非常大一部分刷新场景的用例，只要，只要对对`Environment`进行修改并且发布这个事件（这些是Spring核心API的一部分）。你可以通过观察/configprops端点（Spring Boot Actuator的特性）来检查这些改变绑定到@ConfigurationProperties的bean的情况。对于DataSource这样一个实例，在运行的时候修改maxPoolSize增加大小，修改的变化不会通知实例里面，可以使用@RefreshScope来初始化Bean。
 
 ### Refresh Scope - 刷新作用域
 
-A Spring @Bean that is marked as @RefreshScope will get special treatment when there is a configuration change. This addresses the problem of stateful beans that only get their configuration injected when they are initialized. For instance if a DataSource has open connections when the database URL is changed via the Environment, we probably want the holders of those connections to be able to complete what they are doing. Then the next time someone borrows a connection from the pool he gets one with the new URL.
+A Spring @Bean that is marked as @RefreshScope will get special treatment when there is a configuration change. This addresses the problem of stateful beans that only get their configuration injected when they are initialized. For instance if a DataSource has open connections when the database URL is changed via the `Environment`, we probably want the holders of those connections to be able to complete what they are doing. Then the next time someone borrows a connection from the pool he gets one with the new URL.
 
-一个Spring的@Bean在添加了@RefreshScope注解，可以解决Bean初始化的时候只能获得初始配置的问题。比如，在使用DataSource获得一个数据库连接的时候，当通过Environment修改数据库连接字符串的时候，我们可以通过执行@RefreshScope俩根据修改的配置获取一个新的URL的连接。
+一个Spring的@Bean在添加了@RefreshScope注解，可以解决Bean初始化的时候只能获得初始配置的问题。比如，在使用DataSource获得一个数据库连接的时候，当通过`Environment`修改数据库连接字符串的时候，我们可以通过执行@RefreshScope俩根据修改的配置获取一个新的URL的连接。
 
 Refresh scope beans are lazy proxies that initialize when they are used (i.e. when a method is called), and the scope acts as a cache of initialized values. To force a bean to re-initialize on the next method call you just need to invalidate its cache entry.
 
@@ -197,9 +197,9 @@ The RefreshScope is a bean in the context and it has a public method refreshAll(
 
 ### Encryption and Decryption - 加密和解密
 
-The Config Client has an Environment pre-processor for decrypting property values locally. It follows the same rules as the Config Server, and has the same external configuration via encrypt.*. Thus you can use encrypted values in the form {cipher}* and as long as there is a valid key then they will be decrypted before the main application context gets the Environment. To use the encryption features in a client you need to include Spring Security RSA in your classpath (Maven co-ordinates "org.springframework.security:spring-security-rsa") and you also need the full strength JCE extensions in your JVM.
+The Config Client has an `Environment` pre-processor for decrypting property values locally. It follows the same rules as the Config Server, and has the same external configuration via encrypt.*. Thus you can use encrypted values in the form {cipher}* and as long as there is a valid key then they will be decrypted before the main application context gets the `Environment`. To use the encryption features in a client you need to include Spring Security RSA in your classpath (Maven co-ordinates "org.springframework.security:spring-security-rsa") and you also need the full strength JCE extensions in your JVM.
 
-Config Client可以在本地进行预处理的解密，与Config Server有相同的规则，通过设置相同的encrypt.*来实现。因此，可以使用加密的值在{cipher}*上，同时该有效值在应用通过Environment获得属值之前进行解密。使用加密特性需要包含Spring Security RSA的包到classpath。Maven依赖”org.springframework.security:spring-security-rsa”。并且，需要在JVM添加JCE扩展。
+Config Client可以在本地进行预处理的解密，与Config Server有相同的规则，通过设置相同的encrypt.*来实现。因此，可以使用加密的值在{cipher}*上，同时该有效值在应用通过`Environment`获得属值之前进行解密。使用加密特性需要包含Spring Security RSA的包到classpath。Maven依赖”org.springframework.security:spring-security-rsa”。并且，需要在JVM添加JCE扩展。
 
 If you are getting an exception due to "Illegal key size" and you are using Sun’s JDK, you need to install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files. See the following links for more information:
 
@@ -219,8 +219,8 @@ For a Spring Boot Actuator application there are some additional management endp
 
 相对于Spring Boot Actuator的应用，添加了一些管理端点：
 
-* POST to /env to update the Environment and rebind @ConfigurationProperties and log levels<br />
-  发送到/env的POST请求，可以更新Environment重新加载@ConfigurationProperties和日志级别。
+* POST to /env to update the `Environment` and rebind @ConfigurationProperties and log levels<br />
+  发送到/env的POST请求，可以更新`Environment`重新加载@ConfigurationProperties和日志级别。
 * /refresh for re-loading the boot strap context and refreshing the @RefreshScope beans<br />
   /refresh请求可以重新初始化添加了@RefreshScope 的bean。
 * /restart for closing the ApplicationContext and restarting it (disabled by default)<br />
@@ -301,7 +301,7 @@ spring:
 ---------------------------------
 # Spring Cloud Config
 
-Spring Cloud Config provides server and client-side support for externalized configuration in a distributed system. With the Config Server you have a central place to manage external properties for applications across all environments. The concepts on both client and server map identically to the Spring Environment and PropertySource abstractions, so they fit very well with Spring applications, but can be used with any application running in any language. As an application moves through the deployment pipeline from dev to test and into production you can manage the configuration between those environments and be certain that applications have everything they need to run when they migrate. The default implementation of the server storage backend uses git so it easily supports labelled versions of configuration environments, as well as being accessible to a wide range of tooling for managing the content. It is easy to add alternative implementations and plug them in with Spring configuration.
+Spring Cloud Config provides server and client-side support for externalized configuration in a distributed system. With the Config Server you have a central place to manage external properties for applications across all environments. The concepts on both client and server map identically to the Spring `Environment` and PropertySource abstractions, so they fit very well with Spring applications, but can be used with any application running in any language. As an application moves through the deployment pipeline from dev to test and into production you can manage the configuration between those environments and be certain that applications have everything they need to run when they migrate. The default implementation of the server storage backend uses git so it easily supports labelled versions of configuration environments, as well as being accessible to a wide range of tooling for managing the content. It is easy to add alternative implementations and plug them in with Spring configuration.
 
 Spring Cloud Config项目提供了一个解决分布式系统的配置管理方案，它包含了客户端和服务器两个部分。在客户机和服务器的概念中，Spring环境可以和外部资源的属性直接映射，所以这样的做法很适合与Spring应用程序开发，并且可以被用于任何语言与项目中。随着项目的部署，从开发环境、到测试环境、到生产环节，使用Spring管理这些环境之间的配置，以确保项目拥有他们所需要的一切配置信息都能够安全迁移。后端存储默认使用Git工具实现，因此很容易支持配置环境的版本管理，同时也能够使用其它的工具来管理这部分内容。在Spring Configuration中很容易地利用可插拔方式来添加替代实现。
 
@@ -327,9 +327,9 @@ $ curl localhost:8888/foo/development
 ]}
 ```
 
-The default strategy for locating property sources is to clone a git repository (at spring.cloud.config.server.git.uri) and use it to initialize a mini SpringApplication. The mini-application’s Environment is used to enumerate property sources and publish them via a JSON endpoint.
+The default strategy for locating property sources is to clone a git repository (at spring.cloud.config.server.git.uri) and use it to initialize a mini SpringApplication. The mini-application’s `Environment` is used to enumerate property sources and publish them via a JSON endpoint.
 
-默认加载property资源的策略是克隆一个git仓库(at spring.cloud.config.server.git.uri'),用它去初始化一个mini `SpringApplication, 这个mini SpringApplication的Environment用来枚举property,通过json节点发布它们.
+默认加载property资源的策略是克隆一个git仓库(at spring.cloud.config.server.git.uri'),用它去初始化一个mini `SpringApplication, 这个mini SpringApplication的`Environment`用来枚举property,通过json节点发布它们.
 
 The HTTP service has resources in the form:
 
@@ -526,12 +526,12 @@ where `${user.home}/config-repo` is a git repository containing YAML and propert
 
 ### Environment Repository - 资源库环境
 
-Where do you want to store the configuration data for the Config Server? The strategy that governs this behaviour is the EnvironmentRepository, serving Environment objects. This Environment is a shallow copy of the domain from the Spring Environment (including propertySources as the main feature). The Environment resources are parametrized by three variables:
+Where do you want to store the configuration data for the Config Server? The strategy that governs this behaviour is the EnvironmentRepository, serving `Environment` objects. This `Environment` is a shallow copy of the domain from the Spring `Environment` (including propertySources as the main feature). The `Environment` resources are parametrized by three variables:
 
-你想把Config Server的配置数据存储到哪里?解决这个问题的策略是EnvironmentRepository,并提供Environment对象.Environment对象是对Spring的Environment(其中包括 propertySources做为主要属性)的浅拷贝. Environment资源被参数化成了3个变量:
+你想把Config Server的配置数据存储到哪里?解决这个问题的策略是EnvironmentRepository,并提供`Environment`对象.`Environment`对象是对Spring的`Environment`(其中包括 propertySources做为主要属性)的浅拷贝. `Environment`资源被参数化成了3个变量:
 
-* {application} maps to "spring.application.name" on the client side;<br />
-  {application} 对应客户端的"spring.application.name"属性;
+* {application} maps to `spring.application.name` on the client side;<br />
+  {application} 对应客户端的"`spring.application.name`"属性;
 * {profile} maps to "spring.active.profiles" on the client (comma separated list); and<br />
   {profile} 对应客户端的 "spring.profiles.active"属性(逗号分隔的列表); 和
 * {label} which is a server side feature labelling a "versioned" set of config files.
@@ -558,15 +558,15 @@ spring:
 
 (像通常的Spring Boot应用程序一样, 这些参数也可以通过环境变量或命令行参数进行设置).
 
-If the repository is file-based, the server will create an Environment from application.yml (shared between all clients), and foo.yml (with foo.yml taking precedence). If the YAML files have documents inside them that point to Spring profiles, those are applied with higher precendence (in order of the profiles listed), and if there are profile-specific YAML (or properties) files these are also applied with higher precedence than the defaults. Higher precendence translates to a PropertySource listed earlier in the Environment. (These are the same rules as apply in a standalone Spring Boot application.)
+If the repository is file-based, the server will create an `Environment` from `application.yml` (shared between all clients), and foo.yml (with foo.yml taking precedence). If the YAML files have documents inside them that point to Spring profiles, those are applied with higher precendence (in order of the profiles listed), and if there are profile-specific YAML (or properties) files these are also applied with higher precedence than the defaults. Higher precendence translates to a PropertySource listed earlier in the `Environment`. (These are the same rules as apply in a standalone Spring Boot application.)
 
-如果配置库是基于文件的,服务器将从application.yml(所有的客户端共享)和 foo.yml(foo.yml拥有高优先级)中创建一个Environment对象. 如果这些 YAML文件中有指定Spring profiles,那么这些profiles将有较高优先级(按在profiles列出的顺序),同时如果存在指定profile的YAML(或properties)文件,这些文件就比default文件具有较高优先级.高优先级的配置优先转成Environment对象中的PropertySource.(这和单独的Spring Boot系统使用的规则是一样的.)
+如果配置库是基于文件的,服务器将从`application.yml`(所有的客户端共享)和 foo.yml(foo.yml拥有高优先级)中创建一个`Environment`对象. 如果这些 YAML文件中有指定Spring profiles,那么这些profiles将有较高优先级(按在profiles列出的顺序),同时如果存在指定profile的YAML(或properties)文件,这些文件就比default文件具有较高优先级.高优先级的配置优先转成`Environment`对象中的PropertySource.(这和单独的Spring Boot系统使用的规则是一样的.)
 
 #### Git Backend - Git存储
 
-The default implementation of EnvironmentRepository uses a Git backend, which is very convenient for managing upgrades and physical environments, and also for auditing changes. To change the location of the repository you can set the "spring.cloud.config.server.git.uri" configuration property in the Config Server (e.g. in application.yml). If you set it with a file: prefix it should work from a local repository so you can get started quickly and easily without a server, but in that case the server operates directly on the local repository without cloning it (it doesn’t matter if it’s not bare because the Config Server never makes changes to the "remote" repository). To scale the Config Server up and make it highly available, you would need to have all instances of the server pointing to the same repository, so only a shared file system would work. Even in that case it is better to use the ssh: protocol for a shared filesystem repository, so that the server can clone it and use a local working copy as a cache.
+The default implementation of EnvironmentRepository uses a Git backend, which is very convenient for managing upgrades and physical environments, and also for auditing changes. To change the location of the repository you can set the "spring.cloud.config.server.git.uri" configuration property in the Config Server (e.g. in `application.yml`). If you set it with a file: prefix it should work from a local repository so you can get started quickly and easily without a server, but in that case the server operates directly on the local repository without cloning it (it doesn’t matter if it’s not bare because the Config Server never makes changes to the "remote" repository). To scale the Config Server up and make it highly available, you would need to have all instances of the server pointing to the same repository, so only a shared file system would work. Even in that case it is better to use the ssh: protocol for a shared filesystem repository, so that the server can clone it and use a local working copy as a cache.
 
-EnvironmentRepository的默认实现是使用Git后端,Git后端对于管理升级和物理环境是很方便的,对审计配置变更也很方便.想改变配置库的位置,你可以在Config Server中设置"spring.cloud.config.server.git.uri"配置项的值(e.g. 如在 application.yml文件中).如果你设置这个属性使用 file:前缀,Config Server 是从本地配置库中取数据,这种方式可以不使用Git的情况下,快速和简单的运行起来,但是这种情况下,Config Server不通过Clone Git配置库直接操作本地库(如果本地配置库不为空,也不用担心,因为Config Server不会把变更推送到"remote"库中). 为了增强Config Server 的高可靠性,需要按比例增加Config Server的数量,这时候需要让所有的Config Server 实例指向相同的配置库,此种情况下只能有一个共享的文件系统才能很好的运行.即使在这种情况下,最好还是使用ssh: 协议来访问共享文件系统库,以便让服务器能够克隆Git库并可以让本地工作副本当作缓存来使用.
+EnvironmentRepository的默认实现是使用Git后端,Git后端对于管理升级和物理环境是很方便的,对审计配置变更也很方便.想改变配置库的位置,你可以在Config Server中设置"spring.cloud.config.server.git.uri"配置项的值(e.g. 如在 `application.yml`文件中).如果你设置这个属性使用 file:前缀,Config Server 是从本地配置库中取数据,这种方式可以不使用Git的情况下,快速和简单的运行起来,但是这种情况下,Config Server不通过Clone Git配置库直接操作本地库(如果本地配置库不为空,也不用担心,因为Config Server不会把变更推送到"remote"库中). 为了增强Config Server 的高可靠性,需要按比例增加Config Server的数量,这时候需要让所有的Config Server 实例指向相同的配置库,此种情况下只能有一个共享的文件系统才能很好的运行.即使在这种情况下,最好还是使用ssh: 协议来访问共享文件系统库,以便让服务器能够克隆Git库并可以让本地工作副本当作缓存来使用.
 
 This repository implementation maps the {label} parameter of the HTTP resource to a git label (commit id, branch name or tag). If the git branch or tag name contains a slash ("/") then the label in the HTTP URL should be specified with the special string "(_)" instead (to avoid ambiguity with other URL paths). Be careful with the brackets in the URL if you are using a command line client like curl (e.g. escape them from the shell with quotes '').
 
@@ -738,15 +738,15 @@ The search locations can contain placeholders for {application}, {profile} and {
 
 对于{application},{profile} and {label}来说,搜寻位置可以包含占位符. 采用这种方式,你可以隔离目录,也可以选择某种策略来使你的应用程序更加清晰明了(如:一个application一个子目录,或一个profile一个子目录).
 
-If you don’t use placeholders in the search locations, this repository also appends the {label} parameter of the HTTP resource to a suffix on the search path, so properties files are loaded from each search location and a subdirectory with the same name as the label (the labelled properties take precedence in the Spring Environment). Thus the default behaviour with no placeholders is the same as adding a search location ending with /{label}/. For example `file:/tmp/config is the same as file:/tmp/config,file:/tmp/config/{label}
+If you don’t use placeholders in the search locations, this repository also appends the {label} parameter of the HTTP resource to a suffix on the search path, so properties files are loaded from each search location and a subdirectory with the same name as the label (the labelled properties take precedence in the Spring `Environment`). Thus the default behaviour with no placeholders is the same as adding a search location ending with /{label}/. For example `file:/tmp/config is the same as file:/tmp/config,file:/tmp/config/{label}
 
 如果你在在查找位置中不指定占位符,可以把在HTTP资源请求参数{label}追加到查询路径的后面,此时是从查询路径和用label名称一样的子目录中加载配置文件的(在Spring环境下,被打标记的属性具有较高优先级别).因此,没有占位符的默认特性和以/{label}/结尾的结果一样.举例`file:/tmp/config和 file:/tmp/config,file:/tmp/config/{label}请求效果等同.
 
 #### Sharing Configiration With All Applications - 应用间共享配置
 
-With file-based (i.e. git, svn and native) repositories, resources with file names in application* are shared between all client applications (so application.properties, application.yml, application-*.properties etc.). You can use resources with these file names to configure global defaults and have them overridden by application-specific files as necessary.
+With file-based (i.e. git, svn and native) repositories, resources with file names in application* are shared between all client applications (so application.properties, `application.yml`, application-*.properties etc.). You can use resources with these file names to configure global defaults and have them overridden by application-specific files as necessary.
 
-在基于文件的资源库中(i.e. git, svn and native), 这样的文件名 application* 命名的资源在所有的客户端都是共享的(如 application.properties, application.yml, application-*.properties,etc.).
+在基于文件的资源库中(i.e. git, svn and native), 这样的文件名 application* 命名的资源在所有的客户端都是共享的(如 application.properties, `application.yml`, application-*.properties,etc.).
 
 The #_property_overrides[property overrides] feature can also be used for setting global defaults, and with placeholders applications are allowed to override them locally.
 
@@ -832,9 +832,9 @@ If the remote property sources contain encrypted content (values starting with {
 
 如果远程属性包含加密内容(以{cipher}开头),这些值将在通过HTTP传递到客户端之前被解密.这样设置的最大优点在于属性值不使用时(如在git库中时)，没有必要以明文的方式显示.如果属性值不能被解密,那么这个值将会被删除,之后增加一个和原来key一样的属性值,不过，key的前缀是"invalid."，值是"not applicable"(通常是"<n/a>").这种设计方法很大程度上是为了阻止使用密文当作密码和意外密文泄露.
 
-If you are setting up a remote config repository for config client applications it might contain an application.yml like this, for instance:
+If you are setting up a remote config repository for config client applications it might contain an `application.yml` like this, for instance:
 
-如果你想为config client设置远程config库时使用密文，可能包含的文件application.yml像这样，举例:
+如果你想为config client设置远程config库时使用密文，可能包含的文件`application.yml`像这样，举例:
 
 `application.yml`
 ```yaml
@@ -884,7 +884,7 @@ Take the encrypted value and add the {cipher} prefix before you put it in the YA
 
 你加密的值增加{cipher}前缀后,放到YAML或properties文件之前，或者在递交或推送到远程服务器之前,这些加密的值都面临着潜在的不安全存储风险.
 
-The /encrypt and /decrypt endpoints also both accept paths of the form /*/{name}/{profiles} which can be used to control cryptography per application (name) and profile when clients call into the main Environment resource.
+The /encrypt and /decrypt endpoints also both accept paths of the form /*/{name}/{profiles} which can be used to control cryptography per application (name) and profile when clients call into the main `Environment` resource.
 
 当客户端程序对主环境资源不能确定时,/encrypt 和/decrypt接口也接受带有路径形式的请求 /*/{name}/{profiles},这样可以针对每个application(name)和profile进行详细的控制加解密.
 
@@ -953,9 +953,9 @@ $ keytool -genkeypair -alias mytestkey -keyalg RSA \
   -keypass changeme -keystore server.jks -storepass letmein
 ```
 
-Put the server.jks file in the classpath (for instance) and then in your application.yml for the Config Server:
+Put the server.jks file in the classpath (for instance) and then in your `application.yml` for the Config Server:
 
-把 server.jks文件放到你的classpath中(配置服务器的系统中),然后再application.yml文件中对Config Server 进行配置:
+把 server.jks文件放到你的classpath中(配置服务器的系统中),然后再`application.yml`文件中对Config Server 进行配置:
 
 ```yaml
 encrypt:
@@ -991,11 +991,11 @@ Key rotation is hardly ever necessary on cryptographic grounds if the keys are o
 
 ## Serving Plain Text - 文本处理过程
 
-Instead of using the Environment abstraction (or one of the alternative representations of it in YAML or properties format) your applications might need generic plain text configuration files, tailored to their environment. The Config Server provides these through an additional endpoint at /{name}/{profile}/{label}/{path} where "name", "profile" and "label" have the same meaning as the regular environment endpoint, but "path" is a file name (e.g. log.xml). The source files for this endpoint are located in the same way as for the environment endpoints: the same search path is used as for properties or YAML files, but instead of aggregating all matching resources, only the first one to match is returned.
+Instead of using the `Environment` abstraction (or one of the alternative representations of it in YAML or properties format) your applications might need generic plain text configuration files, tailored to their environment. The Config Server provides these through an additional endpoint at /{name}/{profile}/{label}/{path} where "name", "profile" and "label" have the same meaning as the regular environment endpoint, but "path" is a file name (e.g. log.xml). The source files for this endpoint are located in the same way as for the environment endpoints: the same search path is used as for properties or YAML files, but instead of aggregating all matching resources, only the first one to match is returned.
 
 有的时候根据不同环境，可以考虑不使用`Environment`抽象层（即：不使用JSON,YAML,Properties），而直接使用纯文本方式进行配置。Config Server提供几个额外的访问端点：`/{name}/{profile}/{label}/{path}`起到和正常`Environment`端点一样的作用，不过这里的`{path}`是指的一个文件名(例如 log.xml)。这里的源文件的定位与正常YAML或者属性文件的扫描处理逻辑类似，不同点在于只会搜索到第一个匹配到的文件，而不会想YAML及属性文件那样扫描加载所有匹配文件。
 
-After a resource is located, placeholders in the normal format (${…​}) are resolved using the effective Environment for the application name, profile and label supplied. In this way the resource endpoint is tightly integrated with the environment endpoints. Example, if you have this layout for a GIT (or SVN) repository:
+After a resource is located, placeholders in the normal format (${…​}) are resolved using the effective `Environment` for the application name, profile and label supplied. In this way the resource endpoint is tightly integrated with the environment endpoints. Example, if you have this layout for a GIT (or SVN) repository:
 
 当资源文件被找到后，与常规的配置文件一样，也会先处理占位符。这种配置方法会与环境端点紧密的关联。例如，如果在git（svn）上你有下面这些文件：
 
@@ -1013,7 +1013,7 @@ server {
 }
 ```
 
-and application.yml like this:
+and `application.yml` like this:
 
 ```yaml
 nginx:
@@ -1097,19 +1097,19 @@ The default configuration works out of the box with Github, Gitlab or Bitbucket.
 
 ## Spring Cloud Config Client - Spring Cloud Config客户端
 
-A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer), and it will also pick up some additional useful features related to Environment change events.
+A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer), and it will also pick up some additional useful features related to `Environment` change events.
 
 一个Spring Boot应用可以很快地利用Spring配置服务器（或者应用开发者提供的外在的属性源），它也可以使用一些涉及到环境改变的额外的可用属性。
 
 ### Config First Bootstrap - 配置优先启动模式
 
-This is the default behaviour for any application which has the Spring Cloud Config Client on the classpath. When a config client starts up it binds to the Config Server (via the bootstrap configuration property spring.cloud.config.uri) and initializes Spring Environment with remote property sources.
+This is the default behaviour for any application which has the Spring Cloud Config Client on the classpath. When a config client starts up it binds to the Config Server (via the bootstrap configuration property spring.cloud.config.uri) and initializes Spring `Environment` with remote property sources.
 
 对于任何应用来说，在classpath里有Spring Cloud Config Client文件，会有这样的默认行为。当一个绑定到Config Server端的Config Client端启动（通过bootstrap配置文件的spring.cloud.config.uri属性）并且通过远程的参数资源束初始化Spring环境。
 
-The net result of this is that all client apps that want to consume the Config Server need a bootstrap.yml (or an environment variable) with the server address in spring.cloud.config.uri (defaults to "http://localhost:8888").
+The net result of this is that all client apps that want to consume the Config Server need a `bootstrap.yml` (or an environment variable) with the server address in spring.cloud.config.uri (defaults to "http://localhost:8888").
 
-最终结果是所有要与Config Server连接的的客户端应用在服务地址spring.cloud.config.uri (默认为 "http://localhost:8888")都需要一个bootstrap.yml（或者一个环境设置参数）
+最终结果是所有要与Config Server连接的的客户端应用在服务地址spring.cloud.config.uri (默认为 "http://localhost:8888")都需要一个`bootstrap.yml`（或者一个环境设置参数）
 
 ### Eureka First Bootstrap - Eureka优先启动模式
 
@@ -1117,9 +1117,9 @@ If you are using Spring Cloud Netflix and Eureka Service Discovery, then you can
 
 如果你正在使用Spring Cloud Netflix及Eureka Service Discovery，那么你会有一个使用Eureka注册的Config Server（想要这样使用的话），但是在默认的"Config First"节点，这些客户端不能使用这个注册的服务器。
 
-If you prefer to use Eureka to locate the Config Server, you can do that by setting spring.cloud.config.discovery.enabled=true (default "false"). The net result of that is that client apps all need a bootstrap.yml (or an environment variable) with the Eureka server address, e.g. in eureka.client.serviceUrl.defaultZone. The price for using this option is an extra network round trip on start up to locate the service registration. The benefit is that the Config Server can change its co-ordinates, as long as Eureka is a fixed point. The default service id is "CONFIGSERVER" but you can change that on the client with spring.cloud.config.discovery.serviceId (and on the server in the usual way for a service, e.g. by setting spring.application.name).
+If you prefer to use Eureka to locate the Config Server, you can do that by setting spring.cloud.config.discovery.enabled=true (default "false"). The net result of that is that client apps all need a `bootstrap.yml` (or an environment variable) with the Eureka server address, e.g. in eureka.client.serviceUrl.defaultZone. The price for using this option is an extra network round trip on start up to locate the service registration. The benefit is that the Config Server can change its co-ordinates, as long as Eureka is a fixed point. The default service id is "CONFIGSERVER" but you can change that on the client with spring.cloud.config.discovery.serviceId (and on the server in the usual way for a service, e.g. by setting `spring.application.name`).
 
-如果你想要使用Eureka去定位Config Server，你可以设置spring.cloud.config.discovery.enabled=true（默认为false），那接下来的结果是所有的客户端应用都需要在bootstrap.yml（或者环境变量）设置Eureka服务器地址，比如：eureka.client.serviceUrl.defaultZone。设置这个选项需要在开始定位服务注册的时候，付出额外的网络往返开销。好处是只要Eureka 是一个固定的节点，Config Server就可以改变它自己的合作定位信息。默认的服务id是"CONFIGSERVER"，但是你可以在客户端通过修改spring.cloud.config.discovery.serviceId去修改它（并且在服务器端，对于一个服务，一个不常用的方式是设置spring.application.name）。
+如果你想要使用Eureka去定位Config Server，你可以设置spring.cloud.config.discovery.enabled=true（默认为false），那接下来的结果是所有的客户端应用都需要在`bootstrap.yml`（或者环境变量）设置Eureka服务器地址，比如：eureka.client.serviceUrl.defaultZone。设置这个选项需要在开始定位服务注册的时候，付出额外的网络往返开销。好处是只要Eureka 是一个固定的节点，Config Server就可以改变它自己的合作定位信息。默认的服务id是"CONFIGSERVER"，但是你可以在客户端通过修改spring.cloud.config.discovery.serviceId去修改它（并且在服务器端，对于一个服务，一个不常用的方式是设置`spring.application.name`）。
 
 The discovery client implementations all support some kind of metadata map (e.g. for Eureka we have eureka.instance.metadataMap). Some additional properties of the Config Server may need to be configured in its service registration metadata so that clients can connect correctly. If the Config Server is secured with HTTP Basic you can configure the credentials as "username" and "password". And if the Config Server has a context path you can set "configPath". Example, for a Config Server that is a Eureka client:
 
@@ -1212,7 +1212,7 @@ If you use another form of security you might need to provide a RestTemplate to 
 -------------------------------
 # Spring Cloud Netflix
 
-This project provides Netflix OSS integrations for Spring Boot apps through autoconfiguration and binding to the Spring Environment and other Spring programming model idioms. With a few simple annotations you can quickly enable and configure the common patterns inside your application and build large distributed systems with battle-tested Netflix components. The patterns provided include Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) and Client Side Load Balancing (Ribbon).
+This project provides Netflix OSS integrations for Spring Boot apps through autoconfiguration and binding to the Spring `Environment` and other Spring programming model idioms. With a few simple annotations you can quickly enable and configure the common patterns inside your application and build large distributed systems with battle-tested Netflix components. The patterns provided include Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) and Client Side Load Balancing (Ribbon).
 
 这个工程通过自动的配置文件为Spring Boot应用提供了Netflix OSS的整合，而且可以绑定到Spring环境及其他Spring模式的编程里面。通过一些简单的注解，你可以很快地启用并配置你应用里常用的模式，并且使用battle-tested Netflix 组建来构建大型的分发系统。这些模式在Service Discovery (Eureka), Circuit Breaker (Hystrix), Intelligent Routing (Zuul) 及Client Side Load Balancing (Ribbon)里面都有提供。
 
@@ -1268,13 +1268,13 @@ where "defaultZone" is a magic string fallback value that provides the service U
 
 在这里，"defaultZone"是一个默认缺省值，以提供给任何没有声明属性（比如：这是一个有用的缺省值）的客户端。
 
-The default application name (service ID), virtual host and non-secure port, taken from the Environment, are ${spring.application.name}, ${spring.application.name} and ${server.port} respectively.
+The default application name (service ID), virtual host and non-secure port, taken from the `Environment`, are ${spring.application.name}, ${spring.application.name} and ${server.port} respectively.
 
 默认的应用名（service ID），virtual host 及non-secure port是从环境配置里的${spring.application.name}, ${spring.application.name} 及${server.port}分别获取的。
 
-@EnableEurekaClient makes the app into both a Eureka "instance" (i.e. it registers itself) and a "client" (i.e. it can query the registry to locate other services). The instance behaviour is driven by eureka.instance.* configuration keys, but the defaults will be fine if you ensure that your application has a spring.application.name (this is the default for the Eureka service ID, or VIP).
+@EnableEurekaClient makes the app into both a Eureka "instance" (i.e. it registers itself) and a "client" (i.e. it can query the registry to locate other services). The instance behaviour is driven by eureka.instance.* configuration keys, but the defaults will be fine if you ensure that your application has a `spring.application.name` (this is the default for the Eureka service ID, or VIP).
 
-@EnableEurekaClient 使应用称为既是Eureka "instance" (比如：自己注册资金) 又是一个"client" (比如：它可以查询注册信息去定位其他服务).实例是通过eureka.instance.*键值去配置的，但是，如果你确定你的应用有spring.application.name，那么默认值也是可以的（对于Eureka service ID, 或者VIP来说，这是默认值）。
+@EnableEurekaClient 使应用称为既是Eureka "instance" (比如：自己注册资金) 又是一个"client" (比如：它可以查询注册信息去定位其他服务).实例是通过eureka.instance.*键值去配置的，但是，如果你确定你的应用有`spring.application.name`，那么默认值也是可以的（对于Eureka service ID, 或者VIP来说，这是默认值）。
 
 See EurekaInstanceConfigBean and EurekaClientConfigBean for more details of the configurable options.
 
@@ -1487,7 +1487,7 @@ See also below for details of Ribbon support on the client side for Zones and Re
 Standalone Mode
 The combination of the two caches (client and server) and the heartbeats make a standalone Eureka server fairly resilient to failure, as long as there is some sort of monitor or elastic runtime keeping it alive (e.g. Cloud Foundry). In standalone mode, you might prefer to switch off the client side behaviour, so it doesn’t keep trying and failing to reach its peers. Example:
 
-application.yml (Standalone Eureka Server)
+`application.yml` (Standalone Eureka Server)
 server:
   port: 8761
 
@@ -1505,7 +1505,7 @@ Peer Awareness
 Eureka can be made even more resilient and available by running multiple instances and asking them to register with each other. In fact, this is the default behaviour, so all you need to do to make it work is add a valid serviceUrl to a peer, e.g.
 
 
-application.yml (Two Peer Aware Eureka Servers)
+`application.yml` (Two Peer Aware Eureka Servers)
 ---
 spring:
   profiles: peer1
@@ -1696,14 +1696,14 @@ When Eureka is used in conjunction with Ribbon the ribbonServerList is overridde
 Example: How to Use Ribbon Without Eureka
 Eureka is a convenient way to abstract the discovery of remote servers so you don’t have to hard code their URLs in clients, but if you prefer not to use it, Ribbon and Feign are still quite amenable. Suppose you have declared a @RibbonClient for "stores", and Eureka is not in use (and not even on the classpath). The Ribbon client defaults to a configured server list, and you can supply the configuration like this
 
-application.yml
+`application.yml`
 stores:
   ribbon:
     listOfServers: example.com,google.com
 Example: Disable Eureka use in Ribbon
 Setting the property ribbon.eureka.enabled = false will explicitly disable the use of Eureka in Ribbon.
 
-application.yml
+`application.yml`
 ribbon:
   eureka:
    enabled: false
@@ -1883,7 +1883,7 @@ These properties allow you to be selective about the compressed media types and 
 Feign logging
 A logger is created for each Feign client created. By default the name of the logger is the full class name of the interface used to create the Feign client. Feign logging only responds to the DEBUG level.
 
-application.yml
+`application.yml`
 logging.level.project.user.UserClient: DEBUG
 The Logger.Level object that you may configure per client, tells Feign how much to log. Choices are:
 
@@ -1917,78 +1917,110 @@ class ArchaiusTest {
         OtherClass.someMethod(myprop.get());
     }
 }
-Archaius has its own set of configuration files and loading priorities. Spring applications should generally not use Archaius directly, but the need to configure the Netflix tools natively remains. Spring Cloud has a Spring Environment Bridge so Archaius can read properties from the Spring Environment. This allows Spring Boot projects to use the normal configuration toolchain, while allowing them to configure the Netflix tools, for the most part, as documented.
+Archaius has its own set of configuration files and loading priorities. Spring applications should generally not use Archaius directly, but the need to configure the Netflix tools natively remains. Spring Cloud has a Spring Environment Bridge so Archaius can read properties from the Spring `Environment`. This allows Spring Boot projects to use the normal configuration toolchain, while allowing them to configure the Netflix tools, for the most part, as documented.
 
-Router and Filter: Zuul
+## Router and Filter: Zuul - 路由和过滤：Zuul
+
 Routing in an integral part of a microservice architecture. For example, / may be mapped to your web application, /api/users is mapped to the user service and /api/shop is mapped to the shop service. Zuul is a JVM based router and server side load balancer by Netflix.
+
+路由是微服务架构的重要组成，例如将/映射到web应用，将/api/users映射到用户服务，/api/shop映射到购物服务等。Zuul是Netflix基于JVM开发的路由和服务端负载均衡组件。
 
 Netflix uses Zuul for the following:
 
-Authentication
+Netflix将Zuul用于以下场景：
 
-Insights
-
-Stress Testing
-
-Canary Testing
-
-Dynamic Routing
-
-Service Migration
-
-Load Shedding
-
-Security
-
-Static Response handling
-
-Active/Active traffic management
+* Authentication 权限认证 
+* Insights 监控
+* Stress Testing 压力测试
+* Canary Testing 金丝雀测试
+* Dynamic Routing 动态路由
+* Service Migration 服务迁移
+* Load Shedding 负载切换
+* Security 安全
+* Static Response handling 静态响应处理
+* Active/Active traffic management 在线流量管理
 
 Zuul’s rule engine allows rules and filters to be written in essentially any JVM language, with built in support for Java and Groovy.
 
-Embedded Zuul Reverse Proxy
+可以使用任何JVM语言编写Zuul规则和过滤器, 内置Java和Groovy支持。
+
+### Embedded Zuul Reverse Proxy - Zuul反向代理
+
 Spring Cloud has created an embedded Zuul proxy to ease the development of a very common use case where a UI application wants to proxy calls to one or more back end services. This feature is useful for a user interface to proxy to the backend services it requires, avoiding the need to manage CORS and authentication concerns independently for all the backends.
+
+Spring Cloud提供了一个嵌入式Zuul代理用于简化一些典型应用场景下的开发工作，例如在用户界面需要将请求代理到一个或多个后台服务等。这个功能非常实用，可以避免每个后台服务各自管理访问控制、权限认证等问题。
 
 To enable it, annotate a Spring Boot main class with @EnableZuulProxy, and this forwards local calls to the appropriate service. By convention, a service with the Eureka ID "users", will receive requests from the proxy located at /users (with the prefix stripped). The proxy uses Ribbon to locate an instance to forward to via Eureka, and all requests are executed in a hystrix command, so failures will show up in Hystrix metrics, and once the circuit is open the proxy will not try to contact the service.
 
+在Spring Boot主类上添加@EnableZuulProxy注解即可启用嵌入式Zuul代理，这样就可以将本地调用转发给相应的服务。按照约定，Zuul将路径为/users（会去掉这个前缀）的请求转发给Erureka ID为“users”的服务。Zuul使用Ribbon从Eureka获取服务清单，确定转发目标，所有请求使用hystrix命令执行，因此失败信息会被收集到Hystrix指标中，一旦断路器发生熔断，Zuul就会停止将请求路由给服务。
+
 To skip having a service automatically added, set zuul.ignored-services to a list of service id patterns. If a service matches a pattern that is ignored, but also included in the explicitly configured routes map, then it will be unignored. Example:
 
-application.yml
+可以通过 zuul.ignored-services配置禁止Zuul自动对服务进行路由。如果某个服务符合ignore配置，但又出现在routes配置中，则仍然会对这个服务进行路由，例如：
+
+`application.yml`
+```yaml
  zuul:
   ignoredServices: '*'
   routes:
     users: /myusers/**
+```
+
 In this example, all services are ignored except "users".
+
+在这个例子中，只对users服务路由，忽略其它所有服务。
 
 To augment or change the proxy routes, you can add external configuration like the following:
 
-application.yml
+可以使用下面方法增加和修改路由配置：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     users: /myusers/**
+```
+
 This means that http calls to "/myusers" get forwarded to the "users" service (for example "/myusers/101" is forwarded to "/101").
+
+它表示将http请求/myusers转发给users服务（例如将/myusers/101转发到/101）。
 
 To get more fine-grained control over a route you can specify the path and the serviceId independently:
 
-application.yml
+将path和serviceId分开配置可以更灵活地控制路由规则：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     users:
       path: /myusers/**
       serviceId: users_service
+```
+
 This means that http calls to "/myusers" get forwarded to the "users_service" service. The route has to have a "path" which can be specified as an ant-style pattern, so "/myusers/*" only matches one level, but "/myusers/{asterisk}{asterisk}" matches hierarchically.
+
+它表示将http请求/myusers转发给users_service服务。路由规则必须有一个path参数，采用ant路径格式，/myusers/*匹配一级目录，/myusers/**匹配多级目录。
 
 The location of the backend can be specified as either a "serviceId" (for a Eureka service) or a "url" (for a physical location), e.g.
 
-application.yml
+通过serviceId参数（对于Eureka服务）或url参数（对于固定地址）指定后端服务地址，例如：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     users:
       path: /myusers/**
       url: http://example.com/users_service
+```
+
 These simple url-routes doesn’t get executed as HystrixCommand nor can you loadbalance multiple url with Ribbon. To achieve this specify a service-route and configure a Ribbon client for the serviceId (this currently requires disabling Eureka support in Ribbon: see above for more information), e.g.
 
-application.yml
+上面这种简单的url路由配置方式不会使用HystrixCommand执行，也不能使用Ribbon对多个url进行负载均衡，为了实现这些目标需要采用服务路由配置方式，并且为serviceId指定一个Ribbon客户端（这种方式目前需要在Ribbon中禁用Eureka支持，详细信息参考前面部分），例如：
+
+`application.yml`
+```yaml
 zuul:
   routes:
     users:
@@ -2002,48 +2034,81 @@ ribbon:
 users:
   ribbon:
     listOfServers: example.com,google.com
+```
+
 You can provide convention between serviceId and routes using regexmapper. It uses regular expression named group to extract variables from serviceId and inject them into a route pattern.
 
-ApplicationConfiguration.java
+可以在serviceId和routes配置中使用regexmapper，它可以通过正则表达式的命名组从serviceId中提取变量, 然后可以在路由表达式中使用这些变量。
+
+`ApplicationConfiguration.java`
+```java
 @Bean
 public PatternServiceRouteMapper serviceRouteMapper() {
     return new PatternServiceRouteMapper(
         "(?<name>^.+)-(?<version>v.+$)",
         "${version}/${name}");
 }
+```
+
 This means that a serviceId "myusers-v1" will be mapped to route "/v1/myusers/{asterisk}{asterisk}". Any regular expression is accepted but all named group must be present in both servicePattern and routePattern. If servicePattern do not match a serviceId, the default behavior is used. In exemple above, a serviceId "myusers" will be mapped to route "/myusers/{asterisk}{asterisk}" (no version detected) These feature is disable by default and is only applied to discovered services.
+
+它表示将myusers-v1的服务路由到/v1/myusers/**。可以使用任意的正则表达式，但所有命名组必须同时出现在servicePattern和routePattern之中。如果servicePattern无法匹配到serviceId，则使用默认处理方式，上面例子的默认处理方式是将serviceId为myusers的服务映射/ myusers/**（无法检测版本），这个功能默认是关闭的，并且仅适用于注册中心的服务。
 
 To add a prefix to all mappings, set zuul.prefix to a value, such as /api. The proxy prefix is stripped from the request before the request is forwarded by default (switch this behaviour off with zuul.stripPrefix=false). You can also switch off the stripping of the service-specific prefix from individual routes, e.g.
 
-application.yml
+设置 zuul.prefix 可以为所有的路由映射增加前缀，例如 /api 。默认情况下，路由时会从请求路径中移除路由前缀（通过 zuul.stripPrefix=false 可以关闭这个功能），你也可以针对特定服务关闭这个功能，例如：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     users:
       path: /myusers/**
       stripPrefix: false
+```
+
 In this example requests to "/myusers/101" will be forwarded to "/myusers/101" on the "users" service.
+
+在这个例子中/myusers/101的请求会被转发给users服务的/myusers/101。
 
 The zuul.routes entries actually bind to an object of type ProxyRouteLocator. If you look at the properties of that object you will see that it also has a "retryable" flag. Set that flag to "true" to have the Ribbon client automatically retry failed requests (and if you need to you can modify the parameters of the retry operations using the Ribbon client configuration).
 
+zuul.routes 下的各个条目使用ProxyRouteLocator对象表示，查看这个类的属性可以发现它有一个retryable参数，将该参数设为true，Ribbon会对失败请求自动重试（如果需要，你还可以通过Ribbon客户端配置修改重试操作的其它参数）。
+
 The X-Forwarded-Host header is added to the forwarded requests by default. To turn it off set zuul.addProxyHeaders = false. The prefix path is stripped by default, and the request to the backend picks up a header "X-Forwarded-Prefix" ("/myusers" in the examples above).
+
+路由转发时会默认添加X-Forwarded-Host请求头，可以通过zuul.addProxyHeaders = false关闭。默认情况下会删除路由前缀，后端服务可以通过X-Forwarded-Prefix请求头获取（例如上面示例中的/myusers）。
 
 An application with the @EnableZuulProxy could act as a standalone server if you set a default route ("/"), for example zuul.route.home: / would route all traffic (i.e. "/{asterisk}{asterisk}") to the "home" service.
 
+如果设置一个根路径路由规则，那么使用 @EnableZuulProxy 注解的应用可以作为一个单独的服务器。例如 zuul.route.home: / 会将所有请求（/**）路由到home服务。
+
 If more fine-grained ignoring is needed, you can specify specific patterns to ignore. These patterns are being evaluated at the start of the route location process, which means prefixes should be included in the pattern to warrant a match. Ignored patterns span all services and supersede any other route specification.
 
-application.yml
+可以通过忽略表达式更灵活的控制服务忽略，这些表达式位于路由处理的最前端，因此表达式中需要包括所有前缀路径。忽略表达式作用于所有服务，会覆盖其它路由规则。
+
+`application.yml`
+```yaml
  zuul:
   ignoredPatterns: /**/admin/**
   routes:
     users: /myusers/**
+```
+
 This means that all calls such as "/myusers/101" will be forwarded to "/101" on the "users" service. But calls including "/admin/" will not resolve.
 
-Strangulation Patterns and Local Forwards
+它表示对/myusers/101的所有调用会被转发到users服务的/101，但包含/admin/的调用不会路由。
+
+### Strangulation Patterns and Local Forwards - 老应用切换和本地转发
+
 A common pattern when migrating an existing application or API is to "strangle" old endpoints, slowly replacing them with different implementations. The Zuul proxy is a useful tool for this because you can use it to handle all traffic from clients of the old endpoints, but redirect some of the requests to new ones.
 
-Example configuration:
+迁移已有应用或API时通常需要面对老的接口地址，花费较长时间逐渐替换它们。Zuul非常适用于这种情况，因为它可以代理所有老接口的请求，实现新老接口路由。
 
-application.yml
+Example configuration: 示例配置：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     first:
@@ -2058,50 +2123,93 @@ application.yml
     legacy:
       path: /**
       url: http://legacy.example.com
+```
+
 In this example we are strangling the "legacy" app which is mapped to all requests that do not match one of the other patterns. Paths in /first/{asterisk}{asterisk} have been extracted into a new service with an external URL. And paths in /second/{asterisk}{asterisk} are forwared so they can be handled locally, e.g. with a normal Spring @RequestMapping. Paths in /third/{asterisk}{asterisk} are also forwarded, but with a different prefix (i.e. /third/foo is forwarded to /3rd/foo).
 
-NOTE
-The ignored pattterns aren’t completely ignored, they just aren’t handled by the proxy (so they are also effectively forwarded locally).
-Uploading Files through Zuul
+上面例子对一个老系统进行路由，除了几个规则外，请求都被路由到原系统。路径/first/**切换到了新的服务中，路径 /second/**在本地进行一次转发，例如可以使用Spring的@RequestMapping重新实现，路径/third/**同样被转发一次，使用了另外一个不同的路径（例如/third/foo会转发到/3rd/foo）。
+
+> **NOTE** <br />
+> The ignored pattterns aren’t completely ignored, they just aren’t handled by the proxy (so they are also effectively forwarded locally). <br />
+> **注意**：
+
+### Uploading Files through Zuul - 通过Zuul上传文件
+
 If you @EnableZuulProxy you can use the proxy paths to upload files and it should just work as long as the files are small. For large files there is an alternative path which bypasses the Spring DispatcherServlet (to avoid multipart processing) in "/zuul/*". I.e. if zuul.routes.customers=/customers/{asterisk}{asterisk} then you can POST large files to "/zuul/customers/*". The servlet path is externalized via zuul.servletPath. Extremely large files will also require elevated timeout settings if the proxy route takes you through a Ribbon load balancer, e.g.
 
-application.yml
+使用了@EnableZuulProxy后，你可以使用代理路径上传文件，但只适用于小文件的情况。对于大文件可以使用另外一个路径/zuul/*，它绕开了Spring的DispatcherServlet （为了避免multipart处理），例如对于zuul.routes.customers=/customers/**，你可以将大文件POST到/zuul/customers/*。这个路径可以通过zuul.servletPath修改。如果通过代理上传超大文件并且使用了Ribbon的负载均衡，还需要设置超时等配置：
+
+`application.yml`
+```yaml
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
 ribbon:
   ConnectTimeout: 3000
   ReadTimeout: 60000
+```
+
 Note that for streaming to work with large files, you need to use chunked encoding in the request (which some browsers do not do by default). E.g. on the command line:
 
+启用流式方式上传大文件，你需要在请求中使用chunked编码（某些浏览器默认未开启），例如命令行方式：
+
+```shell
 $ curl -v -H "Transfer-Encoding: chunked" \
     -F "file=@mylarge.iso" localhost:9999/zuul/simple/file
-Plain Embedded Zuul
+```
+
+### Plain Embedded Zuul - Zuul基础服务
+
 You can also run a Zuul server without the proxying, or switch on parts of the proxying platform selectively, if you use @EnableZuulServer (instead of @EnableZuulProxy). Any beans that you add to the application of type ZuulFilter will be installed automatically, as they are with @EnableZuulProxy, but without any of the proxy filters being added automatically.
+
+你可以运行一个Zuul服务，不使用它的代理功能，或者有选择性地使用Zuul的某些功能。使用@EnableZuulServer （而不是@EnableZuulProxy）时，应用中类型为ZuulFilter 的bean会自动生效，跟使用@EnableZuulProxy时一样，但不会自动添加Zuul代理的其他过滤器。
 
 In this case the routes into the Zuul server are still specified by configuring "zuul.routes.*", but there is no service discovery and no proxying, so the "serviceId" and "url" settings are ignored. For example:
 
-application.yml
+这种情况下过滤路径仍然使用zuul.routes.*配置，但不会使用服务发现机制和代理功能，因此会忽略serviceId和url参数，例如：
+
+`application.yml`
+```yaml
  zuul:
   routes:
     api: /api/**
+```
+
 maps all paths in "/api/{asterisk}{asterisk}" to the Zuul filter chain.
 
-Disable Zuul Filters
-Zuul for Spring Cloud comes with a number of ZuulFilter beans enabled by default in both proxy and server mode. See the zuul filters package for the possible filters that are enabled. If you want to disable one, simply set zuul.<SimpleClassName>.<filterType>.disable=true. By convention, the package after filters is the Zuul filter type. For example to disable org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter set zuul.SendResponseFilter.post.disable=true.
+将所有路径为/api/**的请求交给Zuul过滤器链进行处理。
 
-Polyglot support with Sidecar
+### Disable Zuul Filters - 关闭Zuul过滤器
+
+Zuul for Spring Cloud comes with a number of `ZuulFilter` beans enabled by default in both proxy and server mode. See the zuul filters package for the possible filters that are enabled. If you want to disable one, simply set `zuul.<SimpleClassName>.<filterType>.disable=true`. By convention, the package after filters is the Zuul filter type. For example to disable `org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter` set `zuul.SendResponseFilter.post.disable=true`.
+
+在代理和基础服务模式下，Spring Cloud中的Zuul都会默认启用大量`ZuulFilter`，具体可以参考zuul的过滤器包。如果需要禁用某个过滤器，设置`zuul.<SimpleClassName>.<filterType>.disable=true`即可。按照约定，包名中filters后面的部分就是zuul的过滤器类型，例如要禁用 `org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter`，设置`zuul.SendResponseFilter.post.disable=true`。
+
+### Polyglot support with Sidecar - 通过Sidecar支持多语言
+
 Do you have non-jvm languages you want to take advantage of Eureka, Ribbon and Config Server? The Spring Cloud Netflix Sidecar was inspired by Netflix Prana. It includes a simple http api to get all of the instances (ie host and port) for a given service. You can also proxy service calls through an embedded Zuul proxy which gets its route entries from Eureka. The Spring Cloud Config Server can be accessed directly via host lookup or through the Zuul Proxy. The non-jvm app should implement a health check so the Sidecar can report to eureka if the app is up or down.
+
+你是否想要在非jvm语言中使用Eureka、Ribbon和Config Server？Netflix Sidecar由Netflix Prana项目提供，其中包含一个简单的http api，可以用于获取某个服务的所有实例（主机和端口）。然后你可以使用Zuul代理，从Erueka获取服务清单，来代理这些服务请求。Spring Cloud Config Server可以通过主机查询的方式直接访问，也可以通过Zuul代理访问。非jvm应用应当实现一个健康检查接口，这样应用启动和停止的时候Sidecar可以给erueka通知。
 
 To enable the Sidecar, create a Spring Boot application with @EnableSidecar. This annotation includes @EnableCircuitBreaker, @EnableDiscoveryClient, and @EnableZuulProxy. Run the resulting application on the same host as the non-jvm application.
 
-To configure the side car add sidecar.port and sidecar.health-uri to application.yml. The sidecar.port property is the port the non-jvm app is listening on. This is so the Sidecar can properly register the app with Eureka. The sidecar.health-uri is a uri accessible on the non-jvm app that mimicks a Spring Boot health indicator. It should return a json document like the following:
+创建一个Spring Boot应用，通过@EnableSidecar启用Sidecar，这个注解包含了@EnableCircuitBreaker, @EnableDiscoveryClient和 @EnableZuulProxy，在同一个主机上启动非jvm应用。
 
-health-uri-document
+To configure the side car add sidecar.port and sidecar.health-uri to `application.yml`. The sidecar.port property is the port the non-jvm app is listening on. This is so the Sidecar can properly register the app with Eureka. The sidecar.health-uri is a uri accessible on the non-jvm app that mimicks a Spring Boot health indicator. It should return a json document like the following:
+
+需要在 application.yml中添加sidecar.port和sidecar.health-uri配置。sidecar.port属性配置为非jvm应用监听的端口号，这样Sidecar就可以将这个应用注册到Eureka中。sidecar.health-uri指定的uri是非jvm应用实现的Spring Boot健康检查接口，应当按如下格式返回json文档：
+
+`health-uri-document`
+```json
 {
   "status":"UP"
 }
-Here is an example application.yml for a Sidecar application:
+```
 
-application.yml
+Here is an example `application.yml` for a Sidecar application:
+
+下面是Sidecar应用的示例`application.yml`：
+
+`application.yml`
+```yaml
 server:
   port: 5678
 spring:
@@ -2111,9 +2219,14 @@ spring:
 sidecar:
   port: 8000
   health-uri: http://localhost:8000/health.json
-The api for the DiscoveryClient.getInstances() method is /hosts/{serviceId}. Here is an example response for /hosts/customers that returns two instances on different hosts. This api is accessible to the non-jvm app (if the sidecar is on port 5678) at http://localhost:5678/hosts/{serviceId}.
+```
 
-/hosts/customers
+The api for the `DiscoveryClient.getInstances()` method is `/hosts/{serviceId}`. Here is an example response for `/hosts/customers` that returns two instances on different hosts. This api is accessible to the non-jvm app (if the sidecar is on port 5678) at http://localhost:5678/hosts/{serviceId}.
+
+用于`DiscoveryClient.getInstances()`方法的接口地址为`/hosts/{serviceId}`，下面是`/hosts/customers` 的输出示例，它返回不同主机上的两个实例。非jvm应用可以通过 http://localhost:5678/hosts/{serviceId}使用这个api（假设sidecar的端口为5678）。
+
+`/hosts/customers`
+```json
 [
     {
         "host": "myhost",
@@ -2130,6 +2243,8 @@ The api for the DiscoveryClient.getInstances() method is /hosts/{serviceId}. Her
         "secure": false
     }
 ]
+```
+
 The Zuul proxy automatically adds routes for each service known in eureka to /<serviceId>, so the customers service is available at /customers. The Non-jvm app can access the customer service via http://localhost:5678/customers (assuming the sidecar is listening on port 5678).
 
 If the Config Server is registered with Eureka, non-jvm application can access it via the Zuul proxy. If the serviceId of the ConfigServer is configserver and the Sidecar is on port 5678, then it can be accessed at http://localhost:5678/configserver
@@ -2317,17 +2432,17 @@ https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/sr
 Quick Start
 Spring Cloud Bus works by adding Spring Boot autconfiguration if it detects itself on the classpath. All you need to do to enable the bus is to add spring-cloud-starter-bus-amqp to your dependency management and Spring Cloud takes care of the rest. Make sure RabbitMQ is available and configured to provide a ConnectionFactory: running on localhost you shouldn’t have to do anything, but if you are running remotely use Spring Cloud Connectors, or Spring Boot conventions to define the broker credentials, e.g.
 
-application.yml
+`application.yml`
 spring:
   rabbitmq:
     host: mybroker.com
     port: 5672
     username: user
     password: secret
-The bus currently supports sending messages to all nodes listening or all nodes for a particular service (as defined by Eureka). More selector criteria will be added in the future (ie. only service X nodes in data center Y, etc…​). The http endpoints are under the /bus/* actuator namespace. There are currently two implemented. The first, /bus/env, sends key/values pairs to update each nodes Spring Environment. The second, /bus/refresh, will reload each application’s configuration, just as if they had all been pinged on their /refresh endpoint.
+The bus currently supports sending messages to all nodes listening or all nodes for a particular service (as defined by Eureka). More selector criteria will be added in the future (ie. only service X nodes in data center Y, etc…​). The http endpoints are under the /bus/* actuator namespace. There are currently two implemented. The first, /bus/env, sends key/values pairs to update each nodes Spring `Environment`. The second, /bus/refresh, will reload each application’s configuration, just as if they had all been pinged on their /refresh endpoint.
 
 Addressing an Instance
-The HTTP endpoints accept a "destination" parameter, e.g. "/bus/refresh?destination=customers:9000", where the destination is an ApplicationContext ID. If the ID is owned by an instance on the Bus then it will process the message and all other instances will ignore it. Spring Boot sets the ID for you in the ContextIdApplicationContextInitializer to a combination of the spring.application.name, active profiles and server.port by default.
+The HTTP endpoints accept a "destination" parameter, e.g. "/bus/refresh?destination=customers:9000", where the destination is an ApplicationContext ID. If the ID is owned by an instance on the Bus then it will process the message and all other instances will ignore it. Spring Boot sets the ID for you in the ContextIdApplicationContextInitializer to a combination of the `spring.application.name`, active profiles and server.port by default.
 
 Addressing all instances of a service
 The "destination" parameter is used in a Spring PathMatcher (with the path separator as a colon :) to determine if an instance will process the message. Using the example from above, "/bus/refresh?destination=customers:**" will target all instances of the "customers" service regardless of the profiles and ports set as the ApplicationContext ID.
@@ -2469,7 +2584,7 @@ Spot the difference? This app will actually behave exactly the same as the previ
 
 You can register an app in github quite easily, so try that if you want a production app on your own domain. If you are happy to test on localhost:8080, then set up these properties in your application configuration:
 
-application.yml
+`application.yml`
 spring:
   oauth2:
     client:
@@ -2504,7 +2619,7 @@ class Application {
 }
 and
 
-application.yml
+`application.yml`
 spring:
   oauth2:
     resource:
@@ -2547,7 +2662,7 @@ public String relay() {
 Configuring Authentication Downstream of a Zuul Proxy
 You can control the authorization behaviour downstream of an @EnableZuulProxy through the proxy.auth.* settings. Example:
 
-application.yml
+`application.yml`
 proxy:
   auth:
     routes:
