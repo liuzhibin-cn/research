@@ -40,7 +40,7 @@ Extract files into JDK/jre/lib/security folder (whichever version of JRE/JDK x64
 进入目录JDK/jre/lib/security提取文件（无论您正在使用的是JDK/JRE的哪个版本，x64/x86）。
 备注：Spring Cloud 是在没有限制的apache2.0许可下发布。如果您想要贡献一些文档或者发现了一个错误，请在{githubmaster}/docs/src/main/asciidoc[github]工程中找到源码并且进行问题的跟踪。
 
-> NOTE
+> **NOTE**<br />
 > Spring Cloud is released under the non-restrictive Apache 2.0 license. If you would like to contribute to this section of the documentation or if you find an error, please find the source code and issue trackers in the project at {githubmaster}/docs/src/main/asciidoc[github].
 
 # Spring Cloud Context: Application Context Services 应用上下文服务
@@ -112,9 +112,9 @@ The bootstrap context can be trained to do anything you like by adding entries t
 
 可以通过修改/META-INF/spring.factories配置文件中的org.springframework.cloud.bootstrap.BootstrapConfiguration配置项的值来控制启动上下文。同时通过逗号分隔的Spring@Configuration类来建立上下文。任何main application context需要的自动注入的Bean可以在这里通过这种方式来获取。这也是ApplicationContextInitializer建立@Bean的方式。可以通过@Order来更改初始化序列，默认是”last”。
 
-> <strong>WARNING</strong><br />
+> **WARNING**<br />
 > Be careful when adding custom BootstrapConfiguration that the classes you add are not @ComponentScanned by mistake into your "main" application context, where they might not be needed. Use a separate package name for boot configuration classes that is not already covered by your @ComponentScan or @SpringBootApplication annotated configuration classes.<br />
-> <strong>警告</strong><br />
+> **警告**<br />
 > 你添加的自定义BootstrapConfiguration类没有错误的把@ComponentScanned加入到你的主应用上下文，他们可能是不需要的。使用一个另外的包不被@ComponentScan或者@SpringBootApplication注解覆盖到。
 
 The bootstrap process ends by injecting initializers into the main SpringApplication instance (i.e. the normal Spring Boot startup sequence, whether it is running as a standalone app or deployed in an application server). First a bootstrap context is created from the classes found in spring.factories and then all @Beans of type ApplicationContextInitializer are added to the main SpringApplication before it is started.
@@ -189,9 +189,9 @@ The RefreshScope is a bean in the context and it has a public method refreshAll(
 
 @RefreshScope有一个刷新所有bean的方法refreshAll()，也有通过bean的名字刷新单个bean的方法refresh(String)。
 
-> <strong>NOTE</strong><br />
+> **NOTE**<br />
 > @RefreshScope works (technically) on an @Configuration class, but it might lead to surprising behaviour: e.g. it does not mean that all the @Beans defined in that class are themselves @RefreshScope. Specifically, anything that depends on those beans cannot rely on them being updated when a refresh is initiated, unless it is itself in @RefreshScope (in which it will be rebuilt on a refresh and its dependencies re-injected, at which point they will be re-initialized from the refreshed @Configuration).<br />
-> <strong>注意</strong><br />
+> **注意**<br />
 > @RefreshScope注解在一个@Configuration类上面，但是它可能会产生不可预知的问题。在重新初始化的时候需要注意到可以相互依赖造成的冲突。
 
 ## Encryption and Decryption 加密和解密
@@ -461,9 +461,9 @@ $ curl localhost:8080/env
 
 (一条叫做"configService:<URL of remote repository>/<file name>"的属性源包含了属性"foo"和值"bar",它是最高优先级的)
 
-> *NOTE*<br />
+> **NOTE**<br />
 > the URL in the property source name is the git repository not the config server URL.<br />
-> *备注*<br />
+> **备注**<br />
 > 属性源中的 URL是git仓库的地址而不是配置服务器的URL
 
 ## Spring Cloud Config Server 配置服务
@@ -497,13 +497,13 @@ where `${user.home}/config-repo` is a git repository containing YAML and propert
 
 其中`${user.home}/config-repo`包含了YAML 和 properties文件的git库.
 
-> *NOTE* <br />
+> **NOTE** <br />
 > in Windows you need an extra "/" in the file URL if it is absolute with a drive prefix, e.g. `file:///${user.home}/config-repo`.<br />
-> *注意*：在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：`file:///${user.home}/config-repo`.
+> **注意**：在Windows系统中,如果文件URL是绝对路径并前面有驱动符号,你需要多增加个'/'符号，例如：`file:///${user.home}/config-repo`.
 
->*TIP* <br />
+>**TIP** <br />
 > Here’s a recipe for creating the git repository in the example above:<br />
-> *提示*：创建上面例子使用的git库,使用如下简单方法:
+> **提示**：创建上面例子使用的git库,使用如下简单方法:
 
 > ```shell
 > $ cd $HOME
@@ -515,13 +515,13 @@ where `${user.home}/config-repo` is a git repository containing YAML and propert
 > $ git commit -m "Add application.properties"
 > ```
 
-> *WARNING*<br />
+> **WARNING**<br />
 > using the local filesystem for your git repository is intended for testing only. Use a server to host your configuration repositories in production.<br />
-> *警告*：你的git库使用本地文件系统目的是为了测试.在生产环境中,你需要使用服务器来运行你的git库.
+> **警告**：你的git库使用本地文件系统目的是为了测试.在生产环境中,你需要使用服务器来运行你的git库.
 
-> *WARNING*<br />
+> **WARNING**<br />
 > the initial clone of your configuration repository will be quick and efficient if you only keep text files in it. If you start to store binary files, especially large ones, you may experience delays on the first request for configuration and/or out of memory errors in the server.<br />
-> *警告*：在配置库中,你如果只存储文本文件,初始clone配置库是非常快捷和高效的.如果你开始存储二进制文件特别是大型的二进制文件,你可能会遇到第一次请求配置文件比较慢或遇到发生在配置服务器上的内存溢出.
+> **警告**：在配置库中,你如果只存储文本文件,初始clone配置库是非常快捷和高效的.如果你开始存储二进制文件特别是大型的二进制文件,你可能会遇到第一次请求配置文件比较慢或遇到发生在配置服务器上的内存溢出.
 
 ## Environment Repository 资源库环境
 
@@ -617,9 +617,9 @@ If {application}/{profile} does not match any of the patterns, it will use the d
 
 如果 {application}/{profile}不能匹配任何表达式, 那么将使用"spring.cloud.config.server.git.uri"对应的值. 在上例子中, 对于 "simple" 配置库, 匹配模式是simple/* (也就说,无论profile是什么，它只匹配application 名称为"simple"应用系统)."local"库匹配所有application名称以"local"开头任何应用系统,不管profiles是什么(因没有配置对profile的匹配规则,/*后缀会被自动的增加到任何的匹配表达式中 ).
 
-> *NOTE*<br />
+> **NOTE**<br />
 > the "one-liner" short cut used in the "simple" example above can only be used if the only property to be set is the URI. If you need to set anything else (credentials, pattern, etc.) you need to use the full form.<br />
-> *注意*：在上述"simple"例子中,如果设置的属性只是一个URI,只使用一行就能完整的表示清楚. 如果你需要设置其他属性(如credentials, pattern, etc.),你需要使用完整的格式才能表示清楚.
+> **注意**：在上述"simple"例子中,如果设置的属性只是一个URI,只使用一行就能完整的表示清楚. 如果你需要设置其他属性(如credentials, pattern, etc.),你需要使用完整的格式才能表示清楚.
 
 The pattern property in the repo is actually an array, so you can use a YAML array (or [0], [1], etc. suffixes in properties files) to bind to multiple patterns. You may need to do this if you are going to run apps with multiple profiles. Example:
 
@@ -645,9 +645,9 @@ spring:
               uri: https://github.com/staging/config-repo
 ```
 
-> *NOTE*<br />
+> **NOTE**<br />
 > Spring Cloud will guess that a pattern containing a profile that doesn’t end in \* implies that you actually want to match a list of profiles starting with this pattern (so `*/staging` is a shortcut for `["*/staging", "*/staging,*"])`. This is common where you need to run apps in the "development" profile locally but also the "cloud" profile remotely, for instance.<br />
-> *注意*：如果 profile 不是以\*结尾的,Spring Cloud 会猜想实际的profile值, 这意味着你实际上是匹配以这个表达式开头的一个profile列表(因此 `*/staging` 只是 `["*/staging", "*/staging,*"]`的 简单表示法)。举例，普遍\*\*\*\*的一种方法是在本地环境中使用"development" profile 来运行系统,在远程环境中运行"cloud" profile.
+> **注意**：如果 profile 不是以\*结尾的,Spring Cloud 会猜想实际的profile值, 这意味着你实际上是匹配以这个表达式开头的一个profile列表(因此 `*/staging` 只是 `["*/staging", "*/staging,*"]`的 简单表示法)。举例，普遍\*\*\*\*的一种方法是在本地环境中使用"development" profile 来运行系统,在远程环境中运行"cloud" profile.
 
 Every repository can also optionally store config files in sub-directories, and patterns to search for those directories can be specified as searchPaths. For example at the top level:
 
@@ -721,11 +721,11 @@ There is also a "native" profile in the Config Server that doesn’t use Git, bu
 
 在Config Server中,还有一种不使用Git的"native"的配置方式,这种方式是从本地classpath 或文件系统中加载配置文件(使用 "spring.cloud.config.server.native.searchLocations"配置项进行设置). 加载Config Server 的"spring.profiles.active=native"配置项可以开启native配置.
 
-> *NOTE* <br />
+> **NOTE** <br />
 > Remember to use the file: prefix for file resources (the default without a prefix is usually the classpath). Just as with any Spring Boot configuration you can embed `${}`-style environment placeholders, but remember that absolute paths in Windows require an extra "/", e.g. `file:///${user.home}/config-repo` <br />
 > *注意*：牢记使用file:前缀来指示资源 (默认没有前缀是从classpath中去文件).就像任何 Spring Boot配置一样,你也可以 嵌入`${}`环境参数占位符,但是windows系统下使用绝对路径,前缀后面需要多加个"/", e.g. `file:///${user.home}/config-repo`
 
-> *WARNING* <br />
+> **WARNING** <br />
 The default value of the `searchLocations` is identical to a local Spring Boot application (so `[classpath:/, classpath:/config, file:./, file:./config]`). This does not expose the `application.properties` from the server to all clients because any property sources present in the server are removed before being sent to the client. <br />
 > *警告*：默认的 `searchLocations`值和本地Spring Boot 应用系统是一样的(如 `[classpath:/, classpath:/config,file:./, file:./config]`). 这种方式下,并不暴露服务器上的`application.properties`文件给客户端,因为在把属性传给客户端之前,服务器中属性源信息会被删除掉.
 
