@@ -2158,9 +2158,9 @@ $ curl -v -H "Transfer-Encoding: chunked" \
 
 ### Plain Embedded Zuul - Zuul基础服务
 
-You can also run a Zuul server without the proxying, or switch on parts of the proxying platform selectively, if you use @EnableZuulServer (instead of @EnableZuulProxy). Any beans that you add to the application of type ZuulFilter will be installed automatically, as they are with @EnableZuulProxy, but without any of the proxy filters being added automatically.
+You can also run a Zuul server without the proxying, or switch on parts of the proxying platform selectively, if you use `@EnableZuulServer` (instead of `@EnableZuulProxy`). Any beans that you add to the application of type `ZuulFilter` will be installed automatically, as they are with `@EnableZuulProxy`, but without any of the proxy filters being added automatically.
 
-你可以运行一个Zuul服务，不使用它的代理功能，或者有选择性地使用Zuul的某些功能。使用@EnableZuulServer （而不是@EnableZuulProxy）时，应用中类型为ZuulFilter 的bean会自动生效，跟使用@EnableZuulProxy时一样，但不会自动添加Zuul代理的其他过滤器。
+你可以运行一个Zuul服务，不使用它的代理功能，或者有选择性地使用Zuul的某些功能。使用`@EnableZuulServer` （而不是`@EnableZuulProxy`）时，应用中类型为`ZuulFilter` 的bean会自动生效，跟使用`@EnableZuulProxy`时一样，但不会自动添加Zuul代理的其他过滤器。
 
 In this case the routes into the Zuul server are still specified by configuring "zuul.routes.*", but there is no service discovery and no proxying, so the "serviceId" and "url" settings are ignored. For example:
 
@@ -2189,13 +2189,13 @@ Do you have non-jvm languages you want to take advantage of Eureka, Ribbon and C
 
 你是否想要在非jvm语言中使用Eureka、Ribbon和Config Server？Netflix Sidecar由Netflix Prana项目提供，其中包含一个简单的http api，可以用于获取某个服务的所有实例（主机和端口）。然后你可以使用Zuul代理，从Erueka获取服务清单，来代理这些服务请求。Spring Cloud Config Server可以通过主机查询的方式直接访问，也可以通过Zuul代理访问。非jvm应用应当实现一个健康检查接口，这样应用启动和停止的时候Sidecar可以给erueka通知。
 
-To enable the Sidecar, create a Spring Boot application with @EnableSidecar. This annotation includes @EnableCircuitBreaker, @EnableDiscoveryClient, and @EnableZuulProxy. Run the resulting application on the same host as the non-jvm application.
+To enable the Sidecar, create a Spring Boot application with `@EnableSidecar`. This annotation includes `@EnableCircuitBreaker`, `@EnableDiscoveryClient`, and `@EnableZuulProxy`. Run the resulting application on the same host as the non-jvm application.
 
-创建一个Spring Boot应用，通过@EnableSidecar启用Sidecar，这个注解包含了@EnableCircuitBreaker, @EnableDiscoveryClient和 @EnableZuulProxy，在同一个主机上启动非jvm应用。
+创建一个Spring Boot应用，通过`@EnableSidecar`启用Sidecar，这个注解包含了`@EnableCircuitBreaker`, `@EnableDiscoveryClient`和 `@EnableZuulProxy`，在同一个主机上启动非jvm应用。
 
-To configure the side car add sidecar.port and sidecar.health-uri to `application.yml`. The sidecar.port property is the port the non-jvm app is listening on. This is so the Sidecar can properly register the app with Eureka. The sidecar.health-uri is a uri accessible on the non-jvm app that mimicks a Spring Boot health indicator. It should return a json document like the following:
+To configure the side car add `sidecar.port` and `sidecar.health-uri` to `application.yml`. The `sidecar.port` property is the port the non-jvm app is listening on. This is so the Sidecar can properly register the app with Eureka. The `sidecar.health-uri` is a uri accessible on the non-jvm app that mimicks a Spring Boot health indicator. It should return a json document like the following:
 
-需要在 application.yml中添加sidecar.port和sidecar.health-uri配置。sidecar.port属性配置为非jvm应用监听的端口号，这样Sidecar就可以将这个应用注册到Eureka中。sidecar.health-uri指定的uri是非jvm应用实现的Spring Boot健康检查接口，应当按如下格式返回json文档：
+需要在 `application.yml`中添加`sidecar.port`和`sidecar.health-uri`配置。`sidecar.port`属性配置为非jvm应用监听的端口号，这样Sidecar就可以将这个应用注册到Eureka中。`sidecar.health-uri`指定的uri是非jvm应用实现的Spring Boot健康检查接口，应当按如下格式返回json文档：
 
 `health-uri-document`
 ```json
@@ -2245,13 +2245,13 @@ The api for the `DiscoveryClient.getInstances()` method is `/hosts/{serviceId}`.
 ]
 ```
 
-The Zuul proxy automatically adds routes for each service known in eureka to /<serviceId>, so the customers service is available at /customers. The Non-jvm app can access the customer service via http://localhost:5678/customers (assuming the sidecar is listening on port 5678).
+The Zuul proxy automatically adds routes for each service known in eureka to `/<serviceId>`, so the customers service is available at `/customers`. The Non-jvm app can access the customer service via http://localhost:5678/customers (assuming the sidecar is listening on port 5678).
 
-Zuul代理会对erueka服务自动添加/<serviceId>路径，因此需要通过/customers访问customers服务，非jvm应用可以通过http://localhost:5678/customers访问costumers服务（假设sidecar使用的5678端口）。
+Zuul代理会对erueka服务自动添加`/<serviceId>`路径，因此需要通过`/customers`访问customers服务，非jvm应用可以通过http://localhost:5678/customers访问costumers服务（假设sidecar使用的5678端口）。
 
-If the Config Server is registered with Eureka, non-jvm application can access it via the Zuul proxy. If the serviceId of the ConfigServer is configserver and the Sidecar is on port 5678, then it can be accessed at http://localhost:5678/configserver
+If the Config Server is registered with Eureka, non-jvm application can access it via the Zuul proxy. If the serviceId of the ConfigServer is `configserver` and the Sidecar is on port 5678, then it can be accessed at http://localhost:5678/configserver
 
-如果Config Server通过Eureka注册，非jvm应用就可以通过Zuul代理访问。如果ConofigServer的serviceId为configserver ，Sidecar使用的5678端口，可以通过thttp://localhost:5678/configserver访问。
+如果Config Server通过Eureka注册，非jvm应用就可以通过Zuul代理访问。如果ConofigServer的serviceId为`configserver` ，Sidecar使用的5678端口，可以通过thttp://localhost:5678/configserver访问。
 
 Non-jvm app can take advantage of the Config Server’s ability to return YAML documents. For example, a call to http://sidecar.local.spring.io:5678/configserver/default-master.yml might result in a YAML document like the following
 
@@ -2296,9 +2296,9 @@ Spring Boot Actuator采用层级型指标，每个指标有一个名称，按照
 }
 ```
 
-The first metric gives us a normalized count of successful requests against the root endpoint per unit of time. But what if the system had 20 endpoints and you want to get a count of successful requests against all the endpoints? Some hierarchical metrics backends would allow you to specify a wild card such as counter.status.200. that would read all 20 metrics and aggregate the results. Alternatively, you could provide a HandlerInterceptorAdapter that intercepts and records a metric like counter.status.200.all for all successful requests irrespective of the endpoint, but now you must write 20+1 different metrics. Similarly if you want to know the total number of successful requests for all endpoints in the service, you could specify a wild card such as counter.status.2.*.
+The first metric gives us a normalized count of successful requests against the root endpoint per unit of time. But what if the system had 20 endpoints and you want to get a count of successful requests against all the endpoints? Some hierarchical metrics backends would allow you to specify a wild card such as `counter.status.200`. that would read all 20 metrics and aggregate the results. Alternatively, you could provide a `HandlerInterceptorAdapter` that intercepts and records a metric like `counter.status.200.all` for all successful requests irrespective of the endpoint, but now you must write 20+1 different metrics. Similarly if you want to know the total number of successful requests for all endpoints in the service, you could specify a wild card such as `counter.status.2.*`.
 
-第一个指标是root终端每单位时间内的成功请求数。假如有20个终端，我们需要统计这20个终端的所有成功请求数呢？某些层级型指标允许你使用counter.status.200形式的模糊匹配，它会将20个终端的指标值汇总，另外你可以提供一个HandlerInterceptorAdapter 进行拦截，计算出一个类似counter.status.200.all的指标来表示20个终端的成功请求数，但现在你制造了20+1个监控指标，同理，如果你需要统计某个服务所有节点的成功请求数，你需要使用counter.status.2.*这样的模糊匹配。
+第一个指标是root终端每单位时间内的成功请求数。假如有20个终端，我们需要统计这20个终端的所有成功请求数呢？某些层级型指标允许你使用`counter.status.200`形式的模糊匹配，它会将20个终端的指标值汇总，另外你可以提供一个`HandlerInterceptorAdapter` 进行拦截，计算出一个类似`counter.status.200.all`的指标来表示20个终端的成功请求数，但现在你制造了20+1个监控指标，同理，如果你需要统计某个服务所有节点的成功请求数，你需要使用`counter.status.2.*`这样的模糊匹配。
 
 Even in the presence of wildcarding support on a hierarchical metrics backend, naming consistency can be difficult. Specifically the position of these tags in the name string can slip with time, breaking queries. For example, suppose we add an additional dimension to the hierarchical metrics above for HTTP method. Then `counter.status.200.root` becomes `counter.status.200.method.get.root`, etc. Our `counter.status.200.*` suddenly no longer has the same semantic meaning. Furthermore, if the new dimension is not applied uniformly across the codebase, certain queries may become impossible. This can quickly get out of hand.
 
