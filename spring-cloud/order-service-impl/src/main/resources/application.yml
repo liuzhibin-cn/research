@@ -5,7 +5,21 @@ eureka:
     client:
         serviceUrl:
             defaultZone: http://localhost:9001/eureka/,http://localhost:9002/eureka/
-            
+
+# MySQL JDBC Driver的Bug（Mac OSX环境下）：
+# 中国的时区简写为CST (China Standard Time)，但全球简写为CST的时区一共有4个：
+#    CST Central Standard Time (USA) UT-6:00
+#    CST Central Standard Time (Australia) UT+9:30
+#    CST China Standard Time UT+8:00
+#    CST Cuba Standard Time UT-4:00
+# 安装MySQL Server时，从操作系统获取时区并以简写CST表示，show variables like '%time_zone%'如下：
+#    | Variable_name    | Value  |
+#    | system_time_zone | CST    |
+#    | time_zone        | SYSTEM |
+# MyBatis的DateTypeHandler将java.util.Date类型转换成java.sql.Timestamp交给MySQL JDBC Driver处理，
+# 而MySQL JDBC Driver会使用MySQL Server的CST创建Java TimeZone对象来处理Timestamp参数，
+# 此时实际得到的Java TimeZone为Central Standard Time (USA) UT-6:00，而不是China Standard Time UT+8:00，导致存入MySQL的时间不正确。
+# 通过JDBC url的serverTimezone参数指定TimeZone ID全称可以避免这个问题。
 spring:  
     application:
         name: order-service # 注册到注册中心的服务名称
@@ -13,7 +27,7 @@ spring:
         name: order
         type: org.apache.tomcat.jdbc.pool.DataSource 
         driver-class-name: com.mysql.cj.jdbc.Driver  
-        url: jdbc:mysql://localhost:3306/demo_db?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+        url: jdbc:mysql://localhost:3306/demo_db?serverTimezone=Asia/Shanghai&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
         username: root  
         password: dev
         defaultAutoCommit: true
