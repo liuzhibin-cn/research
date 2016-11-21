@@ -303,8 +303,12 @@ spring:
 
 Spring Cloud Config provides server and client-side support for externalized configuration in a distributed system. With the Config Server you have a central place to manage external properties for applications across all environments. The concepts on both client and server map identically to the Spring Environment and PropertySource abstractions, so they fit very well with Spring applications, but can be used with any application running in any language. As an application moves through the deployment pipeline from dev to test and into production you can manage the configuration between those environments and be certain that applications have everything they need to run when they migrate. The default implementation of the server storage backend uses git so it easily supports labelled versions of configuration environments, as well as being accessible to a wide range of tooling for managing the content. It is easy to add alternative implementations and plug them in with Spring configuration.
 
-### Quick Start
+Spring Cloud Config项目提供了一个解决分布式系统的配置管理方案，它包含了客户端和服务器两个部分。在客户机和服务器的概念中，Spring环境可以和外部资源的属性直接映射，所以这样的做法很适合与Spring应用程序开发，并且可以被用于任何语言与项目中。随着项目的部署，从开发环境、到测试环境、到生产环节，使用Spring管理这些环境之间的配置，以确保项目拥有他们所需要的一切配置信息都能够安全迁移。后端存储默认使用Git工具实现，因此很容易支持配置环境的版本管理，同时也能够使用其它的工具来管理这部分内容。在Spring Configuration中很容易地利用可插拔方式来添加替代实现。
+
+## Quick Start 快速入门
 Start the server:
+
+启动服务：
 
 ```shell
 $ cd spring-cloud-config-server
@@ -312,6 +316,8 @@ $ mvn spring-boot:run
 ```
 
 The server is a Spring Boot application so you can run it from your IDE instead if you prefer (the main class is ConfigServerApplication). Then try it out a client:
+
+这个服务是一个Spring Boot应用,如果你喜欢你可以直接用IDE启动(main类是ConfigServerApplication). 然后试着启动一个客户端:
 
 ```shell
 $ curl localhost:8888/foo/development
@@ -323,7 +329,11 @@ $ curl localhost:8888/foo/development
 
 The default strategy for locating property sources is to clone a git repository (at spring.cloud.config.server.git.uri) and use it to initialize a mini SpringApplication. The mini-application’s Environment is used to enumerate property sources and publish them via a JSON endpoint.
 
+默认加载property资源的策略是克隆一个git仓库(at spring.cloud.config.server.git.uri'),用它去初始化一个mini `SpringApplication, 这个mini SpringApplication的Environment用来枚举property,通过json节点发布它们.
+
 The HTTP service has resources in the form:
+
+HTTP服务资源的构成:
 
 ```shell
 /{application}/{profile}[/{label}]
@@ -335,9 +345,13 @@ The HTTP service has resources in the form:
 
 where the "application" is injected as the spring.config.name in the SpringApplication (i.e. what is normally "application" in a regular Spring Boot app), "profile" is an active profile (or comma-separated list of properties), and "label" is an optional git label (defaults to "master".)
 
+application是SpringApplication的spring.config.name,(一般来说'application'是一个常规的Spring Boot应用),profile是一个active的profile(或者逗号分隔的属性列表),label是一个可选的git标签(默认为"master").
+
 The YAML and properties forms are coalesced into a single map, even if the origin of the values (reflected in the "propertySources" of the "standard" form) has multiple sources.
 
 Spring Cloud Config Server pulls configuration for remote clients from a git repository (which must be provided):
+
+Spring Cloud Config Server从git仓库为 为远程客户端拉取配置信息：
 
 ```yaml
 spring:
@@ -348,9 +362,11 @@ spring:
           uri: https://github.com/spring-cloud-samples/config-repo
 ```
 
-### Client Side Usage
+## Client Side Usage 客户端示例
 
 To use these features in an application, just build it as a Spring Boot application that depends on spring-cloud-config-client (e.g. see the test cases for the config-client, or the sample app). The most convenient way to add the dependency is via a Spring Boot starter org.springframework.cloud:spring-cloud-starter-config. There is also a parent pom and BOM (spring-cloud-starter-parent) for Maven users and a Spring IO version management properties file for Gradle and Spring CLI users. Example Maven configuration:
+
+通过构建一个依赖spring-cloud-config-client(例如config-client的测试用例或者样例)的Spring Boot应用,就可以使用这些特性.最方便的方法就是添加一个依赖org.springframework.cloud:spring-cloud-starter-config.对于Maven用户,有一个父pom和BOM(spring-cloud-starter-parent),对于Gradle和Spring CLI用户有一个Spring IO 版本管理文件.例如Maven的配置:
 
 `pom.xml`
 
@@ -400,6 +416,8 @@ To use these features in an application, just build it as a Spring Boot applicat
 
 Then you can create a standard Spring Boot application, like this simple HTTP server:
 
+然后你可以创建一个标准的Spring Boot应用,比如一个简单的HTTP服务:
+
 ```java
 @SpringBootApplication
 @RestController
@@ -419,9 +437,17 @@ public class Application {
 
 When it runs it will pick up the external configuration from the default local config server on port 8888 if it is running. To modify the startup behaviour you can change the location of the config server using bootstrap.properties (like application.properties but for the bootstrap phase of an application context), e.g.
 
+当它运行的时候,它将默认从本地配置服务器8888端口获取外部配置,你可以改版配置服务的位置通过bootstrap.properties(类似于application.properties,但是是一个应用上下文启动的配置文件),例如:
+
+```yaml
 spring.cloud.config.uri: http://myconfigserver.com
+```
+
 The bootstrap properties will show up in the /env endpoint as a high-priority property source, e.g.
 
+bootstrap.properties将会在/env节点作为一个高优先级的property展示,例如:
+
+```shell
 $ curl localhost:8080/env
 {
   "profiles":[],
@@ -430,14 +456,25 @@ $ curl localhost:8080/env
   "systemProperties":{...},
   ...
 }
+```
+
 (a property source called "configService:<URL of remote repository>/<file name>" contains the property "foo" with value "bar" and is highest priority).
 
-NOTE
-the URL in the property source name is the git repository not the config server URL.
-Spring Cloud Config Server
+(一条叫做"configService:<URL of remote repository>/<file name>"的属性源包含了属性"foo"和值"bar",它是最高优先级的)
+
+> *NOTE*<br />
+> the URL in the property source name is the git repository not the config server URL.<br />
+> *备注*<br />
+> 属性源中的 URL是git仓库的地址而不是配置服务器的URL
+
+## Spring Cloud Config Server 配置服务
+
 The Server provides an HTTP, resource-based API for external configuration (name-value pairs, or equivalent YAML content). The server is easily embeddable in a Spring Boot application using the @EnableConfigServer annotation. So this app is a config server:
 
-ConfigServer.java
+针对系统外的配置项(如name-value对或相同功能的YAML内容),该服务器提供了基于资源的HTTP接口.使用@EnableConfigServer注解,该服务器可以很容易的被嵌入到Spring Boot 类型系统中.使用该注解之后该应用系统也是一个配置服务器:
+
+`ConfigServer.java`
+```java
 @SpringBootApplication
 @EnableConfigServer
 public class ConfigServer {
@@ -445,6 +482,8 @@ public class ConfigServer {
     SpringApplication.run(ConfigServer.class, args);
   }
 }
+```
+
 Like all Spring Boot apps it runs on port 8080 by default, but you can switch it to the conventional port 8888 in various ways. The easiest, which also sets a default configuration repository, is by launching it with spring.config.name=configserver (there is a configserver.yml in the Config Server jar). Another is to use your own application.properties, e.g.
 
 application.properties
