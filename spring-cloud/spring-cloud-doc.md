@@ -1085,10 +1085,15 @@ The default configuration works out of the box with Github, Gitlab or Bitbucket.
 
 缺省配置都能在Github、Gitlab或Bitbucket很好地工作。除了JSON通知外，Github、Gitlab或Bitbucket都可以触发一个更改通知以Form表单方式参数path= {name}提交到“/monitor”访问端点。这将广播到所有和“{ name }”模式匹配的应用程序(可以包含通配符)。
 
-NOTE
-the RefreshRemoteApplicationEvent will only be transmitted if the spring-cloud-bus is activated in the Config Server and in the client application.
-NOTE
-the default configuration also detects filesystem changes in local git repositories (the webhook is not used in that case but as soon as you edit a config file a refresh will be broadcast).
+> **NOTE** <br />
+> the `RefreshRemoteApplicationEvent` will only be transmitted if the `spring-cloud-bus` is activated in the Config Server and in the client application. <br />
+> **注意**：`RefreshRemoteApplicationEvent`仅在`spring-cloud-bus`被激活的情况下才会被触发
+
+> **NOTE** <br />
+> the default configuration also detects filesystem changes in local git repositories (the webhook is not used in that case but as soon as you edit a config file a refresh will be broadcast). <br />
+> **注意**：默认配置也会监测到本地Git资源库文件系统的变化(此时webhook不会触发回调，但当你编辑配置文件时回调将会被广播出去)
+
+
 Spring Cloud Config Client
 A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer), and it will also pick up some additional useful features related to Environment change events.
 
