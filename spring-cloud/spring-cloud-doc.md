@@ -1,6 +1,22 @@
+## 贡献者(Contributor)
+
+指导：1169 CTO 盛国军。<br />
+翻译：
+
+* 卢路路 日日顺物流
+* 肖云 互联网技术中心
+* 郝传正 日日顺物流
+* 孙启飞 日日顺物流
+* 刘嵩巍 日日顺物流
+* 刘志斌 互联网技术中心
+* 刘英 日日顺物流
+
+
 # Spring Cloud
 
 Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state). Coordination of distributed systems leads to boiler plate patterns, and using Spring Cloud developers can quickly stand up services and applications that implement those patterns. They will work well in any distributed environment, including the developer’s own laptop, bare metal data centres, and managed platforms such as Cloud Foundry.
+
+Spring Cloud为开发人员提供了快速构建分布式系统中的一些通用模式（例如配置管理，服务发现，断路器，智能路由，微代理，控制总线，一次性令牌，全局锁，领导选举，分布式会话，群集状态）。 分布式系统的协调导致了锅炉板模式，并且使用Spring Cloud开发人员可以快速地站起来实现这些模式的服务和应用程序。 它们可以在任何分布式环境中正常工作，包括开发人员自己的笔记本电脑，裸机数据中心和受管平台，如Cloud Foundry。
 
 ## Features - 功能特性
 Spring Cloud focuses on providing good out of box experience for typical use cases and extensibility mechanism to cover others.
@@ -3218,3 +3234,5 @@ In this example the "customers" service gets an OAuth2 token relay, the "stores"
 在这个例子中"customers"服务器获得OAuth2令牌传递, "stores"服务器获得直通（授权头只是通过下游），和“recommendations”服务将其授权报头删除。如果令牌校验通过,默认行为是做令牌传递，其他情况下直接通过。更详细信息参见
 
 See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/ProxyAuthenticationProperties[ ProxyAuthenticationProperties] for full details.
+
+日日顺--拥有领先技术的智慧物流平台 欢迎您的加盟
