@@ -1,6 +1,6 @@
 ### 贡献者(Contributors)
 
-组织者：海尔电器CTO 盛国军。<br />
+组织者：海尔电器CTO 盛国军<br />
 翻译：
 
 * 卢路路 日日顺物流
@@ -3239,7 +3239,7 @@ See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2
 
 ### 贡献者(Contributors)
 
-组织者：海尔电器CTO 盛国军。<br />
+组织者：海尔电器CTO 盛国军<br />
 翻译：
 
 * 卢路路 日日顺物流
