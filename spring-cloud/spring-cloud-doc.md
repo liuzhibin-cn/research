@@ -11,10 +11,8 @@
 * 刘志斌 互联网技术中心
 * 刘英 日日顺物流
 
-```
 **任何时候我们都欢迎你来海尔日日顺物流进行技术交流。**
 联系邮箱：[shenggj@haier.com](mailto:shenggj@haier.com)
-```
 
 # Spring Cloud
 
