@@ -11,6 +11,10 @@
 * 刘志斌 互联网技术中心
 * 刘英 日日顺物流
 
+```
+**任何时候我们都欢迎你来海尔日日顺物流进行技术交流。*
+联系邮箱：[shenggj@haier.com](mailto:shenggj@haier.com)
+```
 
 # Spring Cloud
 
@@ -3235,4 +3239,7 @@ In this example the "customers" service gets an OAuth2 token relay, the "stores"
 
 See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/ProxyAuthenticationProperties[ ProxyAuthenticationProperties] for full details.
 
-日日顺--拥有领先技术的智慧物流平台 欢迎您的加盟
+```
+**任何时候我们都欢迎你来海尔日日顺物流进行技术交流。*
+联系邮箱：[shenggj@haier.com](mailto:shenggj@haier.com)
+```
