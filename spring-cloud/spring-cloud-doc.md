@@ -3237,5 +3237,18 @@ In this example the "customers" service gets an OAuth2 token relay, the "stores"
 
 See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/ProxyAuthenticationProperties[ ProxyAuthenticationProperties] for full details.
 
+### 贡献者(Contributors)
+
+组织者：海尔电器CTO 盛国军。<br />
+翻译：
+
+* 卢路路 日日顺物流
+* 肖云 互联网技术中心
+* 郝传正 日日顺物流
+* 孙启飞 日日顺物流
+* 刘嵩巍 日日顺物流
+* 刘志斌 互联网技术中心
+* 刘英 日日顺物流
+
 **任何时候我们都欢迎你来海尔日日顺物流进行技术交流。** <br />
 联系邮箱：[shenggj@haier.com](mailto:shenggj@haier.com)
