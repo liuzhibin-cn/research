@@ -1425,12 +1425,17 @@ public String serviceUrl() {
 > Don’t use the EurekaClient in @PostConstruct method or in a @Scheduled method (or anywhere where the ApplicationContext might not be started yet). It is initialized in a SmartLifecycle (with phase=0) so the earliest you can rely on it being available is in another SmartLifecycle with higher phase. <br />
 > **提示**：不要在@PostConstruct 方法或者 @Scheduled method (或者任何ApplicationContext还没有启动)使用EurekaClient。它被初始化在SmartLifecycle（使用phase=0），因此，最早的你可以使用它并且可用，是在另一个SmartLifecycle的更高一级的阶段
 
-### Alternatives to the native Netflix EurekaClient - 
+### Alternatives to the native Netflix EurekaClient - Netflix原生EurekaClient的替代方案
 
 You don’t have to use the raw Netflix EurekaClient and usually it is more convenient to use it behind a wrapper of some sort. Spring Cloud has support for Feign (a REST client builder) and also Spring RestTemplate using the logical Eureka service identifiers (VIPs) instead of physical URLs. To configure Ribbon with a fixed list of physical servers you can simply set <client>.ribbon.listOfServers to a comma-separated list of physical addresses (or hostnames), where <client> is the ID of the client.
 
+你不一定要用内存Netflix EurekaClient而且通常使用它背后的一些形式的封装是更方便的。 Spring Cloud 已经支持Feign(一个REST构建客户端)而且Spring RestTemplate也使用逻辑 Eureka服务标识符(VIPs)来代替物理地址。你可以简单的用一个都好分隔物理地址（或主机名称） 列表的方式来配置一个固定不变的物理服务器列表的Ribbon,如果是客户端的ID的话。
+
 You can also use the org.springframework.cloud.client.discovery.DiscoveryClient which provides a simple API for discovery clients that is not specific to Netflix, e.g.
 
+你也可以使用org.springframework.cloud.client.discovery.DiscoveryClient提供简单的 API给不确定的Netflix探索客户端。
+
+```java
 @Autowired
 private DiscoveryClient discoveryClient;
 
@@ -1441,12 +1446,21 @@ public String serviceUrl() {
     }
     return null;
 }
-Why is it so Slow to Register a Service?
+```
+
+### Why is it so Slow to Register a Service? - 服务注册为什么这么慢?
+
 Being an instance also involves a periodic heartbeat to the registry (via the client’s serviceUrl) with default duration 30 seconds. A service is not available for discovery by clients until the instance, the server and the client all have the same metadata in their local cache (so it could take 3 hearbeats). You can change the period using eureka.instance.leaseRenewalIntervalInSeconds and this will speed up the process of getting clients connected to other services. In production it’s probably better to stick with the default because there are some computations internally in the server that make assumptions about the lease renewal period.
 
-Service Discovery: Eureka Server
+作为一个实例也包含一个默认30秒的周期性的心跳向注册中心(通过客户端的serviceUrl). 一个服务对于客户端的discovery是不可用的，直到实例，服务端和客户端在它们的缓存里面都拥 有相同的元数据（这可能需要3次心跳）。 你可以改变使用eureka.instance.leaseRenewalIntervalInSeconds并且这将加快这一进程 的客户端连接到其他服务的进度。在生产中坚持默认可能是更好的， 因为有一些在服务器内部的关于租赁复兴时期假设的计算。
+
+## Service Discovery: Eureka Server - 服务发现：Eureka Server
+
 Example eureka server (e.g. using spring-cloud-starter-eureka-server to set up the classpath):
 
+例如eureka server（通过使用spring-cloud-starter-eureka-server设置classpath）:
+
+```java
 @SpringBootApplication
 @EnableEurekaServer
 public class Application {
@@ -1456,14 +1470,21 @@ public class Application {
     }
 
 }
+```
+
 The server has a home page with a UI, and HTTP API endpoints per the normal Eureka functionality under /eureka/*.
+
+服务端拥有一个UI主页，而且在正常的Eureka功能的/eureka/*下拥有一个HTTP API断点。
 
 Eureka background reading: see flux capacitor and google group discussion.
 
-TIP
-Due to Gradle’s dependency resolution rules and the lack of a parent bom feature, simply depending on spring-cloud-starter-eureka-server can cause failures on application startup. To remedy this the Spring dependency management plugin must be added and the Spring cloud starter parent bom must be imported like so:
+Eureka背景阅读：flux capacitor 和 google group discussion.
 
-build.gradle
+> **TIP** <br />
+> Due to Gradle’s dependency resolution rules and the lack of a parent bom feature, simply depending on spring-cloud-starter-eureka-server can cause failures on application startup. To remedy this the Spring dependency management plugin must be added and the Spring cloud starter parent bom must be imported like so: <br />
+
+> `build.gradle`
+> ```gradle
 buildscript {
   dependencies {
     classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
@@ -1477,6 +1498,8 @@ dependencyManagement {
     mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:1.0.0.RELEASE'
   }
 }
+> ```
+
 High Availability, Zones and Regions
 The Eureka server does not have a backend store, but the service instances in the registry all have to send heartbeats to keep their registrations up to date (so this can be done in memory). Clients also have an in-memory cache of eureka registrations (so they don’t have to go to the registry for every single request to a service).
 
