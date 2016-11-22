@@ -1709,7 +1709,7 @@ Looking at an individual instances Hystrix data is not very useful in terms of t
 
 The configuration key turbine.appConfig is a list of eureka serviceIds that turbine will use to lookup instances. The turbine stream is then used in the Hystrix dashboard using a url that looks like: http://my.turbine.sever:8080/turbine.stream?cluster=&lt;CLUSTERNAME&gt; (the cluster parameter can be omitted if the name is "default"). The cluster parameter must match an entry in turbine.aggregator.clusterConfig. Values returned from eureka are uppercase, thus we expect this example to work if there is an app registered with Eureka called "customers":
 
-turbine.appConfig配置是一个eureka服务ID列表，turbine将使用这个配置查询实例。turbine stream在hystrix dashboard中使用如下的url配置： http://my.turbine.server:8080/turbine.stream?cluster=&lt;CLUSTERNAME&gt;，如果集群的名称是default，集群参数可以忽略）。这个cluster参数必须和turbine.aggregator.clusterConfig匹配。从eureka返回的值都是大写的，因此我们希望下面的例子可以工作，如果一个app使用eureka注册，并且被叫做"customers":
+turbine.appConfig配置是一个eureka服务ID列表，turbine将使用这个配置查询实例。turbine stream在hystrix dashboard中使用如下的url配置： http://my.turbine.server:8080/turbine.stream?cluster=&lt;CLUSTERNAME&gt; ，如果集群的名称是default，集群参数可以忽略）。这个cluster参数必须和turbine.aggregator.clusterConfig匹配。从eureka返回的值都是大写的，因此我们希望下面的例子可以工作，如果一个app使用eureka注册，并且被叫做"customers":
 
 ```yaml
 turbine:
