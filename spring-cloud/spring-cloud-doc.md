@@ -1766,46 +1766,62 @@ Spring Cloud provides a spring-cloud-starter-turbine-amqp that has all the depen
 
 Spring Cloud提供了一个 spring-cloud-starter-turbine-stream，包括了运行 Turibine Stream Server运行所需要的所有依赖,如spring-cloud-starter-stream-rabbit. 因为使用了Netty-based，所以你需要Java 8 运行此应用.
 
-## Customizing the AMQP ConnectionFactory - 
+## Customizing the AMQP ConnectionFactory - 定制AMQP ConnectionFactory
 
 If you are using AMQP there needs to be a ConnectionFactory (from Spring Rabbit) in the application context. If there is a single ConnectionFactory it will be used, or if there is a one qualified as @HystrixConnectionFactory (on the client) and @TurbineConnectionFactory (on the server) it will be preferred over others, otherwise the @Primary one will be used. If there are multiple unqualified connection factories there will be an error.
 
-Note that Spring Boot (as of 1.2.2) creates a ConnectionFactory that is not @Primary, so if you want to use one connection factory for the bus and another for business messages, you need to create both, and annotate them @*ConnectionFactory and @Primary respectively.
+Note that Spring Boot (as of 1.2.2) creates a ConnectionFactory that is not @Primary, so if you want to use one connection factory for the bus and another for business messages, you need to create both, and annotate them @ConnectionFactory and @Primary respectively.
 
-Client Side Load Balancer: Ribbon
+## Client Side Load Balancer: Ribbon - 客户端负载均衡：Ribbon
+
 Ribbon is a client side load balancer which gives you a lot of control over the behaviour of HTTP and TCP clients. Feign already uses Ribbon, so if you are using @FeignClient then this section also applies.
+
+Ribbon是一款可以对HTTP和TCP客户端的行为进行负载均衡管控的客户端负载均衡器。 Feign已经使用Ribbon，所以如果你使用@FeignClient注解，那么本节也同样也适用
 
 A central concept in Ribbon is that of the named client. Each load balancer is part of an ensemble of components that work together to contact a remote server on demand, and the ensemble has a name that you give it as an application developer (e.g. using the @FeignClient annotation). Spring Cloud creates a new ensemble as an ApplicationContext on demand for each named client using RibbonClientConfiguration. This contains (amongst other things) an ILoadBalancer, a RestClient, and a ServerListFilter.
 
-Customizing the Ribbon Client
+Ribbon的核心思想是指定客户端。 每个负载均衡器都是调用远程服务器服务的所有组件的一部分，作为程序开发人员你可以给该组件进行注入注解(如@FeignClient注解)。Spring Cloud把每个指定客户端通过RibbonClientConfiguration集成到ApplicationContext中。 这其中包含ILoadBalancer，RestClient和f ServerListFilter。
+
+### Customizing the Ribbon Client - 自定义Ribbon客户端
+
 You can configure some bits of a Ribbon client using external properties in <client>.ribbon.*, which is no different than using the Netflix APIs natively, except that you can use Spring Boot configuration files. The native options can be inspected as static fields in CommonClientConfigKey (part of ribbon-core).
+
+可以使用<client> .ribbon.*中的扩展的配置文件配置一些Ribbon客户端，这与使用Netflix  API一样， Spring Boot配置文件除外。 默认选项可以在CommonClientConfigKey（ribbon-core的一部分）中作为静态字段进行定义。
 
 Spring Cloud also lets you take full control of the client by declaring additional configuration (on top of the RibbonClientConfiguration) using @RibbonClient. Example:
 
+Spring Cloud还允许你通过使用@RibbonClient声明额外的配置（除RibbonClientConfiguration外）来对客户端进行全面管控。 例：
+
+```java
 @Configuration
 @RibbonClient(name = "foo", configuration = FooConfiguration.class)
 public class TestConfiguration {
 }
+```
+
 In this case the client is composed from the components already in RibbonClientConfiguration together with any in FooConfiguration (where the latter generally will override the former).
 
-WARNING
-The FooConfiguration has to be @Configuration but take care that it is not in a @ComponentScan for the main application context, otherwise it will be shared by all the @RibbonClients. If you use @ComponentScan (or @SpringBootApplication) you need to take steps to avoid it being included (for instance put it in a separate, non-overlapping package, or specify the packages to scan explicitly in the @ComponentScan).
+在这种情况下，客户端由RibbonClientConfiguration中的组件与任何FooConfiguration中的任何组件组成（其中后者通常将覆盖前者中的重复组件）。
+
+> **WARNING** <br />
+> The FooConfiguration has to be @Configuration but take care that it is not in a @ComponentScan for the main application context, otherwise it will be shared by all the @RibbonClients. If you use @ComponentScan (or @SpringBootApplication) you need to take steps to avoid it being included (for instance put it in a separate, non-overlapping package, or specify the packages to scan explicitly in the @ComponentScan). <br />
+> **警告**：FooConfiguration必须用@Configuration注解注入，但是注意它不是主应用程序的@ComponentScan中，否则它将被所有@RibbonClient共享。 如果使用@ComponentScan（或@SpringBootApplication），需要采取措施避进行分离（例如将它放在一个单独的、非重叠的包中，或要在@ComponentScan中明确的指定包名，避免扫描重叠）。
+
 Spring Cloud Netflix provides the following beans by default for ribbon (BeanType beanName: ClassName):
 
-IClientConfig ribbonClientConfig: DefaultClientConfigImpl
-
-IRule ribbonRule: ZoneAvoidanceRule
-
-IPing ribbonPing: NoOpPing
-
-ServerList<Server> ribbonServerList: ConfigurationBasedServerList
-
-ServerListFilter<Server> ribbonServerListFilter: ZonePreferenceServerListFilter
-
-ILoadBalancer ribbonLoadBalancer: ZoneAwareLoadBalancer
+* Spring Cloud Netflix 为Ribbon提供了默认的bean（BeanType beanName：ClassName）：
+* IClientConfig ribbonClientConfig: DefaultClientConfigImpl
+* IRule ribbonRule: ZoneAvoidanceRule
+* IPing ribbonPing: NoOpPing
+* ServerList<Server> ribbonServerList: ConfigurationBasedServerList
+* ServerListFilter<Server> ribbonServerListFilter: ZonePreferenceServerListFilter
+* ILoadBalancer ribbonLoadBalancer: ZoneAwareLoadBalancer
 
 Creating a bean of one of those type and placing it in a @RibbonClient configuration (such as FooConfiguration above) allows you to override each one of the beans described. Example:
 
+创建其中的一个bean并将它放在@RibbonClient配置中（例如FooConfiguration）允许你重写已经描述的bean。 例：
+
+```java
 @Configuration
 public class FooConfiguration {
     @Bean
@@ -1813,28 +1829,51 @@ public class FooConfiguration {
         return new PingUrl();
     }
 }
+```
+
 This replaces the NoOpPing with PingUrl.
 
-Using Ribbon with Eureka
+这个替换是用PingUrl替掉了NoOpPing。
+
+### Using Ribbon with Eureka - Ribbon与Eureka结合使用
+
 When Eureka is used in conjunction with Ribbon the ribbonServerList is overridden with an extension of DiscoveryEnabledNIWSServerList which populates the list of servers from Eureka. It also replaces the IPing interface with NIWSDiscoveryPing which delegates to Eureka to determine if a server is up. The ServerList that is installed by default is a DomainExtractingServerList and the purpose of this is to make physical metadata available to the load balancer without using AWS AMI metadata (which is what Netflix relies on). By default the server list will be constructed with "zone" information as provided in the instance metadata (so on the client set eureka.instance.metadataMap.zone), and if that is missing it can use the domain name from the server hostname as a proxy for zone (if the flag approximateZoneFromHostname is set). Once the zone information is available it can be used in a ServerListFilter (by default it will be used to locate a server in the same zone as the client because the default is a ZonePreferenceServerListFilter).
 
-Example: How to Use Ribbon Without Eureka
+当Eureka与Ribbon结合使用时，ribbonServerList将被从Eureka的服务器列表中产生的扩展DiscoveryEnabledNIWSServerList重写。它还把IPing接口用通过Eureka来确定服务器是否已启动NIWSDiscoveryPing替换掉。默认情况下安装的ServerList是DomainExtractingServerList，其目的是使物理元数据再不使用AWS AMI元数据（这是Netflix所依赖的）于负载均衡器有效。服务器列表默认将使用实例元数据中提供的“zone”信息构建（如客户端设置eureka.instance.metadataMap.zone），如果缺少或者丢失，可以使用服务器主机名的域名作为区域的代理（如果标志ZoneFromHostname已经设置）。一旦区域信息有效，它可以在ServerListFilter中使用（它将习惯性的被放在相同的区域中的服务器上做客户端，因为默认的是ZonePreferenceServerListFilter）。
+
+### Example: How to Use Ribbon Without Eureka - 示例：怎么在没有Eureka的情况下使用Ribbon
+
 Eureka is a convenient way to abstract the discovery of remote servers so you don’t have to hard code their URLs in clients, but if you prefer not to use it, Ribbon and Feign are still quite amenable. Suppose you have declared a @RibbonClient for "stores", and Eureka is not in use (and not even on the classpath). The Ribbon client defaults to a configured server list, and you can supply the configuration like this
 
+Eureka是一种能够提获得远程服务发现的轻量级工具，所以你不必在客户端硬编码他们的URL，但如果你不想使用它，Ribbon和Feign仍然可控。 假设你为“stores”声明了一个@RibbonClient，但Eureka并没有被使用（甚至不在classpath配置）。 Ribbon客户端默认配置服务器列表，并且可以提供如下配置
+
 `application.yml`
+```yaml
 stores:
   ribbon:
     listOfServers: example.com,google.com
-Example: Disable Eureka use in Ribbon
+```
+
+### Example: Disable Eureka use in Ribbon - 示例：在Ribbon中禁用Eureka
+
 Setting the property ribbon.eureka.enabled = false will explicitly disable the use of Eureka in Ribbon.
 
+设置ribbon.eureka.enabled = false  Ribbon  禁用Eureka。
+
 `application.yml`
+```yaml
 ribbon:
   eureka:
    enabled: false
-Using the Ribbon API Directly
+```
+
+### Using the Ribbon API Directly - 直接使用Ribbon API
+
 You can also use the LoadBalancerClient directly. Example:
 
+可以直接使用LoadBalancerClient。 例：
+
+```java
 public class MyClass {
     @Autowired
     private LoadBalancerClient loadBalancer;
@@ -1845,11 +1884,17 @@ public class MyClass {
         // ... do something with the URI
     }
 }
-Declarative REST Client: Feign
+```
+
+## Declarative REST Client: Feign - 声明式REST客户端：Feign
+
 Feign is a declarative web service client. It makes writing web service clients easier. To use Feign create an interface and annotate it. It has pluggable annotation support including Feign annotations and JAX-RS annotations. Feign also supports pluggable encoders and decoders. Spring Cloud adds support for Spring MVC annotations and for using the same HttpMessageConverters used by default in Spring Web. Spring Cloud integrates Ribbon and Eureka to provide a load balanced http client when using Feign.
+
+Feign是一个可声明的Web服务客户端。 它使得编写Web服务端更容易。 用Feign创建一个接口并对它进行注入。 它支持注入注解，包括Feign的注解和JAX-RS注解。 Feign还支持可插拔编码器和解码器。 Spring Cloud添加了对Spring MVC注解的支持，并且在Spring Web中默认使用的相同HttpMessageConverters。 Spring Cloud集成了Ribbon和Eureka，在使用Feign时提供负载平衡。
 
 Example spring boot app
 
+```java
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
@@ -1862,7 +1907,10 @@ public class Application {
     }
 
 }
-StoreClient.java
+```
+
+`StoreClient.java`
+```java
 @FeignClient("stores")
 public interface StoreClient {
     @RequestMapping(method = RequestMethod.GET, value = "/stores")
@@ -1871,59 +1919,87 @@ public interface StoreClient {
     @RequestMapping(method = RequestMethod.POST, value = "/stores/{storeId}", consumes = "application/json")
     Store update(@PathVariable("storeId") Long storeId, Store store);
 }
+```
+
 In the @FeignClient annotation the String value ("stores" above) is an arbitrary client name, which is used to create a Ribbon load balancer (see below for details of Ribbon support). You can also specify a URL using the url attribute (absolute value or just a hostname).
+
+String类型的值（“stores”）是一个用于创建Ribbon负载均衡器任意的客户端名（有关Ribbon的详细信息，请参阅下文）在@FeignClient。 您还可以使用url属性（绝对值或仅主机名）指定URL。
 
 The Ribbon client above will want to discover the physical addresses for the "stores" service. If your application is a Eureka client then it will resolve the service in the Eureka service registry. If you don’t want to use Eureka, you can simply configure a list of servers in your external configuration (see above for example).
 
-Overriding Feign Defaults
+上述的Ribbon客户端将会想要发现“stores” 服务器的物理地址。 如果应用程序是Eureka客户端，那么它将解析Eureka服务注册表中的服务。 如果不想使用Eureka，可以在外部配置文件中配置服务器列表（例如，参见上文）。
+
+### Overriding Feign Defaults - 重写Feign默认配置
+
 A central concept in Spring Cloud’s Feign support is that of the named client. Each feign client is part of an ensemble of components that work together to contact a remote server on demand, and the ensemble has a name that you give it as an application developer using the @FeignClient annotation. Spring Cloud creates a new ensemble as an ApplicationContext on demand for each named client using FeignClientsConfiguration. This contains (amongst other things) an feign.Decoder, a feign.Encoder, and a feign.Contract.
+
+Spring Cloud的Feign核心思想是指定客户端。 每个feign客户端是根据需求调用远程服务器的所有组件的一部分，作为程序开发人员你可以用@FeignClient对它注解。 Spring Cloud把每个指定客户端通过FeignClientsConfiguration集成到ApplicationContext中。 这包含feign.Decoder，feign.Encoder和feign.Contract。
 
 Spring Cloud lets you take full control of the feign client by declaring additional configuration (on top of the FeignClientsConfiguration) using @FeignClient. Example:
 
+Spring Cloud通过使用@FeignClient注解声明附加的配置（FeignClientsConfiguration除外）来对feign客户端进行全面管控。 例：
+
+```java
 @FeignClient(name = "stores", configuration = FooConfiguration.class)
 public interface StoreClient {
     //..
 }
+```
+
 In this case the client is composed from the components already in FeignClientsConfiguration together with any in FooConfiguration (where the latter will override the former).
 
-WARNING
-The FooConfiguration has to be @Configuration but take care that it is not in a @ComponentScan for the main application context, otherwise it will be used for every @FeignClient. If you use @ComponentScan (or @SpringBootApplication) you need to take steps to avoid it being included (for instance put it in a separate, non-overlapping package, or specify the packages to scan explicitly in the @ComponentScan).
-NOTE
-The serviceId attribute is now deprecated in favor of the name attribute.
-WARNING
-Previously, using the url attribute, did not require the name attribute. Using name is now required.
+在这种情况下，客户端由FeignClientsConfiguration中的组件与任何FooConfiguration中的任何组件组成（其中后者通常将覆盖前者中的重复组件）。
+
+> **WARNING** <br />
+> The FooConfiguration has to be @Configuration but take care that it is not in a @ComponentScan for the main application context, otherwise it will be used for every @FeignClient. If you use @ComponentScan (or @SpringBootApplication) you need to take steps to avoid it being included (for instance put it in a separate, non-overlapping package, or specify the packages to scan explicitly in the @ComponentScan). <br />
+> **警告**：FooConfiguration必须用@Configuration注解注入，但是注意它不是主应用程序的@ComponentScan中，否则它将被所有@FeignClient共享。 如果使用@ComponentScan（或@SpringBootApplication），需要采取措施避进行分离（例如将它放在一个单独的、非重叠的包中，或要在@ComponentScan中明确的指定包名，避免扫描重叠）。
+
+
+> **NOTE** <br />
+> The serviceId attribute is now deprecated in favor of the name attribute. <br />
+> **注意**：现在已弃用serviceId属性，而改用name属性。
+
+
+> **WARNING** <br />
+> Previously, using the url attribute, did not require the name attribute. Using name is now required. <br />
+> **警告**：以前，使用url属性，不需要name属性。 现在需要使用name。
+
 Placeholders are supported in the name and url attributes.
 
+占位符支持name和url 属性。
+
+```java
 @FeignClient(name = "${feign.name}", url = "${feign.url}")
 public interface StoreClient {
     //..
 }
+```
+
 Spring Cloud Netflix provides the following beans by default for feign (BeanType beanName: ClassName):
 
-Decoder feignDecoder: ResponseEntityDecoder (which wraps a SpringDecoder)
+Spring Cloud Netflix为feign（BeanType beanName：ClassName）提供默认的bean：
 
-Encoder feignEncoder: SpringEncoder
-
-Logger feignLogger: Slf4jLogger
-
-Contract feignContract: SpringMvcContract
-
-Feign.Builder feignBuilder: HystrixFeign.Builder
+* Decoder feignDecoder: ResponseEntityDecoder (which wraps a SpringDecoder)
+* Encoder feignEncoder: SpringEncoder
+* Logger feignLogger: Slf4jLogger
+* Contract feignContract: SpringMvcContract
+* Feign.Builder feignBuilder: HystrixFeign.Builder
 
 Spring Cloud Netflix does not provide the following beans by default for feign, but still looks up beans of these types from the application context to create the feign client:
 
-Logger.Level
+Spring cloud Netflix在默认情况下不为feign提供以下bean，但仍从应用程序上下文中检索这些类型的bean以创建feign客户端：
 
-Retryer
-
-ErrorDecoder
-
-Request.Options
-
-Collection<RequestInterceptor>
+* Logger.Level
+* Retryer
+* ErrorDecoder
+* Request.Options
+* Collection<RequestInterceptor>
 
 Creating a bean of one of those type and placing it in a @FeignClient configuration (such as FooConfiguration above) allows you to override each one of the beans described. Example:
 
+创建其中的一个bean并将它放在@FeignClient注解配置中（例如上面的FooConfiguration）允许你重写已经描述的bean。 例：
+
+```java
 @Configuration
 public class FooConfiguration {
     @Bean
@@ -1936,17 +2012,31 @@ public class FooConfiguration {
         return new BasicAuthRequestInterceptor("user", "password");
     }
 }
+```
+
 This replaces the SpringMvcContract with feign.Contract.Default and adds a RequestInterceptor to the collection of RequestInterceptor.
+
+这会将SpringMvcContract替换为feign.Contract.Default并将RequestInterceptor添加到集合RequestInterceptor中去。
 
 Default configurations can be specified in the @EnableFeignClients attribute defaultConfiguration in a similar manner as described above. The difference is that this configuration will apply to all feign clients.
 
-Feign Hystrix Support
+在@EnableFeignClients注解中用上述类似的描述给予属性defaultConfiguration指定默认配置。 区别在于，此配置将应用于所有feign客户端。
+
+### Feign Hystrix Support - Feign对Hystrix的支持
+
 If Hystrix is on the classpath, by default Feign will wrap all methods with a circuit breaker. Returning a com.netflix.hystrix.HystrixCommand is also available. This lets you use reactive patterns (with a call to .toObservable() or .observe() or asynchronous use (with a call to .queue()).
+
+如果Hystrix在classpath中，默认情况下，Feign将使用断路器模式封装所有方法。 返回com.netflix.hystrix.HystrixCommand同样有效。 这样你就得使用反应模式（调用.toObservable（）或.observe（）或异步使用（调用.queue()）。
 
 To disable Hystrix support for Feign, set feign.hystrix.enabled=false.
 
+要禁用Feign的Hystrix，请设置feign.hystrix.enabled = false。
+
 To disable Hystrix support on a per-client basis create a vanilla Feign.Builder with the "prototype" scope, e.g.:
 
+要在每个客户端上禁用Hystrix，需要创建一个具有"prototype"通用的Feign.Builder。
+
+```java
 @Configuration
 public class FooConfiguration {
     @Bean
@@ -1955,9 +2045,16 @@ public class FooConfiguration {
         return Feign.builder();
     }
 }
-Feign Hystrix Fallbacks
+```
+
+### Feign Hystrix Fallbacks - Feign中的Hystrix回退
+
 Hystrix supports the notion of a fallback: a default code path that is executed when they circuit is open or there is an error. To enable fallbacks for a given @FeignClient set the fallback attribute to the class name that implements the fallback.
 
+Hystrix支持回退的概念：当在默认代码路径执行出现错误或电路断路的时候。 
+让给定的@FeignClient注解中的allback 属性设置成实现回退的类的类名。
+
+```java
 @FeignClient(name = "hello", fallback = HystrixClientFallback.class)
 protected interface HystrixClient {
     @RequestMapping(method = RequestMethod.GET, value = "/hello")
@@ -1970,11 +2067,19 @@ static class HystrixClientFallback implements HystrixClient {
         return new Hello("fallback");
     }
 }
-WARNING
-There is a limitation with the implementation of fallbacks in Feign and how Hystrix fallbacks work. Fallbacks are currently not supported for methods that return com.netflix.hystrix.HystrixCommand and rx.Observable.
-Feign Inheritance Support
+```
+
+> **WARNING** <br />
+> There is a limitation with the implementation of fallbacks in Feign and how Hystrix fallbacks work. Fallbacks are currently not supported for methods that return com.netflix.hystrix.HystrixCommand and rx.Observable. <br />
+> **警告**：在Feign中执行回退和Hystrix执行回都有一个限制。 目前不支持返回com.netflix.hystrix.HystrixCommand和rx.Observable的方法的回退。
+
+### Feign Inheritance Support - Feign对继承的支持
+
 Feign supports boilerplate apis via single-inheritance interfaces. This allows grouping common operations into convenient base interfaces. Together with Spring MVC you can share the same contract for your REST endpoint and Feign client.
 
+Feign通过单继承接口支持样板apis。 这可以将常见操作分配到便捷通用接口。 与Spring MVC一起，让你可以共享REST端点和Feign客户端共同的协议。
+
+```java
 UserService.java
 public interface UserService {
 
@@ -1993,35 +2098,62 @@ package project.user;
 public interface UserClient extends UserService {
 
 }
-Feign request/response compression
+```
+
+### Feign request/response compression - Feign请求、响应压缩
+
 You may consider enabling the request or response GZIP compression for your Feign requests. You can do this by enabling one of the properties:
 
+你或许考虑过Feign的请求通过请求或响应GZIP压缩并使它有效。可以通过修改以下属性来实现：
+
+```properties
 feign.compression.request.enabled=true
 feign.compression.response.enabled=true
+```
+
 Feign request compression gives you settings similar to what you may set for your web server:
 
+Feign请求压缩的设置置与你在web服务器端设置的类似：
+
+```properties
 feign.compression.request.enabled=true
 feign.compression.request.mime-types=text/xml,application/xml,application/json
 feign.compression.request.min-request-size=2048
+```
+
 These properties allow you to be selective about the compressed media types and minimum request threshold length.
 
-Feign logging
+这些属性让你选择最低请求阈值压缩媒体类型和长度。
+
+### Feign logging - Feign日志
+
 A logger is created for each Feign client created. By default the name of the logger is the full class name of the interface used to create the Feign client. Feign logging only responds to the DEBUG level.
 
+日志记录器是为每个已经创建的Feign客户端创建的。记录器的默认名称就是被用于创建Fergn客户端的完整的接口类名。 Feign只对调试等级的响应进行日志记录。
+
 `application.yml`
+```yaml
 logging.level.project.user.UserClient: DEBUG
+```
+
 The Logger.Level object that you may configure per client, tells Feign how much to log. Choices are:
 
-NONE, No logging (DEFAULT).
+必须为每一个Feign Client配置来告诉Feign如何输出日志， 可选：
 
-BASIC, Log only the request method and URL and the response status code and execution time.
-
-HEADERS, Log the basic information along with request and response headers.
-
-FULL, Log the headers, body, and metadata for both requests and responses.
+* NONE, No logging (DEFAULT). <br />
+  无记录（DEFAULT）。
+* BASIC, Log only the request method and URL and the response status code and execution time. <br />
+  仅记录请求方法和URL以及响应状态代码和执行时间。
+* HEADERS, Log the basic information along with request and response headers. <br />
+  记录基本信息以及请求和响应头。
+* FULL, Log the headers, body, and metadata for both requests and responses.
+  记录请求和响应的头，主体和元数据。
 
 For example, the following would set the Logger.Level to FULL:
 
+例如，以下将Logger.Level设置为FULL：
+
+```java
 @Configuration
 public class FooConfiguration {
     @Bean
@@ -2029,10 +2161,17 @@ public class FooConfiguration {
         return Logger.Level.FULL;
     }
 }
-External Configuration: Archaius
+```
+
+## External Configuration: Archaius - 外部配置：Archaius
+
 Archaius is the Netflix client side configuration library. It is the library used by all of the Netflix OSS components for configuration. Archaius is an extension of the Apache Commons Configuration project. It allows updates to configuration by either polling a source for changes or for a source to push changes to the client. Archaius uses Dynamic<Type>Property classes as handles to properties.
 
+Archaius是Netflix客户端配置类库，基于java的配置管理类库。 它是Netflix OSS所有组件都要使用的类库。 主要功能是对apache common configuration类库的扩展。它使用属性来源和定时器进行轮询，使用动态类型化属性
+
 Archaius Example
+
+```java
 class ArchaiusTest {
     DynamicStringProperty myprop = DynamicPropertyFactory
             .getInstance()
@@ -2042,7 +2181,11 @@ class ArchaiusTest {
         OtherClass.someMethod(myprop.get());
     }
 }
+```
+
 Archaius has its own set of configuration files and loading priorities. Spring applications should generally not use Archaius directly, but the need to configure the Netflix tools natively remains. Spring Cloud has a Spring Environment Bridge so Archaius can read properties from the Spring `Environment`. This allows Spring Boot projects to use the normal configuration toolchain, while allowing them to configure the Netflix tools, for the most part, as documented.
+
+Archaius有自己的一组配置文件和加载优先级。 Spring应用程序通常不会直接使用Archaius，但仍然需要配置Netflix工具。 Spring Cloud有一个Spring环境桥梁，所以Archaius可以从Spring环境中读取属性。 这也让Spring Boot工程能够在大多数情况下使用正常的配置工具链，同时允许他们配置Netflix工具。
 
 ## Router and Filter: Zuul - 路由和过滤：Zuul
 
