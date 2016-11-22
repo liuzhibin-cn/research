@@ -1490,9 +1490,9 @@ buildscript {
     classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
   }
 }
-
+>
 apply plugin: "io.spring.dependency-management"
-
+>
 dependencyManagement {
   imports {
     mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:1.0.0.RELEASE'
