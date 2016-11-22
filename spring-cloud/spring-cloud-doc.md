@@ -1,6 +1,6 @@
-## 贡献者(Contributor)
+### 贡献者(Contributor)
 
-指导：1169 CTO 盛国军。<br />
+指导 海尔电器CTO 盛国军。<br />
 翻译：
 
 * 卢路路 日日顺物流
