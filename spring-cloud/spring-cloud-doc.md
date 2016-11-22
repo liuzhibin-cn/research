@@ -2551,41 +2551,69 @@ Make sure to check out the alerting philosophy and docs on using double exponent
 
 基于双重指数平滑生成动态预警阈值请参考alerting philosophy 及相关文档。
 
-Spring Cloud Bus
+-------------------------------
+# Spring Cloud Bus
 
 Spring Cloud Bus links nodes of a distributed system with a lightweight message broker. This can then be used to broadcast state changes (e.g. configuration changes) or other management instructions. A key idea is that the Bus is like a distributed Actuator for a Spring Boot application that is scaled out, but it can also be used as a communication channel between apps. The only implementation currently is with an AMQP broker as the transport, but the same basic feature set (and some more depending on the transport) is on the roadmap for other transports.
 
+Spring Cloud Bus用轻量级的消息代理连接分布式系统的各个节点. 然后，这可以用于广播状态或其他指令的更改(例如:配置的变化).关键点在于Bus就像Spring Boot应用程序的一个扩大了的分布式执行器 ,但是它也被用作应用程序之间的通信渠道.目前这仅仅实现了AMQP(Advanced Message Queuing Protocol)的传输代理, 但相同的基本功能集（而一些更多的取决于传输）是在于其他传输的路线图.
+
 https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/src/main/asciidoc/contributing-docs.adoc
 
-Quick Start
+## Quick Start - 快速入门
+
 Spring Cloud Bus works by adding Spring Boot autconfiguration if it detects itself on the classpath. All you need to do to enable the bus is to add spring-cloud-starter-bus-amqp to your dependency management and Spring Cloud takes care of the rest. Make sure RabbitMQ is available and configured to provide a ConnectionFactory: running on localhost you shouldn’t have to do anything, but if you are running remotely use Spring Cloud Connectors, or Spring Boot conventions to define the broker credentials, e.g.
 
+Spring Cloud Bus检测Spring Boot编译路径下的自动配置文件来启动, 你需要做的仅仅是添加spring-cloud-starter-bus-amqp配置来实现你的依赖注入管理,剩下的Spring Cloud都会处理.确保RabbitMQ可用且配置提供连接池:本地运行时你不必做任何事情,但是如果你远程使用Spring Cloud连接器,或者Spring Boot约定好的定义代理证书,例如:
+
 `application.yml`
+```yaml
 spring:
   rabbitmq:
     host: mybroker.com
     port: 5672
     username: user
     password: secret
+```
+
 The bus currently supports sending messages to all nodes listening or all nodes for a particular service (as defined by Eureka). More selector criteria will be added in the future (ie. only service X nodes in data center Y, etc…​). The http endpoints are under the /bus/* actuator namespace. There are currently two implemented. The first, /bus/env, sends key/values pairs to update each nodes Spring `Environment`. The second, /bus/refresh, will reload each application’s configuration, just as if they had all been pinged on their /refresh endpoint.
 
-Addressing an Instance
+总线目前支持给所有正在监听的各个分布式节点发送消息或者给所有节点指定一个特定的服务。不久将来会添加更多的选择器标准。http端点是在BUS 的命名空间下。已经实现两个功能。第一，“/bus/env”，BUS发送key/values键值对来更新每个几点的的Spring环境。第二，” /bus/refresh”，只要发现应用更新终端就会重新加载他们的配置文件，
+
+## Addressing an Instance - 寻址服务实例
+
 The HTTP endpoints accept a "destination" parameter, e.g. "/bus/refresh?destination=customers:9000", where the destination is an ApplicationContext ID. If the ID is owned by an instance on the Bus then it will process the message and all other instances will ignore it. Spring Boot sets the ID for you in the ContextIdApplicationContextInitializer to a combination of the `spring.application.name`, active profiles and server.port by default.
 
-Addressing all instances of a service
+Http终端接收一个“目标”参数，例如：/bus/refresh?destination=customers:9000，目标是一个应用上下文ID.如果这个ID属于BUS下的一个实例,那么它将处理这个消息,其他实例将忽略这个消息, Spring Boot在ContextIdApplicationContextInitializer上下文应用初始化文件中设置ID来组成生成`spring.application.name`,默认启动profile和服务器端口.
+
+## Addressing all instances of a service  - 寻址全部服务实例
+
 The "destination" parameter is used in a Spring PathMatcher (with the path separator as a colon :) to determine if an instance will process the message. Using the example from above, "/bus/refresh?destination=customers:**" will target all instances of the "customers" service regardless of the profiles and ports set as the ApplicationContext ID.
 
-Application Context ID must be unique
+指定服务器处理消息是在SpringPathMatcher中使用目标参数(使用路径分隔符是冒号:).运用上边的例子, "/bus/refresh?destination=customers:**" 将所有实例的"customers"服务的配置和端口设置为ApplicationContext ID(应用上下文ID)。
+
+## Application Context ID must be unique - 应用上下文ID必须唯一
+
 The bus tries to eliminate processing an event twice, once from the original ApplicationEvent and once from the queue. To do this, it checks the sending application context id againts the current application context id. If multiple instances of a service have the same application context id, events will not be processed. Running on a local machine, each service will be on a different port and that will be part of the application context id. Cloud Foundry supplies an index to differentiate. To ensure that the application context id is the unique, set spring.application.index to something unique for each instance of a service. For example, in lattice, set spring.application.index=${INSTANCE_INDEX} in application.properties (or bootstrap.properties if using configserver).
 
-Customizing the Message Broker
+Bus试图消除从ApplicationEvent和队列中重复处理事件, BUS检查发送应用程序上下文ID和当前应用程序上下文ID是否冲突.如果一个服务有相同应用上下文服务ID和多个实例,事件将不处理.运行在本地机器上,每个服务有不同的端口,端口是应用上下文ID 的一部分. Cloud Foundry提供了唯一性索引.为了确保应用上下文ID是唯一的,设置spring.application.index让每个服务实例有一个唯一标识.例如:在application.properties(如果使用configserver 则在bootstrap.properties)中配置spring.application.index=${INSTANCE_INDEX}.
+
+## Customizing the Message Broker - 定制消息代理
+
 Spring Cloud Bus uses Spring Cloud Stream to broadcast the messages so to get messages to flow you only need to include the binder implementation of your choice in the classpath. There are convenient starters specifically for the bus with AMQP, Kafka and Redis (spring-cloud-starter-bus-[amqp,kafka,redis]). Generally speaking Spring Cloud Stream relies on Spring Boot autoconfiguration conventions for configuring middleware, so for instance the AMQP broker address can be changed with spring.rabbitmq.* configuration properties. Spring Cloud Bus has a handful of native configuration properties in spring.cloud.bus.* (e.g. spring.cloud.bus.destination is the name of the topic to use the the externall middleware). Normally the defaults will suffice.
+
+Spring Cloud Bus使用Spring Cloud Stream来广播消息, 你只需要包含在类路径中选择你绑定实现就能得到消息流.有专门为方便AMQP bus初学者, Kafka and Redis(spring-cloud-starter-bus-[amqp,kafka,redis]),一般来说Spring Cloud Stream依赖Spring Boot自动配置规则中配置中间件,例如AMQP代理地址可以在spring.rabbitmq.*配置文件中更改. Spring Cloud Bus少数本地属性配置在spring.cloud.bus.*中(例如: spring.cloud.bus.destination是使用中间件的名称). 通常情况下，默认值就足够了。
+
 
 To lean more about how to customize the message broker settings consult the Spring Cloud Stream documentation.
 
-Tracing Bus Events
+## Tracing Bus Events - 跟踪总线消息
+
 Bus events (subclasses of RemoteApplicationEvent) can be traced by setting spring.cloud.bus.trace.enabled=true. If you do this then the Spring Boot TraceRepository (if it is present) will show each event sent and all the acks from each service instance. Example (from the /trace endpoint):
 
+通过配置spring.cloud.bus.trace.enabled=true 能够实现追溯事件. 如果你这样做的话，spring启动tracerepository（如果存在）将显示每个事件发送和从每个服务实例的所有的消息。例如（跟踪端点）：
+
+```json
 {
   "timestamp": "2015-11-26T10:24:44.411+0000",
   "info": {
@@ -2616,73 +2644,137 @@ Bus events (subclasses of RemoteApplicationEvent) can be traced by setting sprin
     "destination": "*:**"
   }
 }
+```
+
 This trace shows that a RefreshRemoteApplicationEvent was sent from customers:9000, broadcast to all services, and it was received (acked) by customers:9000 and stores:8081.
+
+跟踪消息显示RefreshRemoteApplicationEvent从customers:9000客户端被发送给给所有服务,并被customers:9000和stores:8081接收.
 
 To handle the ack signals yourself you could add an @EventListener for the AckRemoteAppplicationEvent and SentApplicationEvent types to your app (and enable tracing). Or you could tap into the TraceRepository and mine the data from there.
 
-NOTE
-Any Bus application can trace acks, but sometimes it will be useful to do this in a central service that can do more complex queries on the data. Or forward it to a specialized tracing service.
-Spring Boot Cloud CLI
+你可以在AckRemoteAppplicationEvent和entApplicationEvent类型（可追踪）上添加@EventListener来处理ack信号. 或者你可以进入TraceRepository，从那里获取数据。
+
+> **NOTE** <br />
+> Any Bus application can trace acks, but sometimes it will be useful to do this in a central service that can do more complex queries on the data. Or forward it to a specialized tracing service.
+
+-----------------------
+# Spring Boot Cloud CLI
 
 Spring Boot CLI provides Spring Boot command line features for Spring Cloud. You can write Groovy scripts to run Spring Cloud component applications (e.g. @EnableEurekaServer). You can also easily do things like encryption and decryption to support Spring Cloud Config clients with secret configuration values.
 
+Spring Boot CLI为Spring Cloud提供Spring Boot命令行功能.你可以写Groovy脚本运行SpringCloud组件的应用程序.你可以很容易做到加密解密用来SpringCloud配置客户端的私密配置. 
+
 https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/src/main/asciidoc/contributing-docs.adoc
 
-Installation
+## Installation - 安装
+
 To install, make sure you have Spring Boot CLI (1.2.0 or better):
 
+确保你有SpringBootCLI(1.2.0或者更高版本)用来安装
+
+```shell
 $ spring version
 Spring CLI v1.2.3.RELEASE
+```
+
 E.g. for GVM users
 
+GVM用户需要安装
+
+```shell
 $ gvm install springboot 1.3.0.M5
 $ gvm use springboot 1.3.0.M5
+```
+
 and install the Spring Cloud plugin:
 
+需要安装SpringCloud插件:
+
+```shell
 $ mvn install
 $ spring install org.springframework.cloud:spring-cloud-cli:1.1.0.BUILD-SNAPSHOT
-IMPORTANT
-Prerequisites: to use the encryption and decryption features you need the full-strength JCE installed in your JVM (it’s not there by default). You can download the "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files" from Oracle, and follow instructions for installation (essentially replace the 2 policy files in the JRE lib/security directory with the ones that you downloaded).
-Writing Groovy Scripts and Running Applications
+```
+
+> **IMPORTANT** <br />
+> **Prerequisites**: to use the encryption and decryption features you need the full-strength JCE installed in your JVM (it’s not there by default). You can download the "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files" from Oracle, and follow instructions for installation (essentially replace the 2 policy files in the JRE lib/security directory with the ones that you downloaded). <br />
+> **重要** <br />
+> **预备条件**：使用加密和解密所需要的全部的JCE安装JVM功能（它不在默认情况下）。你可以下载“Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files”，并按照指示安装（基本上取代2的政策文件在JRE LIB /安全与你所下载的目录）。
+
+## Writing Groovy Scripts and Running Applications - 编写Groovy脚本，运行应用
+
 Spring Cloud CLI has support for most of the Spring Cloud declarative features, such as the @Enable* class of annotations. For example, here is a fully functional Eureka server
 
-app.groovy
+Spring Cloud CLI对Spring Cloud陈述功能的支持，如@ Enable *类注释。例如，这里是一个全功能的Eureka服务
+
+`app.groovy`
+```groovy
 @EnableEurekaServer
 class Eureka {}
+```
+
 which you can run from the command line like this
 
+使用下面命令运行：
+
+```shell
 $ spring run app.groovy
+```
+
 To include additional dependencies, often it suffices just to add the appropriate feature-enabling annotation, e.g. @EnableConfigServer, @EnableOAuth2Sso or @EnableEurekaClient. To manually include a dependency you can use a @Grab with the special "Spring Boot" short style artifact co-ordinates, i.e. with just the artifact ID (no need for group or version information), e.g. to set up a client app to listen on AMQP for management events from the Spring CLoud Bus:
 
-app.groovy
+包括额外的依赖关系，往往可以只添加适当注释来使用，如@enableeurekaclient  @ enableconfigserver，@ enableoauth2sso。手动包括依赖你可以使用@Grab与特殊“Spring Boot“短的坐标，即只有ID（不需要组或版本信息），如建立客户应用程序侦听从Spring Cloud Bus管理事件AMQP：
+
+`app.groovy`
+```groovy
 @Grab('spring-cloud-starter-bus-amqp')
 @RestController
 class Service {
   @RequestMapping('/')
   def home() { [message: 'Hello'] }
 }
-Encryption and Decryption
+```
+
+## Encryption and Decryption - 加密解密
+
 The Spring Cloud CLI comes with an "encrypt" and a "decrypt" command. Both accept arguments in the same form with a key specified as a mandatory "--key", e.g.
 
+Spring Cloud CLI是一个“加密”和“解密”命令。都接受相同形式的参数与一个指定的键指定为一个强制性的“-键”，例如
+
+```shell
 $ spring encrypt mysecret --key foo
 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
 $ spring decrypt --key foo 682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda
 mysecret
+```
+
 To use a key in a file (e.g. an RSA public key for encyption) prepend the key value with "@" and provide the file path, e.g.
 
+在一个文件中使用一个密钥（例如加密RSA公钥）在核心价值与“@”和提供文件的路径，例如
+
+```shell
 $ spring encrypt mysecret --key @${HOME}/.ssh/id_rsa.pub
 AQAjPgt3eFZQXwt8tsHAVv/QHiY5sI2dRcR+...
-Spring Cloud Security
+```
+
+-------------------------
+# Spring Cloud Security
 
 Spring Cloud Security offers a set of primitives for building secure applications and services with minimum fuss. A declarative model which can be heavily configured externally (or centrally) lends itself to the implementation of large systems of co-operating, remote components, usually with a central indentity management service. It is also extremely easy to use in a service platform like Cloud Foundry. Building on Spring Boot and Spring Security OAuth2 we can quickly create systems that implement common patterns like single sign on, token relay and token exchange.
 
+Spring Cloud Security提供了一组原语，事半功倍的建立安全的应用程序和服务。声明的可重配置的外部（或中央）本身的合作，大型系统实施远程组件，通常有一个中心的身份管理服务。它也非常容易使用在一个服务平台，如云代工。建立在Spring Boot and Spring Security我们可以快速创建实现共同的模式，如单点登录系统，令牌传递和令牌交换。
+
 https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/src/main/asciidoc/contributing-docs.adoc
 
-Quickstart
-OAuth2 Single Sign On
+## Quickstart - 快速入门
+
+### OAuth2 Single Sign On - OAther2单点登录
+
 Here’s a Spring Cloud "Hello World" app with HTTP Basic authentication and a single user account:
 
-app.groovy
+这是一个Spring Cloud “Hello World”应用程序的HTTP基本认证和一个用户帐户：
+
+`app.groovy`
+```groovy
 @Grab('spring-boot-starter-security')
 @Controller
 class Application {
@@ -2693,11 +2785,16 @@ class Application {
   }
 
 }
+```
+
 You can run it with spring run app.groovy and watch the logs for the password (username is "user"). So far this is just the default for a Spring Boot app.
+
+你可以用spring运行app.groovy查看记录的密码日志（用户名为“用户”）。到目前为止，这只是一个Spring Boot应用程序的默认值
 
 Here’s a Spring Cloud app with OAuth2 SSO:
 
-app.groovy
+`app.groovy`
+```groovy
 @Controller
 @EnableOAuth2Sso
 class Application {
@@ -2708,11 +2805,18 @@ class Application {
   }
 
 }
+```
+
 Spot the difference? This app will actually behave exactly the same as the previous one, because it doesn’t know it’s OAuth2 credentals yet.
+
+指出不同点?这个应用运行的程序和前一个一样,因为现在还不知OAuth2凭据.
 
 You can register an app in github quite easily, so try that if you want a production app on your own domain. If you are happy to test on localhost:8080, then set up these properties in your application configuration:
 
+如果你想在自己的域里制作App,你可以在Github上很容易的注册一个app.如果你想要在本机调试,那么在你的应用程序配置文件中设置这些属性.
+
 `application.yml`
+```yaml
 spring:
   oauth2:
     client:
@@ -2724,16 +2828,27 @@ spring:
     resource:
       userInfoUri: https://api.github.com/user
       preferTokenInfo: false
+```
+
 run the app above and it will redirect to github for authorization. If you are already signed into github you won’t even notice that it has authenticated. These credentials will only work if your app is running on port 8080.
+
+运行上面的这个程序，它将重定向到GitHub的授权。如果你已经登陆了GitHub你甚至不会注意到它已认证。这些凭据只有你的应用在8080端口运行时才会起作用。
 
 To limit the scope that the client asks for when it obtains an access token you can set spring.oauth2.client.scope (comma separated or an array in YAML). By default the scope is empty and it is up to to Authorization Server to decide what the defaults should be, usually depending on the settings in the client registration that it holds.
 
-NOTE
-The examples above are all Groovy scripts. If you want to write the same code in Java (or Groovy) you need to add Spring Security OAuth2 to the classpath (e.g. see the sample here).
-OAuth2 Protected Resource
+当客户端获得访问权限，可以通过设置spring.oauth2.client.scope（逗号分隔或YAML的数组）来限制它的请求范围。默认情况下，范围是空的它是由授权服务器来决定默认应该是什么，通常取决于它拥有的客户端注册的设置
+
+> **NOTE** <br />
+> The examples above are all Groovy scripts. If you want to write the same code in Java (or Groovy) you need to add Spring Security OAuth2 to the classpath (e.g. see the sample here).
+
+### OAuth2 Protected Resource - OAuth2保护的资源
+
 You want to protect an API resource with an OAuth2 token? Here’s a simple example (paired with the client above):
 
-app.groovy
+你想用oauth2令牌保护API资源？这里有一个简单的例子（与客户机配对）
+
+`app.groovy`
+```groovy
 @Grab('spring-cloud-starter-security')
 @RestController
 @EnableResourceServer
@@ -2745,39 +2860,64 @@ class Application {
   }
 
 }
+```
+
 and
 
 `application.yml`
+```yaml
 spring:
   oauth2:
     resource:
       userInfoUri: https://api.github.com/user
       preferTokenInfo: false
-More Detail
-Single Sign On
-NOTE
-All of the OAuth2 SSO and resource server features moved to Spring Boot in version 1.3. You can find documentation in the Spring Boot user guide.
-Token Relay
+```
+
+## More Detail - 其他方面
+
+### Single Sign On - 单点登录
+
+> **NOTE** <br />
+> All of the OAuth2 SSO and resource server features moved to Spring Boot in version 1.3. You can find documentation in the Spring Boot user guide.
+
+### Token Relay - 令牌中继
+
 A Token Relay is where an OAuth2 consumer acts as a Client and forwards the incoming token to outgoing resource requests. The consumer can be a pure Client (like an SSO application) or a Resource Server.
 
-Client Token Relay
+一个令牌中继是一个oauth2消费者作为一个客户端和友好的资源请求的输入令牌转发。消费者可以是一个纯粹的客户端（如单点登录应用程序）或资源服务器。
+
+#### Client Token Relay - 客户端令牌中继
+
 If your app has a Spring Cloud Zuul embedded reverse proxy (using @EnableZuulProxy) then you can ask it to forward OAuth2 access tokens downstream to the services it is proxying. Thus the SSO app above can be enhanced simply like this:
 
-app.groovy
+如果你的应用程序有SpringCloud Zuul嵌入式反向代理（使用@ enablezuulproxy）然后你可以让它向前oauth2访问令牌的下游服务是代理。因此，在单点登录应用程序可以增强就是这样简单：
+
+`app.groovy`
+```groovy
 @Controller
 @EnableOAuth2Sso
 @EnableZuulProxy
 class Application {
 
 }
+```
+
 and it will (in addition to loggin the user in and grabbing a token) pass the authentication token downstream to the /proxy/* services. If those services are implemented with @EnableOAuth2Resource then they will get a valid token in the correct header.
+
+它将（除了当前登录的用户和抢夺令牌）通过认证令牌到下游/代理/服务。如果这些服务实现了@ EnableOAuth2Resource那么他们会在”正确的标题”中得到一个有效的令牌。
 
 How does it work? The @EnableOAuth2Sso annotation pulls in spring-cloud-starter-security (which you could do manually in a traditional app), and that in turn triggers some autoconfiguration for a ZuulFilter, which itself is activated because Zuul is on the classpath (via @EnableZuulProxy). The {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/OAuth2TokenRelayFilter.java[filter] just extracts an access token from the currently authenticated user, and puts it in a request header for the downstream requests.
 
-Resource Server Token Relay
+那怎么使用呢？“enableoauth2sso注释将spring-cloud-starter-security（在传统的应用程序中你可以手工引入）引入，这反过来又触发了ZuulFilter的一些配置， Zuul会因为包含在类路径（通过@ enablezuulproxy）下而被激活。GitHub/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/OAuth2TokenRelayFilter.java[filter]只提取一个访问令牌从目前认证用户，并把它放在下游请求的请求头部信息中。
+
+#### Resource Server Token Relay - 服务端令牌中继
+
 If your app has @EnableOAuth2Resource and also is a Client (i.e. it has a spring.oauth2.client.clientId, even if it doesn’t use it), then the OAuth2RestOperations that is provided for @Autowired users by Spring Cloud (it is declared as @Primary) will also forward tokens. If you don’t want to forward tokens (and that is a valid choice, since you might want to act as yourself, rather than the client that sent you the token), then you only need to create your own OAuth2RestOperations instead of autowiring the default one. Here’s a basic example showing the use of the autowired rest template ("foo.com" is a Resource Server accepting the same tokens as the surrounding app):
 
-MyController.java
+如果你的应用程序有“enableoauth2resource也是一个客户端（即它有一个spring.oauth2.client.clientid，即使不使用它），然后通过SpringCloud给用户提供自动绑定的OAuth2RestOperations也能发送令牌,如果你不想发送令牌（这是一个有效的选择，因为你可能想做自己，而不是把你的令牌的客户端），那么你只需要创建自己的OAuth2RestOperations而不是自动默认。这是一个显示的自动绑定其他模板的使用的基本例子（“foo.com”是一个为周边APP接受相同的标记的资源服务器）：
+
+`MyController.java`
+```java
 @Autowired
 private OAuth2RestOperations restTemplate;
 
@@ -2787,18 +2927,26 @@ public String relay() {
       restTemplate.getForEntity("https://foo.com/bar", String.class);
     return "Success! (" + response.getBody() + ")";
 }
-Configuring Authentication Downstream of a Zuul Proxy
+```
+
+## Configuring Authentication Downstream of a Zuul Proxy - Zull代理中的安全认证配置
+
 You can control the authorization behaviour downstream of an @EnableZuulProxy through the proxy.auth.* settings. Example:
 
+你可以通过“enablezuulproxy。auth *设置来控制下游的代理授权行为。例如:
+
 `application.yml`
+```yaml
 proxy:
   auth:
     routes:
       customers: oauth2
       stores: passthru
       recommendations: none
+```
+
 In this example the "customers" service gets an OAuth2 token relay, the "stores" service gets a passthrough (the authorization header is just passed downstream), and the "recommendations" service has its authorization header removed. The default behaviour is to do a token relay if there is a token available, and passthru otherwise.
 
-See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/ProxyAuthenticationProperties[ ProxyAuthenticationProperties] for full details.
+在这个例子中"customers"服务器获得OAuth2令牌传递, "stores"服务器获得直通（授权头只是通过下游），和“recommendations”服务将其授权报头删除。如果令牌校验通过,默认行为是做令牌传递，其他情况下直接通过。更详细信息参见
 
-Last updated 2016-01-26 10:56:04 UTC
+See {github}/tree/master/src/main/java/org/springframework/cloud/security/oauth2/proxy/ProxyAuthenticationProperties[ ProxyAuthenticationProperties] for full details.
