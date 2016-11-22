@@ -1500,17 +1500,28 @@ dependencyManagement {
 }
 > ```
 
-High Availability, Zones and Regions
+### High Availability, Zones and Regions - 高可用性：Zone和Region
+
 The Eureka server does not have a backend store, but the service instances in the registry all have to send heartbeats to keep their registrations up to date (so this can be done in memory). Clients also have an in-memory cache of eureka registrations (so they don’t have to go to the registry for every single request to a service).
+
+Eureka服务端没有后台存储,但是服务端实例全都得在注册中心中发送心跳去保持注册（所以他们能在内存中操作）， 客户端也有内存缓存着eureka的注册信息(他们不必表为每个单一的请求去注册一个服务).
 
 By default every Eureka server is also a Eureka client and requires (at least one) service URL to locate a peer. If you don’t provide it the service will run and work, but it will shower your logs with a lot of noise about not being able to register with the peer.
 
+默认情况下每个Eureka服务端也是一个Eureka客户端并且通过请求服务的URL去定位一个节点。如果你不提供的话，服务虽然还会运行和工作，但是它不会向你打印一堆关于没有注册的节点日志。
+
 See also below for details of Ribbon support on the client side for Zones and Regions.
 
-Standalone Mode
+请看 以下细节为 Ribbon 支持 在客户端区域和地区。
+
+### Standalone Mode - 独立部署模式
+
 The combination of the two caches (client and server) and the heartbeats make a standalone Eureka server fairly resilient to failure, as long as there is some sort of monitor or elastic runtime keeping it alive (e.g. Cloud Foundry). In standalone mode, you might prefer to switch off the client side behaviour, so it doesn’t keep trying and failing to reach its peers. Example:
 
+两个缓存的组合和心跳可以使一个标准的Eureka服务端完全弹性的失败，只要一些监视器或者弹性运行保持存货（例如Cloud Foundry）。在标准模式中，你也许更倾向于关闭客户端的行为，所以它不保持重试和重新找回它的那些节点。如：
+
 `application.yml` (Standalone Eureka Server)
+```yaml
 server:
   port: 8761
 
@@ -1522,13 +1533,21 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+```
+
 Notice that the serviceUrl is pointing to the same host as the local instance.
 
-Peer Awareness
+注意serviceUrl是指向相同主机的本地实例。
+
+### Peer Awareness - 节点感知
+
 Eureka can be made even more resilient and available by running multiple instances and asking them to register with each other. In fact, this is the default behaviour, so all you need to do to make it work is add a valid serviceUrl to a peer, e.g.
+
+Eureka甚至可以更有弹性和可用性的运行多个实例,并让他们互相注册。事实上，这也是默认的行为，因此所有你需要让它工作 的，只要添加一个有效的节点serviceUrl.例如：
 
 
 `application.yml` (Two Peer Aware Eureka Servers)
+```yaml
 ---
 spring:
   profiles: peer1
@@ -1548,26 +1567,45 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://peer1/eureka/
+```
+
 In this example we have a YAML file that can be used to run the same server on 2 hosts (peer1 and peer2), by running it in different Spring profiles. You could use this configuration to test the peer awareness on a single host (there’s not much value in doing that in production) by manipulating /etc/hosts to resolve the host names. In fact, the eureka.instance.hostname is not needed if you are running on a machine that knows its own hostname (it is looked up using java.net.InetAddress by default).
+
+在这个例子中，我们有一个YAML文件能够被使用去运行在两个主机运行相同的服务（peer1 和 peer2），通过运行不同的Spring配置文件。你还可以使用这个配置在单个主机上去测试节点感知（在生产中这样做没有多少价值），通过操纵/etc/hosts来解决主机名称。事实上，如果你在已知主机名的机器中运行的话，eureka.instance.hostname是不需要的（默认查找使用的java.net.InetAddress）。
 
 You can add multiple peers to a system, and as long as they are all connected to each other by at least one edge, they will synchronize the registrations amongst themselves. If the peers are physically separated (inside a data centre or between multiple data centres) then the system can in principle survive split-brain type failures.
 
-Prefer IP Address
+你可以为一个系统添加更多的节点，并且只要他们全都互相能通过最少一边来互相连接，他们将同步互相注册他们自己。如果节点被分离（在一个数据中心或者多个数据中心之间）那么系统原则上split-brain类型存活失败。
+
+### Prefer IP Address - 优先使用IP地址
+
 In some cases, it is preferable for Eureka to advertise the IP Adresses of services rather than the hostname. Set eureka.instance.preferIpAddress to true and when the application registers with eureka, it will use its IP Address rather than its hostname.
 
-Circuit Breaker: Hystrix Clients
+在一些案例里，更可取的是Eureka广播服务的IP地址而不是主机名。设置eureka.instance.preferIpAddress 为true以便当应用注册到eureka的时候，它将使用它的IP地址而不是主机名。
+
+## Circuit Breaker: Hystrix Clients - 断路器：Hystrix客户端
+
 Netflix has created a library called Hystrix that implements the circuit breaker pattern. In a microservice architecture it is common to have multiple layers of service calls.
 
-HystrixGraph
+Netflix创建了一个叫Hystrix的库去实现circuit breaker pattern。在microservice架构中拥有多个层的服务调用是很常见的。
+
+![Figure 1. Microservice Graph](http://projects.spring.io/spring-cloud/images/HystrixGraph.png)
 Figure 1. Microservice Graph
+
 A service failure in the lower level of services can cause cascading failure all the way up to the user. When calls to a particular service reach a certain threshold (20 failures in 5 seconds is the default in Hystrix), the circuit opens and the call is not made. In cases of error and an open circuit a fallback can be provided by the developer.
 
-HystrixFallback
+在一个低等级的服务群中一个服务挂掉会给用户导致级联失效的。当调用一个特定的服务达到一定阈值(在Hystrix里默认是5秒内20个失败)，断路由开启并且调用没有成功的。在这种情况下开发者能够提供错误和开启一个断路由回调。
+
+![Figure 2. Hystrix fallback prevents cascading failures](http://projects.spring.io/spring-cloud/images/HystrixFallback.png)
 Figure 2. Hystrix fallback prevents cascading failures
+
 Having an open circuit stops cascading failures and allows overwhelmed or failing services time to heal. The fallback can be another Hystrix protected call, static data or a sane empty value. Fallbacks may be chained so the first fallback makes some other business call which in turn falls back to static data.
+
+出现公开的电路停止连锁故障并且允许解决或者失败的服务时间来修复。回调能被另一个Hystrix保护调用，静态数据或者合理的空数据。回调 可以绑定因此第一次回调会有一些其它的业务调用反过来才落回到静态数据。
 
 Example boot app:
 
+```java
 @SpringBootApplication
 @EnableCircuitBreaker
 public class Application {
@@ -1590,24 +1628,42 @@ public class StoreIntegration {
         return /* something useful */;
     }
 }
+```
+
 The @HystrixCommand is provided by a Netflix contrib library called "javanica". Spring Cloud automatically wraps Spring beans with that annotation in a proxy that is connected to the Hystrix circuit breaker. The circuit breaker calculates when to open and close the circuit, and what to do in case of a failure.
+
+Netflix路由库提供@HystrixCommand调用 "javanica". Spring Cloud 在这个注解下自动包裹Spring beans进一个代理里面，被连接到了一个Hystrix断路由。断路器计算何时打开和关闭电路,并在失败的情况下做什么。
 
 To configure the @HystrixCommand you can use the commandProperties attribute with a list of @HystrixProperty annotations. See here for more details. See the Hystrix wiki for details on the properties available.
 
-Propagating the Security Context or using Spring Scopes
+你可以使用commandProperties参数和@HystrixProperty注解的集合来配置@HystrixCommand。请见 here 更多细节. 请见 the Hystrix wiki 有关可用的属性。
+
+### Propagating the Security Context or using Spring Scopes - 线程上下文延续或者使用Spring Scope
+
 If you want some thread local context to propagate into a @HystrixCommand the default declaration will not work because it executes the command in a thread pool (in case of timeouts). You can switch Hystrix to use the same thread as the caller using some configuration, or directly in the annotation, by asking it to use a different "Isolation Strategy". For example:
 
+如果你想一些线程的本地的上下文传播到一个@HystrixCommand，默认声明将不会工作，因为他在线程池里执行命令。（在超时的情况下）。你可以切换Hystrix去使用同个线程让调用者使用一些配置，或直接在注解中，让它去使用不同的“隔离策略”。 例如：
+
+```java
 @HystrixCommand(fallbackMethod = "stubMyService",
     commandProperties = {
       @HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE")
     }
 )
 ...
+```
+
 The same thing applies if you are using @SessionScope or @RequestScope. You will know when you need to do this because of a runtime exception that says it can’t find the scoped context.
 
-Health Indicator
+如果你使用@SessionScope 或 @RequestScope同样适用。你会知道你要这么做，因为一个runtime异常说他不能找到作用域上下文。
+
+### Health Indicator - 健康指标
+
 The state of the connected circuit breakers are also exposed in the /health endpoint of the calling application.
 
+连接的断路器的状态也暴露在呼叫应用程序的/health端点中。
+
+```json
 {
     "hystrix": {
         "openCircuitBreakers": [
@@ -1617,55 +1673,101 @@ The state of the connected circuit breakers are also exposed in the /health endp
     },
     "status": "UP"
 }
-Hystrix Metrics Stream
+```
+
+### Hystrix Metrics Stream - Hystrix指标流
+
 To enable the Hystrix metrics stream include a dependency on spring-boot-starter-actuator. This will expose the /hystrix.stream as a management endpoint.
 
+使Hystrix指标流包括依赖于spring-boot-starter-actuator。这将使/hystrix.stream流作为一个管理端点。
+
+```xml
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
-Circuit Breaker: Hystrix Dashboard
+```
+
+## Circuit Breaker: Hystrix Dashboard - 断路器：Hystrix仪表盘
+
 One of the main benefits of Hystrix is the set of metrics it gathers about each HystrixCommand. The Hystrix Dashboard displays the health of each circuit breaker in an efficient manner.
 
-Hystrix
+Hystrix的主要优点是会采集每一个HystrixCommand的信息指标,把每一个断路器的信息指标显示的Hystrix仪表盘上。
+
+![Figure 3. Hystrix Dashboard](http://projects.spring.io/spring-cloud/images/Hystrix.png)
 Figure 3. Hystrix Dashboard
+
 To run the Hystrix Dashboard annotate your Spring Boot main class with @EnableHystrixDashboard. You then visit /hystrix and point the dashboard to an individual instances /hystrix.stream endpoint in a Hystrix client application.
 
-Turbine
+运行Hystrix仪表板需要在spring boot主类上标注@EnableHystrixDashboard。然后访问/hystrix查看仪表盘，在hystrix客户端应用使用/hystrix.stream监控。
+
+### Turbine
+
 Looking at an individual instances Hystrix data is not very useful in terms of the overall health of the system. Turbine is an application that aggregates all of the relevant /hystrix.stream endpoints into a combined /turbine.stream for use in the Hystrix Dashboard. Individual instances are located via Eureka. Running Turbine is as simple as annotating your main class with the @EnableTurbine annotation (e.g. using spring-cloud-starter-turbine to set up the classpath). All of the documented configuration properties from the Turbine 1 wiki apply. The only difference is that the turbine.instanceUrlSuffix does not need the port prepended as this is handled automatically unless turbine.instanceInsertPort=false.
+
+看一个实例Hystrix数据对于整个系统的健康不是很有用. Turbine 是一个应用程序,该应用程序汇集了所有相关的/hystrix.stream端点到 /turbine.stream用于Hystrix仪表板。运行turbine使用@EnableTurbine注解你的主类，使用spring-cloud-starter-turbine这个jar。配置请参考 the Turbine 1 wiki 唯一的区别是turbine.instanceUrlSuffix不需要端口号前缀,因为这是自动处理,除非turbine.instanceInsertPort=false。
 
 The configuration key turbine.appConfig is a list of eureka serviceIds that turbine will use to lookup instances. The turbine stream is then used in the Hystrix dashboard using a url that looks like: http://my.turbine.sever:8080/turbine.stream?cluster=<CLUSTERNAME>; (the cluster parameter can be omitted if the name is "default"). The cluster parameter must match an entry in turbine.aggregator.clusterConfig. Values returned from eureka are uppercase, thus we expect this example to work if there is an app registered with Eureka called "customers":
 
+turbine.appConfig配置是一个eureka服务ID列表，turbine将使用这个配置查询实例。turbine stream在hystrix dashboard中使用如下的url配置： http://my.turbine.server:8080/turbine.stream?cluster=,如果集群的名称是default，集群参数可以忽略）。这个cluster参数必须和turbine.aggregator.clusterConfig匹配。从eureka返回的值都是大写的，因此我们希望下面的例子可以工作，如果一个app使用eureka注册，并且被叫做"customers":
+
+```yaml
 turbine:
   aggregator:
     clusterConfig: CUSTOMERS
   appConfig: customers
+```
+
 The clusterName can be customized by a SPEL expression in turbine.clusterNameExpression with root an instance of InstanceInfo. The default value is appName, which means that the Eureka serviceId ends up as the cluster key (i.e. the InstanceInfo for customers has an appName of "CUSTOMERS"). A different example would be turbine.clusterNameExpression=aSGName, which would get the cluster name from the AWS ASG name. Another example:
 
+clusterName可以使用SPEL表达式定义，在turbine.clusterNameExpression。 默认值是appName,意思是eureka服务ID最终将作为集群的key，例如customers的 InstanceInfo有一个CUSTOMERS的appName。另外一个例子是turbine.clusterNameExpression=aSGName，将从AWS ASG name获取集群名称。
+
+```yaml
 turbine:
   aggregator:
     clusterConfig: SYSTEM,USER
   appConfig: customers,stores,ui,admin
   clusterNameExpression: metadata['cluster']
+```
+
 In this case, the cluster name from 4 services is pulled from their metadata map, and is expected to have values that include "SYSTEM" and "USER".
+
+在这种情况下,集群名称从4个服务从其元数据映射,期望包含“SYSTEM”和“USER”。
 
 To use the "default" cluster for all apps you need a string literal expression (with single quotes):
 
+所有的app使用default,你需要一个文字表达式(使用单引号)：
+
+```yaml
 turbine:
   appConfig: customers,stores
   clusterNameExpression: 'default'
+```
+
 Spring Cloud provides a spring-cloud-starter-turbine that has all the dependencies you need to get a Turbine server running. Just create a Spring Boot application and annotate it with @EnableTurbine.
 
-Turbine AMQP
+spring cloud提供一个spring-cloud-starter-turbine,所有依赖项你需要运行一个turbine服务器。使用@EnableTurbine创建一个spring boot应用。
+
+### Turbine AMQP
+
 In some environments (e.g. in a PaaS setting), the classic Turbine model of pulling metrics from all the distributed Hystrix commands doesn’t work. In that case you might want to have your Hystrix commands push metrics to Turbine, and Spring Cloud enables that with AMQP messaging. All you need to do on the client is add a dependency to spring-cloud-netflix-hystrix-amqp and make sure there is a Rabbit broker available (see Spring Boot documentation for details on how to configure the client credentials, but it should work out of the box for a local broker or in Cloud Foundry).
+
+在一些环境(Pass), 在所有分布式下典型的Turbine 模型的Hystrix 命令都不工作，在这种情况下，你可能想要 Hystrix 命令 推送到 Tuibine， 和Spring Cloud进行消息传递，那么你需要要做的是在客户端添加一个依赖spring-cloud-netflix-hystrix-stream和你所选择的 spring-cloud-starter-stream-*的依赖(相关信息请查看 Spring Cloud Stream 方档，以及如何配置客户端凭证，和工作时的要本地代理)。
 
 On the server side Just create a Spring Boot application and annotate it with @EnableTurbineAmqp and by default it will come up on port 8989 (point your Hystrix dashboard to that port, any path). You can customize the port using either server.port or turbine.amqp.port. If you have spring-boot-starter-web and spring-boot-starter-actuator on the classpath as well, then you can open up the Actuator endpoints on a separate port (with Tomcat by default) by providing a management.port which is different.
 
+创建一个带有注解 @EnableTurbineStream 的Spring boot 应用服务器，端口默认 8989 (Hystrix 仪表盘的URL都使用此端口), 如果你想自定义端口，可以配置 server.port 或 turbine.stream.port 任一个，如果你使用了 spring-boot-starter-web 和 spring-boot-starter-actuator ，那么你可以提供(使用Tomcat默认情况下) management.port 不同的端口，并打开这个单独的执行器端口
+
 You can then point the Hystrix Dashboard to the Turbine AMQP Server instead of individual Hystrix streams. If Turbine AMQP is running on port 8989 on myhost, then put http://myhost:8989 in the stream input field in the Hystrix Dashboard. Circuits will be prefixed by their respective serviceId, followed by a dot, then the circuit name.
+
+你可以把Dashboard指向Turbine Stream Server来代替个别Hystrix streams。如果Tubine Stream 使用你本机的8989端口运行，然后把 http://myhost:8989在流输入字段Hystrix仪表板 Circuits 将由各自的 serverId关缀，紧随其后的是一个点，然后是circuit 名称
 
 Spring Cloud provides a spring-cloud-starter-turbine-amqp that has all the dependencies you need to get a Turbine AMQP server running. You need Java 8 to run the app because it is Netty-based.
 
-Customizing the AMQP ConnectionFactory
+Spring Cloud提供了一个 spring-cloud-starter-turbine-stream，包括了运行 Turibine Stream Server运行所需要的所有依赖,如spring-cloud-starter-stream-rabbit. 因为使用了Netty-based，所以你需要Java 8 运行此应用.
+
+## Customizing the AMQP ConnectionFactory - 
+
 If you are using AMQP there needs to be a ConnectionFactory (from Spring Rabbit) in the application context. If there is a single ConnectionFactory it will be used, or if there is a one qualified as @HystrixConnectionFactory (on the client) and @TurbineConnectionFactory (on the server) it will be preferred over others, otherwise the @Primary one will be used. If there are multiple unqualified connection factories there will be an error.
 
 Note that Spring Boot (as of 1.2.2) creates a ConnectionFactory that is not @Primary, so if you want to use one connection factory for the bus and another for business messages, you need to create both, and annotate them @*ConnectionFactory and @Primary respectively.
