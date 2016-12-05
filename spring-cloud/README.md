@@ -121,6 +121,36 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 访问几次客户端应用的演示功能，刷新`Hystrix Dashboard`页面，则会显示监控内容。可以开启另外一个浏览器执行`benchmark`演示功能，观察`Hystrix Dashboard`的监控情况：<br />
 ![Hystrix Monitor Screen](../resources/hystrix-dashboard-3.png)
 
+# 高可用性部署方案说明
+
+### 微服务高可用性部署方案
+任何一个微服务都可以部署多个实例，上面示例中的DemoService、OrderService不需要做任何更改，即可实现在新的机器上部署新的实例（本示例中要求服务器安装`JDK1.8`）：
+
+* **DemoService** <br />
+  按上面方法从github下载项目源代码；<br />
+  使用下面maven命令编译、启动服务：
+  ```shell
+  cd spring-cloud/demo-service
+  mvn spring-boot:run
+  ```
+
+* **OrderService** <br />
+  按上面方法从github下载项目源代码；<br />
+  使用下面maven命令将spring-cloud-order-service-client安装到本地maven仓库：
+  ```shell
+  cd spring-cloud/order-service-client
+  mvn install
+  ```
+  使用下面maven命令编译、启动OrderService服务：
+  ```shell
+  cd spring-cloud/order-service-impl
+  mvn spring-boot:run
+  ```
+
+### Eureka Server高可用性部署方案
+
+### Zuul Server高可用性部署方案
+
 # 参考
 
 1. [Spring Cloud Netflix Reference](http://cloud.spring.io/spring-cloud-netflix/spring-cloud-netflix.html)
