@@ -171,6 +171,7 @@ mvn spring-boot:run
   ```
   
 可以参考[Spring Cloud构建微服务架构（六）高可用服务注册中心](http://blog.didispace.com/springcloud6/)，像下面图示一样部署3个或更多个Eureka Server实例组成的高可用集群：
+
 ![Eureka Server高可用方案](../resources/eureka-ha.png)
 
 # 参考
