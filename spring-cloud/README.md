@@ -2,14 +2,20 @@
 
 ![Spring Cloud Netflix Demo Project Architecture Overview](../resources/spring-cloud-demo-architecture.jpg)
 
-* **Eureka Server：注册中心** <br />
-  提供服务注册、发现功能，主要工作机制：
-  1. 服务启动时，通过Eureka客户端将自己注册到Eureka Server
-  2. 啊啊啊
-* **Zuul Server：服务网关**
-* **Hystrix Dashboard：Hystrix监控仪表盘**
-* **DemoService：演示用微服务**
-* **OrderService：演示用微服务**
+* **Eureka Server: 注册中心** <br />
+  `Spring Cloud Netflix`的微服务注册中心，提供服务注册、发现功能，主要工作机制如下：
+  1. 服务启动时，通过`Eureka Client`将自己注册到`Eureka Server`。<br />
+     主要注册信息包括主机名、端口号、服务名，这样，注册中心就维护了一份所有服务可用实例清单。
+  2. 服务的客户端启动时，通过`Eureka Client`向注册中心获取服务实例清单，注册中心将被请求服务所有可用实例返回给该客户端。
+  3. 客户端在本地缓存服务实例清单，每次调用服务方法时，使用`Ribbon`客户端负载均衡确定调用哪一个服务实例，直接与这个服务实例通讯。服务调用过程不经过注册中心。
+  4. 每个服务实例启动之后，每30秒（默认）向注册中心发送一次心跳服务，证明自己仍然是可用状态。<br />
+     如果注册中心在一定时间内没有收到某个服务实例的心跳信息，则注册中心会将该服务标记为不可用状态，并且会将该服务实例的状态同步给注册中心集群内的其它节点。
+  5. 每个客户端实例启动后，同样每30秒（默认）向注册中心发送一次请求，获取最新的可用服务实例清单。<br />
+     这样可以确保如果某个服务实例下线或者故障停机，每个客户端能够及时刷新这些状态，`Ribbon`客户端负载均衡时不会再将请求分配给已下线或停机的服务实例。
+* **Zuul Server: 服务网关**
+* **Hystrix Dashboard: Hystrix监控仪表盘**
+* **DemoService: 演示用微服务**
+* **OrderService: 演示用微服务**
 
 # 启动运行
 
