@@ -177,6 +177,8 @@ mvn spring-boot:run
 
 # 示例项目部分功能介绍，及一些关键配置说明
 
+Spring Boot主张“约定优于配置”，很多组件和框架非常简单容易就可以使用起来，隐藏在背后的是Spring Boot使用了很多默认配置，而对于一些关键配置参数，采用默认配置可能根本不适合生产环境。
+
 ### Feign：优秀的HTTP REST服务客户端
 
 本示例项目中使用了Feign作为HTTP REST服务的客户端调用工具，Feign是一个非常优秀、便利的HTTP调用组件。
@@ -219,6 +221,123 @@ public OrderDTO create() {
     ...
 }
 ```
+
+### 为Feign选择HTTP客户端
+
+Feign支持`HttpClient`、`OkHttp`、`URLHttpConnection`等，默认情况下将使用`URLHttpConnection`来执行HTTP请求。<br />
+`HttpClient`提供连接池、并发链接数等管理，功能比较丰富，建议在Spring Cloud架构中采用`HttpClient`。`OkHttp`是一个新的HTTP客户端组件，支持一些新的HTTP特性，目前阶段建议持续观察。
+
+指定使用`HttpClient`方法如下：
+
+`pom.xml`
+```xml
+<dependency>
+    <groupId>com.netflix.feign</groupId>
+    <artifactId>feign-httpclient</artifactId>
+    <version>8.18.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+</dependency>
+```
+
+`application.yml`
+```yaml
+feign.httpclient.enabled: true
+```
+
+### HTTP连接超时、执行超时设置
+默认情况下FeignClient的连接超时时间为10秒、执行超时时间为60秒，可以为上下文提供一个`feign.Request.Options`的bean更改默认设置：
+
+```java
+ @Configuration
+ public class FeignConfiguration {
+    @Bean
+    Request.Options feignOptions() {
+        return new Options(3 * 1000, 3 * 60 * 1000); //连接超时设置为3秒，执行超时3分钟
+    }
+ }
+```
+
+不管使用哪种HTTP客户端，Feign在执行请求时，都会将这2个参数设置到相应的客户端上。
+
+Hystrix的超时时间可以通过`application.yml`设置，例如：
+
+```yaml
+hystrix:
+    command:
+        default:
+            execution:
+                isolation:
+                    thread:
+                        timeoutInMilliseconds: 60000
+```
+
+### HTTP错误重试
+
+默认情况下，有几个地方会涉及到HTTP错误重试（发生HTTP调用错误时，自动重试几次）。
+
+* **HttpClient** <br />
+  默认使用`DefaultHttpRequestRetryHandler(3, false)`：如果请求已经成功发送给服务器，则不会重试，在请求未发送给服务器的情况下，会自动重试3次。这样的默认处理，可以尽可能避免偶然的HTTP错误导致调用失败，又避免对不支持幂等性的服务接口重试调用。<br />
+  Feign默认创建的`HttpClient`未设置任何参数，全部使用`HttpClient`的默认值，但是它会先尝试从上下文中获取`HttpClient`的bean。下面方式可以为Feign提供自定义的`HttpClient` Bean（对任何http错误请求自动重试1次）：
+
+ ```java
+ @Configuration
+ public class FeignConfiguration {
+    private HttpClient httpClient;
+    
+    /**
+     * FeignClient使用默认方式创建HttpClient对象，未设置MaxConnPerRoute、MaxConnTotal属性。
+     * @return
+     */
+    @Bean
+    HttpClient buildHttpClient() { 
+        if(httpClient!=null) return httpClient;
+        synchronized (this) {
+            if(httpClient!=null) return httpClient;
+            httpClient = HttpClientBuilder.create()
+                .setMaxConnPerRoute(15).setMaxConnTotal(30) //并发连接数
+                .setConnectionManagerShared(false)
+                 //第2个参数，表示如果request已经成功发送给服务器，是否仍然可以重试
+                 //支持幂等性的请求可以将第2个参数设为true
+                .setRetryHandler(new DefaultHttpRequestRetryHandler(1, true))
+                .disableCookieManagement()
+                .disableAuthCaching()
+                .build();
+        }
+        return httpClient; 
+    }
+ }
+ ```
+
+* **Feign** <br />
+  Feign本身也实现了重试机制，默认情况下，对出错的http请求自动重试6次，在`feign.Retryer.Default`中实现。<br />
+  下面示例代码将禁止Feign自动重试：
+
+ ```java
+ @Configuration
+ public class FeignConfiguration {
+    @Bean
+    Retryer feignRetryer() {
+        return Retryer.NEVER_RETRY;
+    }
+ }
+ ```
+ 
+  下面示例代码表示：对出错http请求自动重试3次，第一次间隔50毫秒重试，后续重试将逐级增加间隔时间，最大间隔时间500毫秒。
+  
+ ```java
+ @Configuration
+ public class FeignConfiguration {
+    @Bean
+    Retryer feignRetryer() {
+        return new Retryer.Default(50, 500, 3);
+    }
+ }
+ ```
+
+> **注意**：上面是在Spring Boot应用中单独使用Feign，未和Spring Cloud（包括Ribbon、Hystrix、Zuul等）结合使用。如果和这些组件结合使用，需查看它们是否重新封装提供了默认配置，具体参考这些组件源码。
 
 # 参考
 
