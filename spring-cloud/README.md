@@ -175,6 +175,51 @@ mvn spring-boot:run
 
 ![Eureka Server高可用方案](../resources/eureka-ha.png)
 
+# 示例项目部分功能介绍，及Spring Cloud Netflix的一些关键配置
+
+### Feign：优秀的HTTP REST服务客户端
+
+本示例项目中使用了Feign作为HTTP REST服务的客户端调用工具，Feign是一个非常优秀、便利的HTTP调用组件。
+
+示例项目中`OrderService`提供了一个创建订单的REST接口：<br />
+接口地址：`/order/create`<br />
+HTTP方法：`POST`<br />
+所需参数：一个`OrderDTO`对象，必须采用JSON序列化，通过`RequestBody`方式提交<br />
+
+如果使用`httpclient`，我们有不少必须工作：
+* 初始化创建合适的`HttpConnectionManager`对象，设置并发链接数、超时时间等；
+* 创建`HttpClient`对象；
+* 使用`OrderDTO`对象创建`HttpEntity`，使用`HttpClient`对象执行请求；
+* 解析`HttpResponse`，获得调用结果；
+
+使用Feign完成上面的HTTP接口调用工作非常简单，我们只需要定义一个接口：
+```java
+@RequestMapping(value="/order")
+@FeignClient(name="order-service", configuration=FeignConfiguration.class)
+public interface OrderRestServiceFeignClient {
+    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    int createOrder(@RequestBody OrderDTO order);
+}
+```
+
+在Spring Boot的启动主类上添加下面注解，让Spring容器启动时创建这个FeignClient的Bean实例：
+```java
+@EnableFeignClients(basePackages="org.liuzhibin.research.feign")
+```
+
+然后在代码中就可以直接调用这个接口方法了：
+```java
+@Autowired
+OrderRestServiceFeignClient orderServiceClient;
+
+public OrderDTO create() {
+    OrderDTO order = new OrderDTO();
+    ...
+    int orderId = orderServiceClient.createOrder(order);
+    ...
+}
+```
+
 # 参考
 
 1. [Spring Cloud Netflix Reference](http://cloud.spring.io/spring-cloud-netflix/spring-cloud-netflix.html)
