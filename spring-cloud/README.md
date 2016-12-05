@@ -175,7 +175,7 @@ mvn spring-boot:run
 
 ![Eureka Server高可用方案](../resources/eureka-ha.png)
 
-# 示例项目部分功能介绍，及Spring Cloud Netflix的一些关键配置
+# 示例项目部分功能介绍，及一些关键配置说明
 
 ### Feign：优秀的HTTP REST服务客户端
 
