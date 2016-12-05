@@ -124,11 +124,11 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 # 高可用性部署方案说明
 
 ### 微服务高可用性部署方案
-任何一个微服务都可以部署多个实例，上面示例中的DemoService、OrderService不需要做任何更改，即可实现在新的机器上部署新的实例（本示例中要求服务器安装`JDK1.8`）：
+任何一个微服务都可以部署多个实例，上面示例中的`DemoService`、`OrderService`不需要做任何更改，即可实现在新的机器上部署新的实例（本示例中要求服务器安装`JDK1.8`）：
 
 * **DemoService** <br />
   按上面方法从github下载项目源代码；<br />
-  使用下面maven命令编译、启动服务：
+  使用下面maven命令编译、启动新的`DemoService`服务实例：
   ```shell
   cd spring-cloud/demo-service
   mvn spring-boot:run
@@ -136,20 +136,42 @@ Order服务：[http://localhost:10100/order/find?status=New](http://localhost:10
 
 * **OrderService** <br />
   按上面方法从github下载项目源代码；<br />
-  使用下面maven命令将spring-cloud-order-service-client安装到本地maven仓库：
+  使用下面maven命令将`spring-cloud-order-service-client`安装到本地maven仓库：
   ```shell
   cd spring-cloud/order-service-client
   mvn install
   ```
-  使用下面maven命令编译、启动OrderService服务：
+  使用下面maven命令编译、启动新的`OrderService`服务实例：
   ```shell
   cd spring-cloud/order-service-impl
   mvn spring-boot:run
   ```
-
-### Eureka Server高可用性部署方案
+  
+  可以使用上面方法为`DemoService`、`OrderService`部署N个新的实例。
 
 ### Zuul Server高可用性部署方案
+`Zuul Server`本身也是一个普通的微服务，其高可用性部署方案与上面微服务的高可用性部署方案完全相同：
+
+按上面方法从github下载项目源代码；<br />
+使用下面maven命令编译、启动新的`Zuul Server`实例：
+```shell
+cd spring-cloud/zuul-server
+mvn spring-boot:run
+```
+
+### Eureka Server高可用性部署方案
+在本示例中，已经配置了2个Eureka注册中心组成一个集群：
+* 集群中的2个节点会互相同步复制，任何一个服务，在任意一个注册中心注册的信息，都会同步复制到另外一个注册中心节点上，因此客户端无论连接哪个注册中心节点，都能获取到完整的服务实例清单；
+* 示例中的每个服务、客户端，都使用下面方式指定注册中心，当其中任何一个注册中心节点故障停机，都会自动使用另外一个注册中心节点。
+  ```yaml
+  eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9001/eureka/,http://localhost:9002/eureka/
+  ```
+  
+可以参考[Spring Cloud构建微服务架构（六）高可用服务注册中心](http://blog.didispace.com/springcloud6/)，像下面图示一样部署3个或更多个Eureka Server实例组成的高可用集群：
+![Eureka Server高可用方案](../resources/eureka-ha.png)
 
 # 参考
 
