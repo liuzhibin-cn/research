@@ -4,8 +4,8 @@
 
 * Eureka Server：注册中心 <br />
   提供服务注册、发现功能，主要工作机制：
-  * 服务启动时，通过Eureka客户端将自己注册到Eureka Server
-  * 啊啊啊
+  1. 服务启动时，通过Eureka客户端将自己注册到Eureka Server
+  2. 啊啊啊
 * Zuul Server：服务网关
 * Hystrix Dashboard：Hystrix监控仪表盘
 * DemoService：演示用微服务
