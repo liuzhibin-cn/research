@@ -2,14 +2,14 @@
 
 ![Spring Cloud Netflix Demo Project Architecture Overview](../resources/spring-cloud-demo-architecture.jpg)
 
-* Eureka Server：注册中心 <br />
+* **Eureka Server：注册中心** <br />
   提供服务注册、发现功能，主要工作机制：
   1. 服务启动时，通过Eureka客户端将自己注册到Eureka Server
   2. 啊啊啊
-* Zuul Server：服务网关
-* Hystrix Dashboard：Hystrix监控仪表盘
-* DemoService：演示用微服务
-* OrderService：演示用微服务
+* **Zuul Server：服务网关**
+* **Hystrix Dashboard：Hystrix监控仪表盘**
+* **DemoService：演示用微服务**
+* **OrderService：演示用微服务**
 
 # 启动运行
 
