@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.liuzhibin.research.mycat.dao.ProductDao">
+    <resultMap id="product" type="org.liuzhibin.research.mycat.domain.Product">
+        <result property="productId" column="product_id" />
+        <result property="sku" column="sku" />
+        <result property="category" column="category" />
+        <result property="price" column="price" />
+        <result property="title" column="title" />
+        <result property="createdAt" column="created_at" />
+        <result property="lastUpdate" column="last_update" />
+    </resultMap>
+</mapper>

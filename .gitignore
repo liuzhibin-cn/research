@@ -5,3 +5,5 @@
 **/.DS_Store
 **/maven-eclipse.xml
 **/.externalToolBuilders/
+**/logs
+**/tmlogs

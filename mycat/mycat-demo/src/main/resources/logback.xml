@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+	<!-- <include resource="org/springframework/boot/logging/logback/defaults.xml" /> -->
+	<!-- 去掉logback启动时搜索、解析logback.xml的日志 -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    
+    <!-- copied from org/springframework/boot/logging/logback/ defaults.xml and console-appender.xml in spring-boot-xxx.jar -->
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <!-- spring default console pattern: -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="utf-8"> <!-- add charset -->
+		  <charset>UTF-8</charset>
+		   <pattern>${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}</pattern>
+		</encoder>
+	</appender>
+	<logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
+	<logger name="org.apache.catalina.util.LifecycleBase" level="ERROR"/>
+	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+	<logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
+	<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
+	<logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
+	<logger name="org.hibernate" level="WARN"/>
+	<logger name="org.mybatis" level="INFO"/>
+	<logger name="org.liuzhibin.research.mycat.dao" level="INFO"/>
+
+    <logger name="org.xnio" level="WARN" />
+    <logger name="io.undertow" level="WARN" />
+    <logger name="ch.qos.logback" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>	
+    <logger name="org.springframework" level="WARN"/>
+    
+    <root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>
