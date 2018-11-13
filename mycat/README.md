@@ -31,5 +31,12 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
 +----------+-----------+-------+-----------+------+------+--------+------+------+---------+-----------+------------+
 ```
 
-### 数据库及分片规则
-逻辑表
+### 表及分片规则
+演示用逻辑表及分片规则方案如下：
+![](logical-table-and-datanode.png)
+
+逻辑表作用说明：
+- `member_account`：会员账号`account`与会员ID`member_id`对应关系，主键为`account`，分片键为`account_hash`。
+   1. 会员注册时，除插入`member`表，同时插入`member_account`；
+   2. 会员登录，以及注册时判断账号`account`是否已经注册过，
+- `member_order`：
