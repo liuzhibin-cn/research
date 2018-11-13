@@ -36,10 +36,10 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
 ![](logical-table-and-datanode.png)
 
 逻辑表作用说明：
-- `member_account`：会员账号`account`与会员ID `member_id`对应关系，主键为`account`，分片键为`account_hash`。
-   其它表通过`member_id`与会员表关联，整个系统以`member_id`存取会员数据，因此会员表`member`选择`member_id`作为分片键；
-   会员使用`account` + `password`登录为高频场景，因此添加`member_account`表，相当于由应用维护的一个索引。这个也进行水平拆分，使用`account`的hashcode作为分片键；
+- `member_account`：会员账号`account`与会员ID `member_id`对应关系，主键为`account`，分片键为`account_hash`。<br />
+   其它表通过`member_id`与会员表关联，整个系统以`member_id`存取会员数据，因此会员表`member`选择`member_id`作为分片键；<br />
+   会员使用`account` + `password`登录为高频场景，因此添加`member_account`表，相当于由应用维护的一个索引。这个也进行水平拆分，使用`account`的hashcode作为分片键；<br />
    1. 会员注册时提供`account`值，由应用生成`member_id`值å，除插入`member`表，同时插入`member_account`表，2个插入操作mycat都可以根据分片字段路由到对应的datanode；
    2. 会员登录，以及注册时判断账号`account`是否已经注册过，都先通过`member_account`表查询`member_id`值，这个查询可以使用分片键完成路由。随后所有会员数据访问都通过`member_id`存取`member`表，同样使用分片键完成路由；
-- `member_order`：会员ID `member_id`与会员订单`order_id`对应关系，主键为`member_id` + `order_id`，分片键为`member_id`。
+- `member_order`：会员ID `member_id`与会员订单`order_id`对应关系，主键为`member_id` + `order_id`，分片键为`member_id`。<br />
    其作用同`member_account`，是应用维护的一个索引，用于会员查询自己的订单。
