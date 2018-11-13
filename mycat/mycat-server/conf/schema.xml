@@ -38,14 +38,14 @@
 
 		dbDriver: 值为native时，writeHost/readHost的url格式必须为：[IP/host]:[port]
 	 -->
-	<dataHost name="db1" maxCon="10" minCon="1" balance="0" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" maxRetryCount="0">
+	<dataHost name="db1" maxCon="5" minCon="5" balance="0" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" maxRetryCount="0">
 		<heartbeat>select user()</heartbeat>
 		<writeHost host="localhost" url="localhost:3306" user="root" password="dev">
 			<!-- can have multi read hosts -->
 			<!-- readHost host="hostS2" url="192.168.1.200:3306" user="root" password="xxx" / -->
 		</writeHost>
 	</dataHost>
-	<dataHost name="db2" maxCon="10" minCon="1" balance="0" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" maxRetryCount="0">
+	<dataHost name="db2" maxCon="5" minCon="5" balance="0" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" maxRetryCount="0">
                 <heartbeat>select user()</heartbeat>
                 <writeHost host="127.0.0.1" url="127.0.0.1:3306" user="root" password="dev" />
         </dataHost>

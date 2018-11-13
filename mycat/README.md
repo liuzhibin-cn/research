@@ -61,3 +61,8 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
    3. 使用`member_id`值插入`member`表；
 3. mycat 2.0在开发中，参考[Mycat2](https://github.com/MyCATApache/Mycat2) <br />
    从新特性来看，结果集缓存、自动集群管理、支持负载均衡等主要特性，方向偏了，mycat应该朝彻底无状态化、为mycat server降压减负的方向上做到极致，负载均衡、集群管理、缓存等，完全交由外围管理。
+4. 简单性能对比测试 <br />
+   Mac book pro，单机测试，50并发线程，TPS指perfTest的每秒执行次数（包含`select from member_account` + `insert into member` + `insert into member_account`）：
+   - mycat: TPS勉强能维持在2000左右；
+   - JDBC: TPS能维持在2500左右；
+   单机测试，mycat server的CPU占用对测试结果有一定影响。

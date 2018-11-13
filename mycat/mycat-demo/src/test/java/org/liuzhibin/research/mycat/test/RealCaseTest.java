@@ -39,7 +39,7 @@ public class RealCaseTest {
 	@Test
 	public void fullCasePerfTest() {
 		RealCaseTest test = this;
-		int threads = 10;
+		int threads = 50;
 		for(int i=0; i<threads; i++) {
 			Thread t = new Thread(new Runnable() {
 				@Override

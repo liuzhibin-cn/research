@@ -32,10 +32,10 @@ spring:
     tomcat:
       defaultAutoCommit: true
       defaultTransactionIsolation: 2
-      initialSize: 1
-      minIdle: 1
-      maxIdle: 1
-      maxActive: 2
+      initialSize: 5
+      minIdle: 5
+      maxIdle: 5
+      maxActive: 5
       maxWait: 2000
       timeBetweenEvictionRunsMillis: 60000  
       minEvictableIdleTimeMillis: 300000 
