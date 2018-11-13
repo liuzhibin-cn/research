@@ -52,17 +52,22 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
    演示应用中的`member_id`，可以使用mycat的全局序列，方案如下：
    1. 注册会员时，先`insert` `member_account`表，`insert`过程中使用mycat全局序列生成`member_id`值；
    2. 在`insert`的DAO方法上，可以使用mybatis的`selectKey`获取到本次生成的`member_id`值：
-   ```java
-   @Insert("insert into member_account(account, account_hash, member_id) values (#{account}, #{accountHash}, #{memberId})")
-   @SelectKey(before=false, keyColumn="member_id", keyProperty="memberId", resultType=Long.class, statementType=StatementType.PREPARED
-       , statement="select member_id from member where account=#{account} and account_hash=#{accountHash}")
-   int createMemberAccount(MemberAccount ma);
-   ```
+      ```java
+      @Insert("insert into member_account(account, account_hash, member_id) values (#{account}, #{accountHash}, #{memberId})")
+      @SelectKey(before=false, keyColumn="member_id", keyProperty="memberId", resultType=Long.class, statementType=StatementType.PREPARED
+          , statement="select member_id from member where account=#{account} and account_hash=#{accountHash}")
+      int createMemberAccount(MemberAccount ma);
+      ```
    3. 使用`member_id`值插入`member`表；
 3. mycat 2.0在开发中，参考[Mycat2](https://github.com/MyCATApache/Mycat2) <br />
    从新特性来看，结果集缓存、自动集群管理、支持负载均衡等主要特性，方向偏了，mycat应该朝彻底无状态化、为mycat server降压减负的方向上做到极致，负载均衡、集群管理、缓存等，完全交由外围管理。
-4. 简单性能对比测试 <br />
+4. 简单性能对比测试： <br />
    Mac book pro，单机测试，50并发线程，TPS指perfTest的每秒执行次数（包含`select from member_account` + `insert into member` + `insert into member_account`）：
    - mycat: TPS勉强能维持在2000左右；
    - JDBC: TPS能维持在2500左右；
    单机测试，mycat server的CPU占用对测试结果有一定影响。
+5. 分片方案：
+   - 尽量建立一层虚拟分片到实际物理节点的映射，方便物理节点扩容；
+   - 分片算法的选择，充分考虑扩容时的数据迁移尽量简单方便；
+   - 分片算法的选择，充分考虑其对高并发插入时的热点问题、XA事物问题；
+6. 不要依赖mycat的XA事物；
