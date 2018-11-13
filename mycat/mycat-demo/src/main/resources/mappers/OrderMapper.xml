@@ -16,4 +16,21 @@
         <result property="createdAt" column="created_at" />
         <result property="lastUpdate" column="last_update" />
     </resultMap>
+    <resultMap id="orderDetail" type="org.liuzhibin.research.mycat.domain.OrderDetail">
+        <result property="detailId" column="detail_id" />
+        <result property="orderId" column="order_id" />
+        <result property="productId" column="product_id" />
+        <result property="sku" column="sku" />
+        <result property="title" column="title" />
+        <result property="quantity" column="quantity" />
+        <result property="price" column="price" />
+        <result property="subtotal" column="subtotal" />
+        <result property="discount" column="discount" />
+        <result property="createdAt" column="created_at" />
+        <result property="lastUpdate" column="last_update" />
+    </resultMap>
+    
+    <select id="findOrders" resultMap="order">
+        select * from order_header where order_id in <foreach item="id" index="index" collection="orderIds" open="(" separator="," close=")">#{id}</foreach>
+    </select>
 </mapper>

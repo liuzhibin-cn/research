@@ -6,6 +6,8 @@ public class OrderDetail {
 	private long detailId;
 	private long orderId;
 	private int productId;
+	private String sku;
+	private String title;
 	private int quantity;
 	private double price;
 	private double subtotal;
@@ -30,6 +32,18 @@ public class OrderDetail {
 	}
 	public void setProductId(int productId) {
 		this.productId = productId;
+	}
+	public String getSku() {
+		return sku;
+	}
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	public int getQuantity() {
 		return quantity;
@@ -63,8 +77,5 @@ public class OrderDetail {
 	}
 	public Date getLastUpdate() {
 		return lastUpdate;
-	}
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
 	}
 }

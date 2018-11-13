@@ -3,18 +3,18 @@ package org.liuzhibin.research.mycat.domain;
 import java.util.Date;
 
 public class Order {
-	private long orderId;
-	private long memberId;
-	private String status;
-	private double total;
-	private double discount;
-	private double payment;
-	private Date payTime;
-	private String payStatus;
-	private String contact;
-	private String phone;
-	private String address;
-	private Date createdAt;
+	private long orderId = 0;
+	private long memberId = 0;
+	private String status = "";
+	private double total = 0;
+	private double discount = 0;
+	private double payment = 0;
+	private Date payTime = null;
+	private String payStatus = "";
+	private String contact = "";
+	private String phone = "";
+	private String address = "";
+	private Date createdAt = null;
 	private Date lastUpdate;
 	
 	public long getOrderId() {
@@ -91,8 +91,5 @@ public class Order {
 	}
 	public Date getLastUpdate() {
 		return lastUpdate;
-	}
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
 	}
 }

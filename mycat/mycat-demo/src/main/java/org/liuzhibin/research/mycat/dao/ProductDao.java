@@ -1,5 +1,7 @@
 package org.liuzhibin.research.mycat.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,4 +26,8 @@ public interface ProductDao {
 	
 	@Delete("delete from product where product_id=#{productId}")
 	int delete(int productId);
+
+	@Select("select * from product limit #{offset}, #{count}")
+	@ResultMap("product")
+	List<Product> findProducts(int offset, int count);
 }

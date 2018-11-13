@@ -23,7 +23,7 @@ spring:
     ansi:
       enabled: always
   datasource:  
-    name: rrs
+    name: research
     type: org.apache.tomcat.jdbc.pool.DataSource 
     driver-class-name: com.mysql.cj.jdbc.Driver  
     url: ${sys.db.url}

@@ -11,4 +11,10 @@
         <result property="createdAt" column="created_at" />
         <result property="lastUpdate" column="last_update" />
     </resultMap>
+    
+    <resultMap id="memberAccount" type="org.liuzhibin.research.mycat.domain.MemberAccount">
+        <result property="memberId" column="member_id" />
+        <result property="account" column="account" />
+        <result property="accountHash" column="account_hash" />
+    </resultMap>
 </mapper>

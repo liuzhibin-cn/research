@@ -9,7 +9,7 @@
 		-->
 		<table name="product" ruleRequired="false" dataNode="dn0" />
 		<table name="order_header" primaryKey="order_id" dataNode="dn$1-4" rule="order-rule">
-			<childTable name="order_lines" primaryKey="line_id" joinKey="order_id" parentKey="order_id" />
+			<childTable name="order_detail" primaryKey="detail_id" joinKey="order_id" parentKey="order_id" />
 		</table>
 		<table name="member" primaryKey="member_id" dataNode="dn1, dn2" rule="member-rule" />
 		<table name="member_account" primaryKey="account" dataNode="dn1, dn2" rule="member-account-rule" />

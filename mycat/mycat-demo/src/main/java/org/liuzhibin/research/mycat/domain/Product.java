@@ -21,13 +21,13 @@ public class Product {
 		return sku;
 	}
 	public void setSku(String sku) {
-		this.sku = sku;
+		this.sku = sku==null ? "" : sku;
 	}
 	public String getCategory() {
 		return category;
 	}
 	public void setCategory(String category) {
-		this.category = category;
+		this.category = category==null ? "" : category;
 	}
 	public double getPrice() {
 		return price;
@@ -39,18 +39,15 @@ public class Product {
 		return title;
 	}
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title==null ? "" : title;
 	}
 	public Date getCreatedAt() {
 		return createdAt;
 	}
 	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
+		this.createdAt = createdAt==null ? new Date() : createdAt;
 	}
 	public Date getLastUpdate() {
 		return lastUpdate;
-	}
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
 	}
 }
