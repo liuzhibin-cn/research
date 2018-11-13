@@ -43,3 +43,21 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
    2. 会员登录，以及注册时判断账号`account`是否已经注册过，都先通过`member_account`表查询`member_id`值，这个查询可以使用分片键完成路由。随后所有会员数据访问都通过`member_id`存取`member`表，同样使用分片键完成路由；
 - `member_order`：会员ID `member_id`与会员订单`order_id`对应关系，主键为`member_id` + `order_id`，分片键为`member_id`。<br />
    其作用同`member_account`，是应用维护的一个索引，用于会员查询自己的订单。
+
+<span style="color:red;">演示应用展示的分库分表解决方案应该能覆盖B2C电商系统用户交互的大部分场景，对于后台管理功能需要采用另外的解决方案，例如会员管理、订单管理的列表页面，无法使用分片键执行查询。</span>
+
+### Tips
+1. 测试了mycat数据库方式的全局序列sequence（`order_detail.detail_id`），简单使用多线程单机验证，功能正常；
+2. mycat的全局序列不太方便直接用于分片键，`insert`数据后，未找到有效获取本次生成的sequance值的方法；<br />
+   演示应用中的`member_id`，可以使用mycat的全局序列，方案如下：
+   1. 注册会员时，先`insert` `member_account`表，`insert`过程中使用mycat全局序列生成`member_id`值；
+   2. 在`insert`的DAO方法上，可以使用mybatis的`selectKey`获取到本次生成的`member_id`值：
+   ```java
+   @Insert("insert into member_account(account, account_hash, member_id) values (#{account}, #{accountHash}, #{memberId})")
+   @SelectKey(before=false, keyColumn="member_id", keyProperty="memberId", resultType=Long.class, statementType=StatementType.PREPARED
+       , statement="select member_id from member where account=#{account} and account_hash=#{accountHash}")
+   int createMemberAccount(MemberAccount ma);
+   ```
+   3. 使用`member_id`值插入`member`表；
+3. mycat 2.0在开发中，参考[Mycat2](https://github.com/MyCATApache/Mycat2) <br />
+   从新特性来看，结果集缓存、自动集群管理、支持负载均衡等主要特性，方向偏了，mycat应该朝彻底无状态化、为mycat server降压减负的方向上做到极致，负载均衡、集群管理、缓存等，完全交由外围管理。
