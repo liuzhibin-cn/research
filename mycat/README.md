@@ -65,7 +65,7 @@ mysql -h localhost -P 9066 -uroot -p --protocol=TCP
    Mac book pro，单机测试，50并发线程，对相同的业务逻辑功能（用户使用手机号+密码注册会员）进行测试，TPS指被测试业务逻辑的每秒执行次数（包含`select from member_account` + `insert into member` + `insert into member_account`）：
    - mycat + mybatis，分片: TPS在2200上下波动；
    - mybatis，不分片: TPS在2600上下波动；
-   - 纯JDBC，不分片: TPS在3400上下波动；
+   - 纯JDBC，不分片: TPS在3400上下波动；<br />
    单机测试，mycat server的CPU占用对测试结果有一定影响。<br />
    受单机资源限制，测试结果TPS高低不反映数据库吞吐率，而是反映平均执行时间，TPS越高执行速度越快。从结果看，中间加一层mycat后性能有一定下降，但幅度不大，不及mybatis与原生JDBC之间的差异。
 5. 分片方案：
