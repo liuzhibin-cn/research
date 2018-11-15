@@ -183,11 +183,11 @@ public class DemoService {
 		return orderDao.getOrderDetails(orderId);
 	}
 	
-	private long newId() {
-		//高位毫秒数 + 低10位随机数
-		return ((System.currentTimeMillis() - BASE_LINE.getTime()) << 16) | Math.round(Math.random() * 32767);
+	public long newId() {
+		//高43位毫秒数 + 低21位随机数
+		return ((System.currentTimeMillis() - BASE_LINE.getTime()) << 21) | (Math.round(Math.random() * 2097150) & 0x1FFFFF);
 	}
-	private int getAccountHashcode(String account) {
+	public int getAccountHashcode(String account) {
 		int hashcode = account.hashCode();
 		return hashcode<0 ? -hashcode : hashcode;
 	}

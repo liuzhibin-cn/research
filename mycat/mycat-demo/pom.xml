@@ -24,12 +24,14 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-			    <!-- mycat JDBC连接 -->
-				<sys.db.url>jdbc:mysql://localhost:8066/test_schema?connectTimeout=3000&amp;socketTimeout=10000&amp;characterEncoding=utf8&amp;useTimezone=true&amp;serverTimezone=Asia/Shanghai&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;useSSL=false</sys.db.url>
-				<!-- 不走mycat直连mysql，用于与mycat性能对比 -->
-				<!-- <sys.db.url>jdbc:mysql://localhost:3306/mycat_dn1?connectTimeout=3000&amp;socketTimeout=10000&amp;characterEncoding=utf8&amp;useTimezone=true&amp;serverTimezone=Asia/Shanghai&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;useSSL=false</sys.db.url> -->
-				<sys.db.user>root</sys.db.user>
-				<sys.db.password>dev</sys.db.password>
+			    <!-- mycat连接 -->
+				<mycat.db.url>jdbc:mysql://localhost:8066/test_schema?connectTimeout=3000&amp;socketTimeout=10000&amp;characterEncoding=utf8&amp;useTimezone=true&amp;serverTimezone=Asia/Shanghai&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;useSSL=false</mycat.db.url>
+				<mycat.db.user>root</mycat.db.user>
+				<mycat.db.password>dev</mycat.db.password>
+				<!-- JDBC直连 -->
+                <jdbc.db.url>jdbc:mysql://localhost:3306/mycat_dn1?connectTimeout=3000&amp;socketTimeout=10000&amp;characterEncoding=utf8&amp;useTimezone=true&amp;serverTimezone=Asia/Shanghai&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;useSSL=false</jdbc.db.url>
+                <jdbc.db.user>root</jdbc.db.user>
+                <jdbc.db.password>dev</jdbc.db.password>
 			</properties>
 		</profile>
 	</profiles>

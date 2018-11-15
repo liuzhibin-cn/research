@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan(basePackages = { "org.liuzhibin.research.mycat.service" })
+@ComponentScan(basePackages = { "org.liuzhibin.research.mycat", "org.liuzhibin.research.mycat.service" })
 @MapperScan(basePackages = { "org.liuzhibin.research.mycat.dao" })
 public class Application {
 	public static void main(String[] args) {
