@@ -7,3 +7,25 @@
 **/.externalToolBuilders/
 **/logs
 **/tmlogs
+
+# react-js
+/react-js/node_modules
+/react-js/.pnp
+/react-js.pnp.js
+
+# testing
+/react-js/coverage
+
+# production
+/react-js/build
+/react-js/build.tar.gz
+
+# misc
+/react-js/.env.local
+/react-js/.env.development.local
+/react-js/.env.test.local
+/react-js/.env.production.local
+
+/react-js/npm-debug.log*
+/react-js/yarn-debug.log*
+/react-js/yarn-error.log*
