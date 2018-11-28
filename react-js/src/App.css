@@ -1,0 +1,8 @@
+/* 全局隐藏react-smooth-scrollbar的滚动条 */
+.scrollbar-track {
+  display:none !important;
+}
+/* 注意：不加这个样式，react-smooth-scrollbar将不会起作用 */
+.top-home-scroll {
+  height: 100%; 
+}

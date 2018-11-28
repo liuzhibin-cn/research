@@ -1,0 +1,22 @@
+.sku-list-item { height: 180px; }
+.sku-image {  
+    height: 180px;
+    width: 180px;
+    float: left;
+}
+.sku-info{
+    height: 180px;
+    float: left;
+    margin-left: 182px;
+    margin-top: -180px;
+    padding: 30px 10px;
+    color: #666666;
+    font-size: 14px;
+}
+.sku-title {
+    line-height: 24px;
+}
+.sku-price {
+    position: relative;
+    color: #cc0000;
+}

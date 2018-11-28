@@ -1,0 +1,7 @@
+body { background-color: #fff; }
+/* 使首页TabBar全屏显示 */
+.router-container, #root, .cache-route-wrapper {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}

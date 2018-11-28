@@ -1,0 +1,15 @@
+/* 注意：不加这个样式，react-smooth-scrollbar将不会起作用 */
+.home-container {
+    height: 100%;
+}
+
+.carousel, .carousel-link, .carousel-img {
+    height: 180px !important;
+    width: 100%;
+}
+.carousel-link {
+    display: inline-block;
+}
+.carousel-img {
+    vertical-align: top;
+}
