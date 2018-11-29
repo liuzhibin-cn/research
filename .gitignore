@@ -17,7 +17,6 @@
 /react-js/coverage
 
 # production
-/react-js/build
 /react-js/build.tar.gz
 
 # misc
