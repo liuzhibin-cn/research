@@ -29,9 +29,9 @@ class SKUInfo extends React.Component {
                         <label className="title">{item.title}</label>
                     </div>
 
-                    <div class="sku-spec">
+                    <div className="sku-spec">
                         <div className="l"><span className="small light">送至</span></div>
-                        <div class="r">
+                        <div className="r">
                             <div style={{padding: '0 35px'}}><span>山东省青岛市李沧区巨峰路1723号</span></div>
                             <div style={{padding: '0 35px'}}>
                                 <span className="red small">现货 </span><span className="small light">23:00前下单，预计明天(11月30日)送达，受天气影响，您的订单可能会延迟配送，我们会全力为您服务，请您耐心等待。</span>
@@ -50,12 +50,12 @@ class SKUInfo extends React.Component {
                     </div>
                 </Scrollbar>
                 <div className="sku-bottom-bar">
-                    <div class="icon-btn">
-                        <i class="icon-shop"></i>
+                    <div className="icon-btn">
+                        <i className="icon-shop"></i>
                         <span>店铺</span>
                     </div>
-                    <div class="icon-btn">
-                        <i class="icon-srv"></i>
+                    <div className="icon-btn">
+                        <i className="icon-srv"></i>
                         <span>客服</span>
                     </div>
                     <span className="icon-cart">加入购物车</span>

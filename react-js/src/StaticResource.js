@@ -10,14 +10,14 @@ export default class StaticResource {
         URL + '/assets/images/shortcut-icons/shortcut-04.png'
     ]
     static NavIcons = {
-        Home: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/home.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        HomeActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/home-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        Cat: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/category.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        CatActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/category-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        Cart: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/cart.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        CartActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/cart-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        My: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/my.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
-        MyActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(/assets/images/nav-icons/my-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />
+        Home: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/home.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        HomeActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/home-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        Cat: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/category.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        CatActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/category-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        Cart: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/cart.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        CartActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/cart-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        My: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/my.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />,
+        MyActive: <div style={{ width:'21px', height:'21px', backgroundImage:'url(' + URL + '/assets/images/nav-icons/my-active.svg)', backgroundPosition:'center', backgroundSize:'21px 21px', backgroundRepeat:'no-repeat' }} />
     }
     static Demo = {
         IndexCarouselImages: [
