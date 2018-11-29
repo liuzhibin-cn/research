@@ -1,10 +1,10 @@
 .sku-list-item { height: 180px; }
-.sku-image {  
+.sku-list-image {  
     height: 180px;
     width: 180px;
     float: left;
 }
-.sku-info{
+.sku-list-info {
     height: 180px;
     float: left;
     margin-left: 182px;
@@ -13,10 +13,6 @@
     color: #666666;
     font-size: 14px;
 }
-.sku-title {
+.sku-list-title {
     line-height: 24px;
-}
-.sku-price {
-    position: relative;
-    color: #cc0000;
 }

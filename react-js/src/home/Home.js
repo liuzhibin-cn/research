@@ -14,11 +14,12 @@ import Scrollbar from 'react-smooth-scrollbar';
 //   这里不需要这个效果，所以保留代码，仅将其注释掉。
 // import SmoothScrollbar from 'smooth-scrollbar';
 // import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
-// SmoothScrollbar.use(OverscrollPlugin);
 
 import SKUListItem from '../item/SKUListItem';
 import './Home.css';
 import StaticResource from '../StaticResource';
+
+// SmoothScrollbar.use(OverscrollPlugin);
 
 class Home extends React.Component {
     static refreshing = false

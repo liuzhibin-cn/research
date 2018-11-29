@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { withRouter } from 'react-router-dom';
+import { withRouter,Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Switch } from "react-router";
-import CacheSwitch from '../components/react-router-cache-route/components/CacheSwitch';
+// import CacheSwitch from '../components/react-router-cache-route/components/CacheSwitch';
 
 let lastLocation = { isPush: true };
 const REACT_HISTORIES_KEY = 'REACT_HISTORIES_KEY';
 const histories = (sessionStorage.getItem(REACT_HISTORIES_KEY) || '').split(',').filter(Boolean);
 const isHistoryPush = (location, update, history) => {
-    console.log('>> isHistoryPush pre');
-    console.log(histories.join(', '));
-    console.log({...history});
     const key = location.key || location.pathname + location.search;
     if (update && key !== lastLocation.key) {
         const index = histories.lastIndexOf(key);
@@ -30,9 +26,6 @@ const isHistoryPush = (location, update, history) => {
             key
         };
     }
-    console.log('>> isHistoryPush post');
-    console.log(histories.join(', '));
-    console.log({...history});
     return lastLocation.isPush;
 };
 
@@ -111,8 +104,6 @@ class AnimatedRouterInner extends Component {
             onEntered: this.onEntered
         };
         const cls = [prefix + '-container', 'react-animated-router', className];
-console.log('>> AnimatedRouter.render() pre');
-console.log({...this.props});
         return (
             <TransitionGroup
                 className={cls.filter(Boolean).join(' ')}
@@ -143,7 +134,8 @@ console.log({...this.props});
                     timeout={timeout}
                     {...cssProps}>
                     {/* CacheSwitch必须放在这里，不能放在children中，否则转场效果有问题 */}
-                    <CacheSwitch location={location} history={history} match={match}>{children}</CacheSwitch>
+                    {/* <CacheSwitch location={location} history={history} match={match}>{children}</CacheSwitch> */}
+                    <Switch location={location} history={history} match={match}>{children}</Switch>
                 </CSSTransition>
             </TransitionGroup>
         );

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Switch, matchPath, withRouter } from 'react-router-dom'
+import { Switch, matchPath } from 'react-router-dom'
 
 import { isNull } from '../helpers/is'
 import { get } from '../helpers/try'
@@ -24,9 +24,6 @@ export default class CacheSwitch extends Switch {
   }
 
   render() {
-    // console.log('>> CacheSwitch.render()');
-    // console.log({...this.props});
-
     const { route } = this.context.router
     const { children } = this.props
     const location = this.props.location || route.location

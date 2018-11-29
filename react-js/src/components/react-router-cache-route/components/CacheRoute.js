@@ -31,7 +31,7 @@ export default class CacheRoute extends Component {
   static defaultProps = {
     when: 'forward'
   }
-
+  
   render() {
     let {
       children,
@@ -52,7 +52,7 @@ export default class CacheRoute extends Component {
      * 说明：如果 children 属性是 React Element 则定义对应的包裹组件以支持多个子组件
      */
     if (React.isValidElement(children) || !isEmptyChildren(children)) render = () => children;
-
+    
     /**
      * Only children prop of Route can help to control rendering behavior
      * 只有 Router 的 children 属性有助于主动控制渲染行为
@@ -86,6 +86,7 @@ export default class CacheRoute extends Component {
               match={props.match}
               render={() => {
                 Object.assign(props, { cacheLifecycles });
+                // console.log('>> Updatable.render in CacheRoute');
                 if (component) {
                   return React.createElement(component, props)
                 }

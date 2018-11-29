@@ -8,18 +8,21 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import AnimatedRouter from './components/AnimatedRouter';
 import './components/AnimatedRouter.css';
 // react-router-cache-route: https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md
-import CacheRoute from './components/react-router-cache-route/components/CacheRoute';
+// import CacheRoute from './components/react-router-cache-route/components/CacheRoute';
 
 import * as serviceWorker from './serviceWorker';
 import App from './App';
 import SKUInfo from './item/SKUInfo';
 import './index.css';
+// import CacheSwitch from './components/react-router-cache-route/components/CacheSwitch';
 
-ReactDOM.render(
+ReactDOM.render( 
     <Router>
-        <AnimatedRouter className="router-container" appear={true}>
-            <CacheRoute exact path="/" component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
+        <AnimatedRouter className="router-container" appear={false}>
+        {/* <CacheSwitch> */}
+            <Route exact path="/" component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
             <Route path="/item/:id" component={SKUInfo} />
+        {/* </CacheSwitch> */}
         </AnimatedRouter>
     </Router>, document.getElementById('root')
 );

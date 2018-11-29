@@ -70,6 +70,7 @@ export default class CacheComponent extends Component {
   }
 
   render() {
+    // console.log('>> CacheComponent.render');
     const { className: behavior__className = '', ...behaviorProps } = value(
       this.props.behavior(!this.state.matched),
       {}
@@ -88,13 +89,14 @@ export default class CacheComponent extends Component {
   }
 
   constructor(props, ...args) {
-    super(props, ...args);
+    // console.log('>> CacheComponent.constructor');
+    // super(props, ...args);
     if (props.cacheKey) register(props.cacheKey, this);
     /**
-     * - `matched`: `CacheRoute`是否匹配本次请求路径；
+     * - `matched`: 是否显示该组件，根据`CacheRoute`是否匹配本次请求路径得到；
      *    - `true`: 组件正常显示；
      *    - `false`: 输出组件，但组件隐藏：`style.display: none`；
-     * - `cached`: 是否缓存
+     * - `cached`: 是否输出该组件的DOM节点
      *    - `true`: 输出该组件，是否隐藏由`matched`控制；
      *    - `false`: 不输出该组件(从DOM中删除)；
      */

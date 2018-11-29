@@ -29,52 +29,158 @@ export default class StaticResource {
                 id: 224679,
                 price: 13488.00,
                 title: 'Apple MacBook Pro 13.3英寸笔记本电脑 银色 2018新款（四核八代i5 8G 256G固态硬盘 MR9U2CH/A）',
-                listImage: '/assets/images/demo/item/list-224679.jpg'
+                listImage: '/assets/images/demo/item/list-224679.jpg',
+                mainImages: ['/assets/images/demo/item/main-224679-01.jpg','/assets/images/demo/item/main-224679-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }, {
                 id: 224680,
                 price: 6299.00,
                 title: '三星（SAMSUNG） UA65MUC30SJXXZ 65英寸4K智能HDR曲面液晶电视 官方正品',
-                listImage: '/assets/images/demo/item/list-224680.jpg'
+                listImage: '/assets/images/demo/item/list-224680.jpg',
+                mainImages: ['/assets/images/demo/item/main-224680-01.jpg','/assets/images/demo/item/main-224680-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224680-01.jpg',
+                    '/assets/images/demo/item/d-224680-02.jpg',
+                    '/assets/images/demo/item/d-224680-03.jpg',
+                    '/assets/images/demo/item/d-224680-04.jpg',
+                    '/assets/images/demo/item/d-224680-06.jpg',
+                    '/assets/images/demo/item/d-224680-07.jpg',
+                    '/assets/images/demo/item/d-224680-08.jpg'
+                ]
             }, { 
                 id: 224681, 
                 price: 3699.00,
                 title: 'MOOKA/模卡65英寸4K超高清人工智能网络语音液晶电视60 香槟金', 
-                listImage: '/assets/images/demo/item/list-224681.jpg' 
+                listImage: '/assets/images/demo/item/list-224681.jpg' ,
+                mainImages: ['/assets/images/demo/item/main-224681-01.jpg','/assets/images/demo/item/main-224681-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }, {
                 id: 224682,
                 title: '海尔滚筒洗衣机全自动 高温蒸汽除螨 10KG纤维级防皱洗烘一体变频',
                 price: 4099,
-                listImage: '/assets/images/demo/item/list-224682.jpg'
+                listImage: '/assets/images/demo/item/list-224682.jpg',
+                mainImages: ['/assets/images/demo/item/main-224682-01.jpg','/assets/images/demo/item/main-224682-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224680-01.jpg',
+                    '/assets/images/demo/item/d-224680-02.jpg',
+                    '/assets/images/demo/item/d-224680-03.jpg',
+                    '/assets/images/demo/item/d-224680-04.jpg',
+                    '/assets/images/demo/item/d-224680-06.jpg',
+                    '/assets/images/demo/item/d-224680-07.jpg',
+                    '/assets/images/demo/item/d-224680-08.jpg'
+                ]
             }, {
                 id: 224683,
                 price: 3499,
                 title: '海尔十字对开门冰箱多门双门超薄机身静音电冰箱 482升匀冷保鲜低温净味 速冻 金色新品',
-                listImage: '/assets/images/demo/item/list-224683.jpg'
+                listImage: '/assets/images/demo/item/list-224683.jpg',
+                mainImages: ['/assets/images/demo/item/main-224683-01.jpg','/assets/images/demo/item/main-224683-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }, {
                 id: 224684,
                 price: 13488.00,
                 title: 'Apple MacBook Pro 13.3英寸笔记本电脑 银色 2018新款（四核八代i5 8G 256G固态硬盘 MR9U2CH/A）',
-                listImage: '/assets/images/demo/item/list-224679.jpg'
+                listImage: '/assets/images/demo/item/list-224679.jpg',
+                mainImages: ['/assets/images/demo/item/main-224679-01.jpg','/assets/images/demo/item/main-224679-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }, {
                 id: 224685,
                 price: 6299.00,
                 title: '三星（SAMSUNG） UA65MUC30SJXXZ 65英寸4K智能HDR曲面液晶电视 官方正品',
-                listImage: '/assets/images/demo/item/list-224680.jpg'
+                listImage: '/assets/images/demo/item/list-224680.jpg',
+                mainImages: ['/assets/images/demo/item/main-224680-01.jpg','/assets/images/demo/item/main-224680-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224680-01.jpg',
+                    '/assets/images/demo/item/d-224680-02.jpg',
+                    '/assets/images/demo/item/d-224680-03.jpg',
+                    '/assets/images/demo/item/d-224680-04.jpg',
+                    '/assets/images/demo/item/d-224680-06.jpg',
+                    '/assets/images/demo/item/d-224680-07.jpg',
+                    '/assets/images/demo/item/d-224680-08.jpg'
+                ]
             }, { 
                 id: 224686, 
                 price: 3699.00,
                 title: 'MOOKA/模卡65英寸4K超高清人工智能网络语音液晶电视60 香槟金', 
-                listImage: '/assets/images/demo/item/list-224681.jpg'
+                listImage: '/assets/images/demo/item/list-224681.jpg',
+                mainImages: ['/assets/images/demo/item/main-224681-01.jpg','/assets/images/demo/item/main-224681-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224680-01.jpg',
+                    '/assets/images/demo/item/d-224680-02.jpg',
+                    '/assets/images/demo/item/d-224680-03.jpg',
+                    '/assets/images/demo/item/d-224680-04.jpg',
+                    '/assets/images/demo/item/d-224680-06.jpg',
+                    '/assets/images/demo/item/d-224680-07.jpg',
+                    '/assets/images/demo/item/d-224680-08.jpg'
+                ]
             }, {
                 id: 224687,
                 title: '海尔滚筒洗衣机全自动 高温蒸汽除螨 10KG纤维级防皱洗烘一体变频',
                 price: 4099,
-                listImage: '/assets/images/demo/item/list-224682.jpg'
+                listImage: '/assets/images/demo/item/list-224682.jpg',
+                mainImages: ['/assets/images/demo/item/main-224682-01.jpg','/assets/images/demo/item/main-224682-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }, {
                 id: 224688,
                 price: 3499,
                 title: '海尔十字对开门冰箱多门双门超薄机身静音电冰箱 482升匀冷保鲜低温净味 速冻 金色新品',
-                listImage: '/assets/images/demo/item/list-224683.jpg'
+                listImage: '/assets/images/demo/item/list-224683.jpg',
+                mainImages: ['/assets/images/demo/item/main-224683-01.jpg','/assets/images/demo/item/main-224683-02.jpg'],
+                detailImages: [
+                    '/assets/images/demo/item/d-224679-01.jpg',
+                    '/assets/images/demo/item/d-224679-02.jpg',
+                    '/assets/images/demo/item/d-224679-03.jpg',
+                    '/assets/images/demo/item/d-224679-04.jpg',
+                    '/assets/images/demo/item/d-224679-05.jpg',
+                    '/assets/images/demo/item/d-224679-06.jpg',
+                    '/assets/images/demo/item/d-224679-07.jpg',
+                    '/assets/images/demo/item/d-224679-08.jpg'
+                ]
             }
         ]
     }

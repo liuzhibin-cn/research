@@ -1,0 +1,71 @@
+<!-- #build-sample -->
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.liuzhibin.research</groupId>
+    <artifactId>akka-demo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.18</version>
+        </dependency>
+		<dependency>
+		  <groupId>com.typesafe.akka</groupId>
+		  <artifactId>akka-remote_2.12</artifactId>
+		  <version>2.5.18</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.typesafe.akka</groupId>
+		    <artifactId>akka-cluster_2.12</artifactId>
+		    <version>2.5.18</version>
+		</dependency>
+		
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-testkit_2.12</artifactId>
+            <version>2.5.18</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath />
+                        <argument>com.lightbend.akka.sample.AkkaQuickstart</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
