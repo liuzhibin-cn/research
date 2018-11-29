@@ -9,13 +9,15 @@ import './SKUInfo.css';
 
 // SmoothScrollbar.use(OverscrollPlugin);
 
+const URL = process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '';
+
 class SKUInfo extends React.Component {
     render() {
         const id = Number(this.props.match.params.id);
         const item = StaticResource.Demo.Items.filter(item => item.id === id)[0];
         return (
             <div className="sku-page-wrapper">
-                <Link to="/" className="sku-top-bar"><div className="icon-back"></div></Link>
+                <Link to={`${URL}/`} className="sku-top-bar"><div className="icon-back"></div></Link>
                 <Scrollbar style={{height:'100%'}} className="sku-scrollbar-wrapper">
                     <Carousel autoplay={true} autoplayInterval={4000} infinite swipeSpeed={300} slideWidth={1} className="sku-main-img-container">
                         {item.mainImages.map((url, index) => (

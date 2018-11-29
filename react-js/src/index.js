@@ -16,12 +16,14 @@ import SKUInfo from './item/SKUInfo';
 import './index.css';
 // import CacheSwitch from './components/react-router-cache-route/components/CacheSwitch';
 
+const URL = process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '';
+
 ReactDOM.render( 
     <Router>
         <AnimatedRouter className="router-container" appear={false}>
         {/* <CacheSwitch> */}
-            <Route exact path="/" component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
-            <Route path="/item/:id" component={SKUInfo} />
+            <Route exact path={`${URL}/`} component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
+            <Route path={`${URL}/item/:id`} component={SKUInfo} />
         {/* </CacheSwitch> */}
         </AnimatedRouter>
     </Router>, document.getElementById('root')

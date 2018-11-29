@@ -1,7 +1,6 @@
 import React from 'react';
 
-const URL = process.env.PUBLIC_URL;
-console.log('PUBLIC_URL: ' + URL);
+const URL = process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '';
 
 export default class StaticResource {
     static ShortcutIcons = [

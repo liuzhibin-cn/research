@@ -21,6 +21,8 @@ import StaticResource from '../StaticResource';
 
 // SmoothScrollbar.use(OverscrollPlugin);
 
+const URL = process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '';
+
 class Home extends React.Component {
     static refreshing = false
     constructor(props) {
@@ -58,7 +60,7 @@ class Home extends React.Component {
                 )}
             />
             {StaticResource.Demo.Items.map(item => (
-                <Link key={item.id} to={ `/item/${item.id}` }>
+                <Link key={item.id} to={ `${URL}/item/${item.id}` }>
                     <SKUListItem id={item.id} price={item.price} title={item.title} imageUrl={item.listImage} />
                 </Link>
             ))}
