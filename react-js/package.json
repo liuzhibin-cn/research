@@ -32,5 +32,6 @@
   "devDependencies": {
     "babel-plugin-import": "^1.11.0",
     "react-app-rewired": "^1.6.2"
-  }
+  },
+  "homepage": "https://liuzhibin-cn.github.io/research/react-js/build"
 }

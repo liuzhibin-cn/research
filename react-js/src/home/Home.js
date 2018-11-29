@@ -1,7 +1,7 @@
 import React from 'react';
 import { Carousel, Grid } from 'antd-mobile';
 import { Link } from "react-router-dom";
-
+//https://liuzhibin-cn.github.io/research/react-js/build
 // react-smooth-scrollbar，参考：https://idiotwu.github.io/smooth-scrollbar/ 和 https://www.ctolib.com/article/wiki/16148
 // 问题描述：
 //   tab-bar全屏后，tab-item内容滚动不平滑，将tab-item的内容包装在react-smooth-scrollbar中解决这个问题；

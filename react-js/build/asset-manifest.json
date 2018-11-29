@@ -1,15 +1,15 @@
 {
-  "main.css": "/static/css/main.cbd62643.chunk.css",
-  "main.js": "/static/js/main.c2fbb74d.chunk.js",
-  "main.js.map": "/static/js/main.c2fbb74d.chunk.js.map",
-  "static/css/1.1bbcb962.chunk.css": "/static/css/1.1bbcb962.chunk.css",
-  "static/js/1.44acaf56.chunk.js": "/static/js/1.44acaf56.chunk.js",
-  "static/js/1.44acaf56.chunk.js.map": "/static/js/1.44acaf56.chunk.js.map",
-  "runtime~main.js": "/static/js/runtime~main.229c360f.js",
-  "runtime~main.js.map": "/static/js/runtime~main.229c360f.js.map",
-  "static/css/1.1bbcb962.chunk.css.map": "/static/css/1.1bbcb962.chunk.css.map",
-  "static/css/main.cbd62643.chunk.css.map": "/static/css/main.cbd62643.chunk.css.map",
-  "index.html": "/index.html",
-  "precache-manifest.b68385e5ad16ddfd4c59fab5b36a254f.js": "/precache-manifest.b68385e5ad16ddfd4c59fab5b36a254f.js",
-  "service-worker.js": "/service-worker.js"
+  "main.css": "/research/react-js/build/static/css/main.cbd62643.chunk.css",
+  "main.js": "/research/react-js/build/static/js/main.98d632f1.chunk.js",
+  "main.js.map": "/research/react-js/build/static/js/main.98d632f1.chunk.js.map",
+  "static/css/1.1bbcb962.chunk.css": "/research/react-js/build/static/css/1.1bbcb962.chunk.css",
+  "static/js/1.44acaf56.chunk.js": "/research/react-js/build/static/js/1.44acaf56.chunk.js",
+  "static/js/1.44acaf56.chunk.js.map": "/research/react-js/build/static/js/1.44acaf56.chunk.js.map",
+  "runtime~main.js": "/research/react-js/build/static/js/runtime~main.a7813d48.js",
+  "runtime~main.js.map": "/research/react-js/build/static/js/runtime~main.a7813d48.js.map",
+  "static/css/1.1bbcb962.chunk.css.map": "/research/react-js/build/static/css/1.1bbcb962.chunk.css.map",
+  "static/css/main.cbd62643.chunk.css.map": "/research/react-js/build/static/css/main.cbd62643.chunk.css.map",
+  "index.html": "/research/react-js/build/index.html",
+  "precache-manifest.3a95022e649981d53a77558d2ddb514d.js": "/research/react-js/build/precache-manifest.3a95022e649981d53a77558d2ddb514d.js",
+  "service-worker.js": "/research/react-js/build/service-worker.js"
 }

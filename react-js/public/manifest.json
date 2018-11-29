@@ -1,6 +1,6 @@
 {
-  "short_name": "RRS mini-Shop",
-  "name": "RRS mini-Shop",
+  "short_name": "Hello React-JS",
+  "name": "Hello React-JS",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,7 +8,7 @@
       "type": "image/x-icon"
     }
   ],
-  "start_url": "https://liuzhibin-cn.github.io/research/react-js/build",
+  "start_url": "https://liuzhibin-cn.github.io/research/react-js/build", 
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
