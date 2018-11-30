@@ -24,7 +24,7 @@ class App extends React.Component {
       props.cacheLifecycles.didCache(this.componentDidCache);
       props.cacheLifecycles.didRecover(this.componentDidRecover);
     }
-    // console.log('>> [' + this.state.id + '] constructor');
+    console.log('>> [' + this.state.id + '] App.constructor');
   }
 
   componentDidCache = () => {

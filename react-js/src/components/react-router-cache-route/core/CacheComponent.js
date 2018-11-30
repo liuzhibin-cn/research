@@ -89,8 +89,8 @@ export default class CacheComponent extends Component {
   }
 
   constructor(props, ...args) {
-    // console.log('>> CacheComponent.constructor');
-    // super(props, ...args);
+    super(props, ...args);
+    console.log('>> CacheComponent.constructor');    
     if (props.cacheKey) register(props.cacheKey, this);
     /**
      * - `matched`: 是否显示该组件，根据`CacheRoute`是否匹配本次请求路径得到；

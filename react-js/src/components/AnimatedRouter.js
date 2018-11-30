@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { withRouter,Switch } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+// import { Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
-// import CacheSwitch from '../components/react-router-cache-route/components/CacheSwitch';
+import CacheSwitch from '../components/react-router-cache-route/components/CacheSwitch';
 
 let lastLocation = { isPush: true };
 const REACT_HISTORIES_KEY = 'REACT_HISTORIES_KEY';
@@ -90,6 +91,7 @@ class AnimatedRouterInner extends Component {
     }
 
     render() {
+        console.log('>> AnimatedRouter.render');
         const { className, location, history, match, children, timeout, prefix, appear, enter, exit, component } = this.props;
         const groupProps = {
             appear,
@@ -134,8 +136,8 @@ class AnimatedRouterInner extends Component {
                     timeout={timeout}
                     {...cssProps}>
                     {/* CacheSwitch必须放在这里，不能放在children中，否则转场效果有问题 */}
-                    {/* <CacheSwitch location={location} history={history} match={match}>{children}</CacheSwitch> */}
-                    <Switch location={location} history={history} match={match}>{children}</Switch>
+                    <CacheSwitch location={location} history={history} match={match}>{children}</CacheSwitch>
+                    {/* <Switch location={location} history={history} match={match}>{children}</Switch> */}
                 </CSSTransition>
             </TransitionGroup>
         );

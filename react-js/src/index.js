@@ -1,14 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// https://segmentfault.com/a/1190000014294604
 import { BrowserRouter as Router, Route } from "react-router-dom";
-// react-animated-router: 
-//    1. https://github.com/qiqiboy/react-animated-router
-//    2. http://www.qiqiboy.com/post/111
 import AnimatedRouter from './components/AnimatedRouter';
 import './components/AnimatedRouter.css';
-// react-router-cache-route: https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md
-// import CacheRoute from './components/react-router-cache-route/components/CacheRoute';
+import CacheRoute from './components/react-router-cache-route/components/CacheRoute';
 
 import * as serviceWorker from './serviceWorker';
 import App from './App';
@@ -22,7 +17,7 @@ ReactDOM.render(
     <Router>
         <AnimatedRouter className="router-container" appear={false}>
         {/* <CacheSwitch> */}
-            <Route exact path={`${URL}/`} component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
+            <CacheRoute exact path={`${URL}/`} component={App} className="cache-route-wrapper" cacheKey="/" when="forward" />
             <Route path={`${URL}/item/:id`} component={SKUInfo} />
         {/* </CacheSwitch> */}
         </AnimatedRouter>
