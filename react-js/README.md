@@ -1,3 +1,9 @@
+### 运行效果
+用手机浏览器访问[https://liuzhibin-cn.github.io/research/react-js/build](https://liuzhibin-cn.github.io/research/react-js/build)。<br />
+如果通过浏览器`保存到主屏`，然后从主屏上点击图标打开应用，则不会出现浏览器导航栏，效果跟使用APP类似。
+
+![](./public/assets/images/screenshot-01.png) ![](./public/assets/images/screenshot-02.png) ![](./public/assets/images/screenshot-03.png) 
+
 ### 创建React项目
 
 安装nodejs和npm，现在的nodejs已经自带npm，不需要单独安装。
@@ -49,7 +55,7 @@ static/
 ```
 
 #### 项目环境
-本项目为了可以直接在github上访问，将React首页路径配置为了[https://liuzhibin-cn.github.io/research/react-js/build](https://liuzhibin-cn.github.io/research/react-js/build)：
+本项目为了可以直接在github上访问，将React首页路径配置为了`https://liuzhibin-cn.github.io/research/react-js/build`：
 
 1. `package.json`中设置`homepage`
    ```js
@@ -68,8 +74,6 @@ static/
 
 经过`npm run build`构建后，`PUBLIC_URL`的值变为：`/research/react-js/build`，上面2、3中引用的都是这个值。如果使用`npm start`本地启动项目，默认会使用`development`的`env`，此时`PUBLIC_URL`的值为`.`。
 
-可以直接用手机浏览器访问这个地址，如果通过浏览器`保存到主屏`，然后从主屏上点击图标打开应用，则不会出现浏览器导航栏，效果跟使用APP类似。
-
 ### React快速入门
 
 JSX
@@ -82,7 +86,7 @@ Component Life Cycle
 #### 路由 `react-route`、`react-route-dom`
 _作用_：实现页面间的切换、跳转；官方提供的；使用`Router`、`Switch`、`Route`。
 
-_资料_：<br />
+_参考_：<br />
 [REACT TRAINING / REACT ROUTER](https://reacttraining.com/react-router/web/example/basic)，包括示例、详细API文档。<br />
 [React Router 中文文档](https://react-guide.github.io/react-router-cn/index.html) <br />
 [React Router 使用教程](http://www.ruanyifeng.com/blog/2016/05/react_router.html)
@@ -94,7 +98,7 @@ _问题_：<br />
 #### 路由缓存 `react-router-cache-route`
 _作用_：解决`react-router`无法保留页面状态的问题；个人开发的；使用`CacheSwitch`、`CacheRoute`。
 
-_资料_：[github: react-router-cache-route](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
+_参考_：[github: react-router-cache-route](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
 
 _原理_：`CacheSwitch`会在DOM节点中输出每个`CacheRoute`组件，如果`CacheRoute`匹配当前请求路径则正常展示，若未匹配当前请求路径，则设置为`style.display: none`。
 
@@ -106,7 +110,7 @@ _作用_：<br />
 - 进入新页面时：原页面从右向左slide out，新页面从右向左slide in；
 - 返回原页面时：原页面从左向右slide in，新页面从左向右slide out；
 
-_资料_：<br />
+_参考_：<br />
 [使用react-router v4和react-transition-group实现页面路由切换动画效果](http://www.qiqiboy.com/post/111) <br />
 [github: react-animated-router](https://github.com/qiqiboy/react-animated-router)
 
@@ -123,7 +127,7 @@ _问题_：
 #### 平滑滚动 `react-smooth-scrollbar`
 _作用_：手机H5中如果直接使用`div`的滚动功能，性能差体验不好，滚动迟滞卡顿，使用`Scrollbar`后滚动平滑，体验上基本与APP接近。
 
-_资料_：<br />
+_参考_：<br />
 [Smooth Scrollbar: Customizable, Pluginable, and High Performance Scrollbars!](https://idiotwu.github.io/smooth-scrollbar/) <br />
 [Documentation](https://github.com/idiotWu/smooth-scrollbar/tree/develop/docs)、
 [APIs](https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md)、
@@ -138,6 +142,7 @@ _注意_：必须将`Scrollbar`高度设置为100%，否则`Scrollbar`不会起�
 #### overscroll插件
 _作用_：`react-smooth-scrollbar`滚动到内容的顶部或底部后，不再响应滚动事件。overscroll则允许继续响应滚动事件，视觉效果是在顶部或底部拉出一个空白区域，用户停止滚动操作后空白区域逐渐消失，可用于实现下拉或上拉刷新的视觉效果。
 
+_使用_
 ```js
 import SmoothScrollbar from 'smooth-scrollbar';
 import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
