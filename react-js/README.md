@@ -2,11 +2,7 @@
 用手机浏览器访问[https://liuzhibin-cn.github.io/research/react-js/build](https://liuzhibin-cn.github.io/research/react-js/build)。<br />
 如果通过浏览器`保存到主屏`，然后从主屏上点击图标打开应用，则不会出现浏览器导航栏，效果跟使用APP类似。
 
-![](./public/assets/images/screenshot-01.png) ![](./public/assets/images/screenshot-02.png) ![](./public/assets/images/screenshot-03.png) 
-
-<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888" />
-<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888; margin-left:10px;" />
-<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888; margin-left:10px;" />
+![](./public/assets/images/screenshot-01.png) 　![](./public/assets/images/screenshot-02.png) 　![](./public/assets/images/screenshot-03.png) 
 
 ### 创建React项目
 
