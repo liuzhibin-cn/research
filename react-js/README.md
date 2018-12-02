@@ -4,6 +4,10 @@
 
 ![](./public/assets/images/screenshot-01.png) ![](./public/assets/images/screenshot-02.png) ![](./public/assets/images/screenshot-03.png) 
 
+<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888" />
+<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888; margin-left:10px;" />
+<img src="./public/assets/images/screenshot-01.png" style="border:solid 1px #888; margin-left:10px;" />
+
 ### 创建React项目
 
 安装nodejs和npm，现在的nodejs已经自带npm，不需要单独安装。
