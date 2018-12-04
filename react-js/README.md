@@ -152,4 +152,4 @@ SmoothScrollbar.use(OverscrollPlugin);
 ### 多端统一框架
 同一个应用，需要H5、微信/阿里/百度小程序都能用，为了避免重复开发，可以采用多端统一的框架。
 - [Taro](https://nervjs.github.io/taro/docs/README.html)，京东开源，[Taro深度开发实践](https://aotu.io/notes/2018/11/30/taro_practice/)
-- [娜娜奇](https://aotu.io/notes/2018/11/30/taro_practice/)，司徒正美开发
+- [娜娜奇](https://rubylouvre.github.io/nanachi/)，司徒正美开发
