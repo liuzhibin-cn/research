@@ -32,7 +32,7 @@
         <dependency>  
             <groupId>mysql</groupId>  
             <artifactId>mysql-connector-java</artifactId>  
-            <version>6.0.5</version><!--$NO-MVN-MAN-VER$-->  
+            <version>8.0.28</version><!--$NO-MVN-MAN-VER$-->  
         </dependency>  
         <dependency>
             <groupId>com.google.code.gson</groupId>
